@@ -19,11 +19,8 @@ const pool = new Pool({
     
 })
 
-pool.connect((err, client, release) =>{
-    if (err) {
-        return console.error('Erro ao conectar no Neon PostgreSQL:', err.stack);
-    }
-    console.log('Conectado com sucesso ao Neon PostgreSQL!');
-})
+pool.on('error', (err, client) => {
+  console.error('Erro inesperado em cliente ocioso no Pool do Postgres:', err);
 
+});
 export default pool;
