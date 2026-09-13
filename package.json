@@ -4,7 +4,6 @@
   "description": "",
   "main": "app.js",
   "imports": {
-    "#/*": "./src/*"
   },
   "scripts": {
     "start": "node app.js",

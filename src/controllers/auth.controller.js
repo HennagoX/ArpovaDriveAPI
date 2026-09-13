@@ -2,28 +2,28 @@ import bcrypt from 'bcrypt';
 import pool from '../Repositories/db.js';
 
 export async function login(req, res, next) {
-  const { email, password } = req.body;
+  const { email, senha } = req.body;
 
   try {
     const { rows } = await pool.query('SELECT * FROM usuario WHERE email = $1', [email]);
 
     if (rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+      return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
     }
 
-    const user = rows[0];
-    const passwordValid = await bcrypt.compare(password, user.senha);
+    const usuario = rows[0];
+    const senhaValida = await bcrypt.compare(senha, usuario.senha);
 
-    if (!passwordValid) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+    if (!senhaValida) {
+      return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
     }
 
     return res.status(200).json({
-      message: 'Login successful!',
-      user: {
-        id: user.id_usuario,
-        name: user.nome,
-        email: user.email
+      message: 'Login realizado com sucesso!',
+      usuario: {
+        id: usuario.id_usuario,
+        nome: usuario.nome,
+        email: usuario.email
       }
     });
   } catch (error) {
@@ -32,11 +32,10 @@ export async function login(req, res, next) {
 }
 
 export async function register(req, res, next) {
-  const { name, email, password, birthDate, data_nascimento } = req.body;
-  const normalizedBirthDate = birthDate || data_nascimento;
+  const { nome, email, senha, data_nascimento } = req.body;
 
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
+    const senhaHash = await bcrypt.hash(senha, 10);
 
     const query = `
       INSERT INTO usuario(nome, email, senha, data_nascimento)
@@ -44,11 +43,11 @@ export async function register(req, res, next) {
       RETURNING id_usuario, nome, email;
     `;
 
-    const { rows } = await pool.query(query, [name, email, passwordHash, normalizedBirthDate]);
+    const { rows } = await pool.query(query, [nome, email, senhaHash, data_nascimento]);
 
     return res.status(201).json({
-      message: 'User registered successfully!',
-      user: rows[0]
+      message: 'Usuário cadastrado com sucesso!',
+      usuario: rows[0]
     });
   } catch (error) {
     next(error);

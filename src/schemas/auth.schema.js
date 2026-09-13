@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-  email: z.string().trim().email('Please enter a valid email address.'),
-  password: z.string().min(6, 'Password must contain at least 6 characters.')
+  email: z.string().trim().email('Por favor, insira um e-mail válido.'),
+  senha: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres.')
 });
 
 export const userSchema = z.object({
-  name: z.string().trim().min(2, 'Name must contain at least 2 characters.'),
-  email: z.string().trim().email('Please enter a valid email address.'),
-  password: z.string().min(6, 'Password must contain at least 6 characters.'),
-  birthDate: z.string().refine((value) => !Number.isNaN(new Date(value).getTime()), {
-    message: 'Invalid birth date.'
+  nome: z.string().trim().min(2, 'O nome deve ter pelo menos 2 caracteres.'),
+  email: z.string().trim().email('Por favor, insira um e-mail válido.'),
+  senha: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres.'),
+  data_nascimento: z.string().refine((value) => !Number.isNaN(new Date(value).getTime()), {
+    message: 'Data de nascimento inválida.'
   })
 });
