@@ -6,7 +6,9 @@
   "imports": {
     "#/*": "./src/*"
   },
-  "scripts": {},
+  "scripts": {
+    "start" : "node app.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
