@@ -1,11 +1,30 @@
 import express from 'express';
 import cors from 'cors';
-import { z } from 'zod';
+import { success, z } from 'zod';
 import { validate } from './src/middlewares/validate.js';
 import pool from "./src/Repositories/db.js";
 import bcrypt from 'bcrypt';
+import rateLimit from 'express-rate-limit';
 
 const app = express();
+
+const limitadorGeral = rateLimit({
+    windowMs: 14 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders : false,
+    message: { error: 'Muitas requisições deste IP. Tente novamente em 15 minutos.' },
+    skip: (req) => req.method === 'OPTIONS',
+    message: { error: 'Muitas tentativas. Aguarde alguns minutos.' }
+})
+
+const limitadorAuth = rateLimit({
+  windowMs: 60 * 60 * 1000, 
+  max: 10,
+    skip: (req) => req.method === 'OPTIONS',
+    message: { error: 'Muitas tentativas. Aguarde alguns minutos.' }
+});
+
 const PORT = process.env.PORT || 3000;
 const userSchema = z.object({
     email: z.string().trim().email('Por favor, insira um email válido')
@@ -27,11 +46,49 @@ app.use(cors({
     }
 }));
 
+
 app.use(express.json());
 
-app.post('/usuarios', validate(userSchema), async (req, res) =>{
+//app.use(limitadorGeral)
+
+
+app.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
+
+  try {
+    const { rows } = await pool.query('SELECT * FROM usuario WHERE email = $1', [email]);
+    
+    if (rows.length === 0) {
+      return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
+    }
+
+    const usuario = rows[0];
+
+    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+
+    if (!senhaValida) {
+      return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
+    }
+
+    return res.status(200).json({
+      message: 'Login realizado com sucesso!',
+      usuario: {
+        id: usuario.id_usuario,
+        nome: usuario.nome,
+        email: usuario.email
+      },
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+
+app.post('/cadastro', validate(userSchema), async (req, res) =>{
     const { nome, email, senha, data_nascimento } = req.body;
     try{
+
         const saltRounds = 10;
         const senhaHash = await bcrypt.hash(senha, saltRounds);
         
