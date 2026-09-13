@@ -1,0 +1,19 @@
+{
+  "name": "arpovadriveapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "zod": "^4.6.4"
+  }
+}
