@@ -14,7 +14,7 @@ const userSchema = z.object({
 const origensPermitidas = [
     'http://localhost:3000',
     'http://127.0.0.1:5500',
-    'https://aprova-drive.vercel.app/'
+    'https://aprova-drive.vercel.app'
 ];
 
 app.use(cors({
