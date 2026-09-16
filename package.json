@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "imports": {
-  },
+  "imports": {},
   "scripts": {
     "start": "node app.js",
-    "dev": "node app.js --watch"
+    "dev": "node app.js --watch",
+    "ai": "node ./src/services/ai.service.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
+    "groq-sdk": "^1.6.0",
     "pg": "^8.23.0",
     "zod": "^4.6.4"
   },
