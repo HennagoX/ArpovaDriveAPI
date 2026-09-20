@@ -1,63 +1,67 @@
 const taskTemplates = {
-	CodigoTransito: {
-		title: 'Estudar 4 capítulos de Código de Trânsito',
-		xp_reward: 100,
-		description: 'Aprenda as principais leis e regras do Código de Trânsito Brasileiro em conteúdos.',
-		task_type: 'study'
-	},
-	reviewConstitutionalLaw: {
-		title: 'Revisar Direito Constitucional',
-		xp_reward: 25,
-		description: 'Revise suas anotações de Direito Constitucional e destaque os assuntos que precisam de reforço.',
-		task_type: 'review'
-	},
-	solvePortugueseQuestions: {
-		title: 'Resolver questões de Português',
-		xp_reward: 35,
-		description: 'Resolva 20 questões de interpretação de texto e confira seus erros.',
-		task_type: 'exercise'
-	},
-	studyMathematics: {
-		title: 'Estudar Matemática',
+	codigoTransitoCapitulo1: {
+		title: 'Estudar capítulo 1 do Código de Trânsito',
 		xp_reward: 30,
-		description: 'Estude um tópico de Matemática e resolva exercícios para fixar o conteúdo.',
+		description: 'Leia o capítulo 1 do Código de Trânsito e anote os conceitos principais e regras relevantes.',
+		task_type: 'study',
+		sort: 0
+	},
+	codigoTransitoCapitulo2: {
+		title: 'Estudar capítulo 2 do Código de Trânsito',
+		xp_reward: 30,
+		description: 'Revise o capítulo 2 do Código de Trânsito e destaque as regras sobre condutores e veículos.',
+		task_type: 'study',
+		sort: 1
+	},
+	codigoTransitoCapitulo3: {
+		title: 'Estudar capítulo 3 do Código de Trânsito',
+		xp_reward: 30,
+		description: 'Estude o capítulo 3 e faça um resumo das infrações e penalidades.',
+		task_type: 'study',
+		sort: 2
+	},
+	codigoTransitoCapitulo4: {
+		title: 'Estudar capítulo 4 do Código de Trânsito',
+		xp_reward: 30,
+		description: 'Leia o capítulo 4 e registre as principais normas sobre educação e fiscalização.',
+		task_type: 'study',
+		sort: 3
+	},
+	placasTransitoCapitulo1: {
+		title: 'Estudar capítulo 1 de Placas de Trânsito',
+		xp_reward: 25,
+		description: 'Estude as placas de regulamentação e identifique a função de cada sinal.',
 		task_type: 'study'
 	},
-	reviewPreviousErrors: {
-		title: 'Revisar questões erradas',
+	placasTransitoCapitulo2: {
+		title: 'Estudar capítulo 2 de Placas de Trânsito',
 		xp_reward: 25,
-		description: 'Revise as questões que você errou e registre o motivo de cada erro.',
-		task_type: 'review'
+		description: 'Revise as placas de indicação e de serviços, reforçando os conceitos de sinalização.',
+		task_type: 'study'
 	},
-	watchLesson: {
-		title: 'Assistir a uma aula',
-		xp_reward: 20,
-		description: 'Assista a uma aula sobre um assunto do seu edital e anote as ideias principais.',
-		task_type: 'video_lesson'
+	direcaoDefensivaCapitulo1: {
+		title: 'Estudar capítulo 1 de Direção Defensiva',
+		xp_reward: 25,
+		description: 'Leia o capítulo 1 e entenda os princípios básicos da direção defensiva.',
+		task_type: 'study'
 	},
-	readStudyMaterial: {
-		title: 'Ler material de estudo',
-		xp_reward: 20,
-		description: 'Leia um capítulo do material de estudo e faça uma breve síntese.',
-		task_type: 'reading'
+	direcaoDefensivaCapitulo2: {
+		title: 'Estudar capítulo 2 de Direção Defensiva',
+		xp_reward: 25,
+		description: 'Revise o capítulo 2 e faça anotações sobre prevenção de acidentes e atenção ao trânsito.',
+		task_type: 'study'
 	},
-	completeMockTest: {
-		title: 'Fazer um simulado',
-		xp_reward: 100,
-		description: 'Faça um simulado completo respeitando o tempo limite da prova.',
-		task_type: 'mock_test'
+	primeirosSocorrosCapitulo1: {
+		title: 'Estudar capítulo 1 de Primeiros Socorros',
+		xp_reward: 25,
+		description: 'Leia o capítulo 1 e registre os procedimentos iniciais de atendimento em emergências.',
+		task_type: 'study'
 	},
-	analyzeMockTest: {
-		title: 'Analisar resultado do simulado',
-		xp_reward: 40,
-		description: 'Analise seu desempenho no simulado e identifique os conteúdos que precisam de atenção.',
-		task_type: 'review'
-	},
-	planStudyWeek: {
-		title: 'Planejar a semana de estudos',
-		xp_reward: 15,
-		description: 'Organize as matérias, horários e metas de estudo para os próximos dias.',
-		task_type: 'planning'
+	meioAmbienteCapitulo1: {
+		title: 'Estudar capítulo 1 de Meio Ambiente e Cidadania',
+		xp_reward: 25,
+		description: 'Revise o capítulo 1 e identifique as responsabilidades ambientais e cidadãs no trânsito.',
+		task_type: 'study'
 	}
 };
 

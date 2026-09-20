@@ -24,13 +24,8 @@ app.get('/health', (req, res) => {
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+/*
 app.listen(PORT, () => {
   console.log('app listening on port ' + PORT);
 });
-
-const task = taskService.newTaskFromTemplate("Henrique", "CodigoTransito", {title : "Estudar 99 capítulos de Código de Trânsito", sort : 10})
-const task2 = taskService.newTaskFromTemplate("Henrique", "CodigoTransito");
-taskService.setDailyTask(task)
-taskService.setDailyTask(task2)
-
-console.log(taskService.getDailyTasks())
+*/

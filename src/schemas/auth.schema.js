@@ -12,5 +12,5 @@ export const userSchema = z.object({
   data_nascimento: z.string().refine((value) => !Number.isNaN(new Date(value).getTime()), {
     message: 'Data de nascimento inválida.'
   })
-  
+
 });
