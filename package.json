@@ -1,7 +1,7 @@
 {
   "name": "arpovadriveapi",
   "version": "1.0.0",
-  "description": "",
+  "descricao": "",
   "main": "app.js",
   "imports": {},
   "scripts": {

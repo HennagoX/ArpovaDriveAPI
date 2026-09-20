@@ -31,8 +31,8 @@ const getDayKey = (date) => {
 
 const taskService = {
 
-  newTask: (id_usuario, title, xp_reward, description, task_type, status, sort) => {
-    return new taskModel(id_usuario, title, xp_reward, description, task_type, status, sort);
+  newTask: (id_usuario, titulo, xp_reward, descricao, ativa, status, sort) => {
+    return new taskModel(id_usuario, titulo, xp_reward, descricao, ativa, status, sort);
   },
 
   newTaskFromTemplate: (id_usuario, templateName, overrides) => {
@@ -44,10 +44,10 @@ const taskService = {
 
     return new taskModel(
       id_usuario,
-      overrides?.title || template.title,
+      overrides?.titulo || template.titulo,
       overrides?.xp_reward || template.xp_reward,
-      overrides?.description || template.description,
-      overrides?.task_type || template.task_type,
+      overrides?.descricao || template.descricao,
+      overrides?.ativa || template.ativa,
       overrides?.status || 'pending',
       overrides?.sort || 0,
     );
