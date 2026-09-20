@@ -4,13 +4,13 @@ export default class TaskSemanais {
     const dataBase = new Date(inicioSemana);
 
     this.tarefa_id = tarefa_id;
-    this.inicioSemana = this.oberInicioDaSemana(dataBase);
+    this.inicioSemana = this.obetrInicioDaSemana(dataBase);
     this.dia_semana = dia_semana;
     this.posicao = posicao;
     this.concluida = concluida;
   }
 
-  oberInicioDaSemana(data) {
+  obetrInicioDaSemana(data) {
     const dataReferencia = new Date(data);
     const diaSemana = dataReferencia.getDay();
     const diasParaSubtrair = diaSemana === 0 ? 6 : diaSemana - 1;

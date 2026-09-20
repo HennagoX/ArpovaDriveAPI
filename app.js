@@ -1,6 +1,6 @@
 import express from 'express';
 import cron from 'node-cron';
-import taskService, {getCurrentWeekDays} from './src/services/task.service.js';
+import taskService, { getCurrentWeekDays } from './src/services/task.service.js';
 import tasksSemanaisModel from './src/models/tasksSemanais.js'
 import cors from 'cors';
 
@@ -33,10 +33,12 @@ app.listen(PORT, () => {
 */
 
 
+/*
 // TAREFAS DO HENRIQUE
 const estudarCap1_h = taskService.newTaskFromTemplate("Henrique", 'codigoTransitoCapitulo1')
 const estudarCap2_h = taskService.newTaskFromTemplate("Henrique", 'codigoTransitoCapitulo2')
 const estudarCap3_h = taskService.newTaskFromTemplate("Henrique", 'placasTransitoCapitulo1')
+const estudarCap4_h = taskService.newTaskFromTemplate("Henrique", 'placasTransitoCapitulo2')
 taskService.setDailyTask(estudarCap1_h);
 taskService.setDailyTask(estudarCap2_h);
 taskService.setDailyTask(estudarCap3_h);
@@ -49,8 +51,30 @@ const estudarCap3_p = taskService.newTaskFromTemplate("Pedro", 'placasTransitoCa
 taskService.setDailyTask(estudarCap1_p);
 taskService.setDailyTask(estudarCap2_p);
 taskService.setDailyTask(estudarCap3_p);
+*/
 
-taskService.getDailyTasks().forEach((task) => {
-  console.log(JSON.stringify(task, null, 2)); 
-  console.log("\n-------------------\n"); 
-});
+
+
+taskService.createWeeklySchedule("Henrique",
+  [
+    //segunda                  //terça                     //quarta
+    "codigoTransitoCapitulo1", "codigoTransitoCapitulo2", "placasTransitoCapitulo1",
+    // quinta                 //sexta                       /sábado
+    "codigoTransitoCapitulo2", "codigoTransitoCapitulo1", "placasTransitoCapitulo1",
+    // segunda                    //terça                    //quarta
+    "codigoTransitoCapitulo2", "codigoTransitoCapitulo1", "placasTransitoCapitulo1",
+
+  ]
+)
+
+
+taskService.createWeeklySchedule("Pedro",
+  [
+    //segunda                  //terça                 
+    "codigoTransitoCapitulo1", "codigoTransitoCapitulo2"
+
+  ]
+)
+
+
+console.log(taskService.getUserSchedule("Pedro"));

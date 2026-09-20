@@ -5,12 +5,12 @@ import taskTemplates from '../config/tasksTemplates.js';
 const MAX_PER_DAY = 3;
 const MAX_PER_WEEK = MAX_PER_DAY * 6;
 const MAX_DAYS_WEEK = 6; // Segunda - Sábado
+const WEEK_DAY_KEYS = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
 
-const dayTasks = [];
-const weekTasks = {};
+const userSchedules = {};
 
-export const getCurrentWeekDays = () => {
-  const today = new Date();
+export const getCurrentWeekDays = (date = new Date()) => {
+  const today = new Date(date);
   const startOfWeek = new Date(today);
   startOfWeek.setDate(today.getDate() - (today.getDay() === 0 ? MAX_DAYS_WEEK : today.getDay() - 1));
   startOfWeek.setHours(0, 0, 0, 0);
@@ -31,9 +31,35 @@ const getDayKey = (date) => {
   return day.toISOString().slice(0, 10);
 };
 
+const getWeekDayKey = (date) => {
+  const day = new Date(date).getDay();
+
+  if (day === 0) {
+    return null;
+  }
+
+  return WEEK_DAY_KEYS[day - 1];
+};
+
 const getWeekKey = (date = new Date()) => {
   const taskSemanal = new TaskSemanais(0, date);
   return getDayKey(taskSemanal.inicioSemana);
+};
+
+const getUserWeek = (id_usuario, date = new Date()) => {
+  const weekKey = getWeekKey(date);
+
+  if (!userSchedules[id_usuario]) {
+    userSchedules[id_usuario] = {};
+  }
+
+  if (!userSchedules[id_usuario][weekKey]) {
+    userSchedules[id_usuario][weekKey] = Object.fromEntries(
+      WEEK_DAY_KEYS.map((dayKey) => [dayKey, []]),
+    );
+  }
+
+  return userSchedules[id_usuario][weekKey];
 };
 
 const attachWeeklyInfo = (task, date = new Date()) => {
@@ -71,7 +97,7 @@ const taskService = {
       overrides?.descricao || template.descricao,
       overrides?.ativa || template.ativa,
       overrides?.status || 'pending',
-      overrides?.sort || template.sort,
+      overrides?.sort ?? template.sort,
     );
   },
 
@@ -80,22 +106,23 @@ const taskService = {
     return attachWeeklyInfo(taskData, date);
   },
 
-  canCreateTaskForWeek: (id_usuario) => {
-    const today = new Date();
-    const dayKey = getDayKey(today);
-    const weekKey = getWeekKey(today);
+  canCreateTaskForWeek: (id_usuario, date = new Date()) => {
+    const taskDate = new Date(date);
+    const dayKey = getWeekDayKey(taskDate);
 
-    const currentDayTasks = dayTasks.filter(
-      (task) => task.id_usuario === id_usuario && getDayKey(task.created_at || today) === dayKey,
-    );
+    if (!dayKey) {
+      return false;
+    }
+
+    const userWeek = getUserWeek(id_usuario, taskDate);
+    const currentDayTasks = userWeek[dayKey] || [];
 
     if (currentDayTasks.length >= MAX_PER_DAY) {
       return false;
     }
 
-    const weeklyCount = Object.values(weekTasks)
-      .flat()
-      .filter((task) => task.id_usuario === id_usuario && getWeekKey(task.created_at || today) === weekKey).length;
+    const weeklyCount = Object.values(userWeek)
+      .reduce((total, tasks) => total + tasks.length, 0);
 
     return weeklyCount < MAX_PER_WEEK;
   },
@@ -103,34 +130,73 @@ const taskService = {
   setDailyTask: (task) => {
     const taskDate = new Date(task.created_at || new Date());
     const taskWithWeeklyInfo = attachWeeklyInfo(task, taskDate);
-    const dayKey = getDayKey(taskDate);
+    const dayKey = getWeekDayKey(taskDate);
 
-    if (!weekTasks[dayKey]) {
-      weekTasks[dayKey] = [];
-    }
-
-    if (weekTasks[dayKey].length >= MAX_PER_DAY) {
+    if (!dayKey) {
       return false;
     }
 
-    if (!taskService.canCreateTaskForWeek(taskWithWeeklyInfo.id_usuario)) {
+    if (!taskService.canCreateTaskForWeek(taskWithWeeklyInfo.id_usuario, taskDate)) {
       return false;
     }
 
-    dayTasks.push(taskWithWeeklyInfo);
-    weekTasks[dayKey].push(taskWithWeeklyInfo);
+    const userWeek = getUserWeek(taskWithWeeklyInfo.id_usuario, taskDate);
 
-    dayTasks.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
+    userWeek[dayKey].push(taskWithWeeklyInfo);
+    userWeek[dayKey].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
     
     return true;
   },
 
-  getDailyTasks: () => {
-    const hojeKey = getDayKey(new Date());
-    return dayTasks.filter((task) => getDayKey(task.created_at || new Date()) === hojeKey);
+  createWeeklySchedule: (id_usuario, templateNames = []) => {
+    if (templateNames.length > MAX_PER_WEEK) {
+      return false;
+    }
+
+    const weekDays = getCurrentWeekDays();
+    const createdTasks = [];
+
+    for (let index = 0; index < templateNames.length; index += 1) {
+      const dayIndex = index % MAX_DAYS_WEEK;
+      const taskDate = weekDays[dayIndex];
+      const task = taskService.newTaskFromTemplate(id_usuario, templateNames[index], {
+        sort: index % MAX_PER_DAY,
+      });
+
+      task.created_at = taskDate.toISOString();
+
+      if (!taskService.setDailyTask(task)) {
+        return false;
+      }
+
+      createdTasks.push(task);
+    }
+
+    return createdTasks;
   },
 
-  getWeekTasks: () => weekTasks,
+  getDailyTasks: (id_usuario) => {
+    const hojeKey = getWeekDayKey(new Date());
+
+    if (!hojeKey) {
+      return [];
+    }
+
+    const users = id_usuario ? [id_usuario] : Object.keys(userSchedules);
+
+    return users.flatMap((userId) => {
+      const userWeek = getUserWeek(userId);
+      return userWeek[hojeKey] || [];
+    });
+  },
+
+  getUserSchedule: (id_usuario) => {
+    if (id_usuario) {
+      return getUserWeek(id_usuario);
+    }
+
+    return userSchedules;
+  },
 };
 
 export default taskService;
