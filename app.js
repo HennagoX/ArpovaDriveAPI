@@ -1,6 +1,6 @@
 import express from 'express';
 import cron from 'node-cron';
-import { newTask } from './src/services/task.service.js';
+import taskService from './src/services/task.service.js';
 import cors from 'cors';
 
 import authRoutes from './src/routes/auth.routes.js';
@@ -28,10 +28,8 @@ app.listen(PORT, () => {
   console.log('app listening on port ' + PORT);
 });
 
-const task = newTask("Henrique") || "";
-console.log(task);
-/*
-TODO : Esse vai ser o final 
-cron.schedule('0 0 * * 1-6', () => {
-})
-*/
+const task = taskService.newTask("Henrique", "Faça 20 flexões", 20, "Faça bem", "", "", 9)
+const task2 = taskService.newTask("Henrique", "Faça 40 flexões", 40, "Faça bem 2x", "", "", 8)
+taskService.setDailyTask(task);
+taskService.setDailyTask(task2);
+console.log(taskService.getDailyTasks());
