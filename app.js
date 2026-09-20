@@ -28,8 +28,9 @@ app.listen(PORT, () => {
   console.log('app listening on port ' + PORT);
 });
 
-const task = taskService.newTask("Henrique", "Faça 20 flexões", 20, "Faça bem", "", "", 9)
-const task2 = taskService.newTask("Henrique", "Faça 40 flexões", 40, "Faça bem 2x", "", "", 8)
-taskService.setDailyTask(task);
-taskService.setDailyTask(task2);
-console.log(taskService.getDailyTasks());
+const task = taskService.newTaskFromTemplate("Henrique", "CodigoTransito", {title : "Estudar 99 capítulos de Código de Trânsito", sort : 10})
+const task2 = taskService.newTaskFromTemplate("Henrique", "CodigoTransito");
+taskService.setDailyTask(task)
+taskService.setDailyTask(task2)
+
+console.log(taskService.getDailyTasks())
