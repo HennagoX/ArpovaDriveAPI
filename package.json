@@ -20,10 +20,19 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "groq-sdk": "^1.6.0",
+    "node-cron": "^4.6.0",
     "pg": "^8.23.0",
     "zod": "^4.6.4"
   },
   "devDependencies": {
     "eslint": "^10.10.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HennagoX/ArpovaDriveAPI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HennagoX/ArpovaDriveAPI/issues"
+  },
+  "homepage": "https://github.com/HennagoX/ArpovaDriveAPI#readme"
 }
