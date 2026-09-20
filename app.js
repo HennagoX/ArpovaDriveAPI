@@ -1,6 +1,6 @@
 import express from 'express';
 import cron from 'node-cron';
-import taskService from './src/services/task.service.js';
+import taskService, {getCurrentWeekDays} from './src/services/task.service.js';
 import tasksSemanaisModel from './src/models/tasksSemanais.js'
 import cors from 'cors';
 
@@ -32,5 +32,25 @@ app.listen(PORT, () => {
 });
 */
 
-const task = new Task(1, "Capítulo 1 matemática", 30, "Estudar capítulo 1 de matemática em conteúdos", true, undefined, 1);
-const taskSemanal = new tasksSemanaisModel(task.id, new Date("2026-09-7"), 1, 1, false);
+
+// TAREFAS DO HENRIQUE
+const estudarCap1_h = taskService.newTaskFromTemplate("Henrique", 'codigoTransitoCapitulo1')
+const estudarCap2_h = taskService.newTaskFromTemplate("Henrique", 'codigoTransitoCapitulo2')
+const estudarCap3_h = taskService.newTaskFromTemplate("Henrique", 'placasTransitoCapitulo1')
+taskService.setDailyTask(estudarCap1_h);
+taskService.setDailyTask(estudarCap2_h);
+taskService.setDailyTask(estudarCap3_h);
+
+
+// TAREFAS DO PEDRO
+const estudarCap1_p = taskService.newTaskFromTemplate("Pedro", 'codigoTransitoCapitulo1')
+const estudarCap2_p = taskService.newTaskFromTemplate("Pedro", 'codigoTransitoCapitulo2')
+const estudarCap3_p = taskService.newTaskFromTemplate("Pedro", 'placasTransitoCapitulo1')
+taskService.setDailyTask(estudarCap1_p);
+taskService.setDailyTask(estudarCap2_p);
+taskService.setDailyTask(estudarCap3_p);
+
+taskService.getDailyTasks().forEach((task) => {
+  console.log(JSON.stringify(task, null, 2)); 
+  console.log("\n-------------------\n"); 
+});

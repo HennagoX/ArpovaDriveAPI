@@ -31,7 +31,8 @@ const taskTemplates = {
 		titulo: 'Estudar capítulo 1 de Placas de Trânsito',
 		xp_reward: 25,
 		descricao: 'Estude as placas de regulamentação e identifique a função de cada sinal.',
-		ativa: true
+		ativa: true,
+		sort : 0
 	},
 	placasTransitoCapitulo2: {
 		titulo: 'Estudar capítulo 2 de Placas de Trânsito',
