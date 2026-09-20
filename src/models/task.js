@@ -1,6 +1,6 @@
 export default class Task {
 
-  constructor(id_usuario, titulo = "New Task", xp_reward = "1", descricao = "Tarefa", ativa = true, status = "pending", sort = 0) {
+  constructor(id_usuario, titulo = "New Task", xp_reward = 1, descricao = "Tarefa", ativa = true, status = "pending", sort = 0) {
     this.id = crypto.randomUUID();
     this.titulo = titulo;
     this.id_usuario = id_usuario;
