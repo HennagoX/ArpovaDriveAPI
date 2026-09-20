@@ -15,5 +15,4 @@ export default class Task {
     return { tile: this.title, description: this.description };
   }
 
-
 }

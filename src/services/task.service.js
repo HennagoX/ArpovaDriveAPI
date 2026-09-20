@@ -3,17 +3,19 @@ import taskTemplates from '../config/tasksTemplates.js';
 
 const MAX_PER_DAY = 3;
 const MAX_PER_WEEK = MAX_PER_DAY * 6;
+const MAX_DAYS_WEEK = 6 // Segunda - Sábado
+
 const dayTasks = [];
 const weekTasks = {};
 
 const getCurrentWeekDays = () => {
   const today = new Date();
   const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
+  startOfWeek.setDate(today.getDate() - (today.getDay() === 0 ? MAX_DAYS_WEEK : today.getDay() - 1));
   startOfWeek.setHours(0, 0, 0, 0);
 
   const days = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < MAX_DAYS_WEEK; i++) {
     const day = new Date(startOfWeek);
     day.setDate(startOfWeek.getDate() + i);
     days.push(day);
