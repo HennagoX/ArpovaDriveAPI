@@ -24,8 +24,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use(rateLimiters.general);
-app.use('/auth', rateLimiters.auth, authRoutes);
+app.use('/auth', authRoutes);
 app.use('/task', taskRoutes);
 
 app.get('/health', (req, res) => {
