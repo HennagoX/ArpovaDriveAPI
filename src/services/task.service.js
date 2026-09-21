@@ -61,6 +61,75 @@ export function formatToYmd(date) {
 }
 
 /**
+ * Converte um valor (nome do dia, número do dia ou data ISO) em um objeto Date de referência.
+ * Permite simulações como ?simularDia=quarta ou ?mockDay=3.
+ * @param {Date|string|number} [dateOrDay]
+ * @returns {Date}
+ */
+export function resolveReferenceDate(dateOrDay) {
+  if (!dateOrDay) {
+    return new Date();
+  }
+
+  if (dateOrDay instanceof Date) {
+    return dateOrDay;
+  }
+
+  const str = String(dateOrDay).toLowerCase().trim();
+  const mapaNomes = {
+    domingo: 0,
+    dom: 0,
+    '0': 0,
+    segunda: 1,
+    'segunda-feira': 1,
+    seg: 1,
+    '1': 1,
+    terca: 2,
+    terça: 2,
+    'terca-feira': 2,
+    'terça-feira': 2,
+    ter: 2,
+    '2': 2,
+    quarta: 3,
+    'quarta-feira': 3,
+    qua: 3,
+    '3': 3,
+    quinta: 4,
+    'quinta-feira': 4,
+    qui: 4,
+    '4': 4,
+    sexta: 5,
+    'sexta-feira': 5,
+    sex: 5,
+    '5': 5,
+    sabado: 6,
+    sábado: 6,
+    'sabado-feira': 6,
+    'sábado-feira': 6,
+    sab: 6,
+    '6': 6
+  };
+
+  if (mapaNomes[str] !== undefined) {
+    const targetDay = mapaNomes[str];
+    const hoje = new Date();
+    const monday = getInicioSemana(hoje);
+    const targetDate = new Date(monday);
+    const offset = targetDay === 0 ? 6 : targetDay - 1;
+    targetDate.setDate(monday.getDate() + offset);
+    targetDate.setHours(12, 0, 0, 0);
+    return targetDate;
+  }
+
+  const parsed = new Date(dateOrDay);
+  if (!isNaN(parsed.getTime())) {
+    return parsed;
+  }
+
+  return new Date();
+}
+
+/**
  * Retorna um array com os 6 dias da semana (Segunda a Sábado) como objetos Date.
  * @param {Date|string} date 
  * @returns {Date[]}
@@ -454,7 +523,7 @@ const taskService = {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
     const diaSemanaHoje = date.getDay(); // 0 = Domingo, 1..6 = Segunda..Sábado
-
+    console.log(diaSemanaHoje);
     const task = await taskRepository.getTaskById(taskId);
     if (!task) {
       const err = new Error('Tarefa não encontrada.');
@@ -468,12 +537,6 @@ const taskService = {
       throw err;
     }
 
-    if (task.concluida || task.status === 'done') {
-      const err = new Error('Esta tarefa já foi concluída.');
-      err.statusCode = 400;
-      throw err;
-    }
-
     // REGRA FUNDAMENTAL: Não pode fazer tasks do outro dia, só no outro dia!
     if (task.dia_semana !== diaSemanaHoje) {
       const nomeDiaTarefa = NOMES_DIAS[task.dia_semana] || `Dia ${task.dia_semana}`;
@@ -481,6 +544,12 @@ const taskService = {
       const err = new Error(
         `Esta tarefa é de ${nomeDiaTarefa}. Você só pode realizar as tarefas do dia atual (${nomeDiaHoje}). As tarefas dos demais dias ficam bloqueadas até chegar o dia.`
       );
+      err.statusCode = 400;
+      throw err;
+    }
+
+    if (task.concluida || task.status === 'done') {
+      const err = new Error('Esta tarefa já foi concluída.');
       err.statusCode = 400;
       throw err;
     }
@@ -551,12 +620,6 @@ const taskService = {
       throw err;
     }
 
-    if (task.concluida || task.status === 'done') {
-      const err = new Error('Esta tarefa já foi concluída.');
-      err.statusCode = 400;
-      throw err;
-    }
-
     // REGRA: Só pode concluir tarefa no dia correspondente
     if (task.dia_semana !== diaSemanaHoje) {
       const nomeDiaTarefa = NOMES_DIAS[task.dia_semana] || `Dia ${task.dia_semana}`;
@@ -564,6 +627,12 @@ const taskService = {
       const err = new Error(
         `Esta tarefa é de ${nomeDiaTarefa}. Você só pode concluir tarefas no dia atual (${nomeDiaHoje}).`
       );
+      err.statusCode = 400;
+      throw err;
+    }
+
+    if (task.concluida || task.status === 'done') {
+      const err = new Error('Esta tarefa já foi concluída.');
       err.statusCode = 400;
       throw err;
     }
@@ -710,7 +779,9 @@ const taskService = {
       message: 'Cronograma semanal reinicializado com sucesso no banco de dados.',
       payload
     };
-  }
+  },
+
+  resolveReferenceDate
 };
 
 export default taskService;

@@ -8,9 +8,13 @@ import taskService from '../services/task.service.js';
 export function extrairParametros(req) {
   const taskId = req.params?.id || req.body?.taskId || req.body?.id || req.body?.id_tarefa || req.query?.taskId;
   const userId = req.body?.id_usuario || req.body?.userId || req.body?.usuario || req.query?.userId || req.query?.id_usuario || req.query?.usuario || (!req.params?.id ? req.query?.id : null);
-  const date = req.query?.date || req.body?.date || undefined;
+  
+  // Suporte a simulação de dia / mock (ex: ?simularDia=quarta, ?mockDay=quarta, ?dia=3, headers['x-mock-day'], etc.)
+  const rawDateOrDay = req.query?.simularDia || req.query?.mockDay || req.query?.dia || req.body?.simularDia || req.body?.mockDay || req.body?.dia || req.headers?.['x-mock-day'] || req.query?.date || req.body?.date || req.headers?.['x-mock-date'];
 
-  return { taskId, userId, date };
+  const date = taskService.resolveReferenceDate(rawDateOrDay);
+
+  return { taskId, userId, date, rawDateOrDay };
 }
 
 /**

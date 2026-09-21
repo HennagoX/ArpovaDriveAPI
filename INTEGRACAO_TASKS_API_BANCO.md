@@ -174,3 +174,31 @@ O servidor inicializa na porta `3000` (ou na porta configurada no `.env`) e cone
 
 ### 5.2 Abrir o Front-end
 Abra a pasta `AprovaDriveFront` no VS Code e inicie via **Live Server**, ou abra diretamente o arquivo `index.html` ou `src/pages/cronograma.html` no navegador.
+
+---
+
+## 6. Simulação e Mock de Dias da Semana (Ex: Simular que Hoje é Quarta-feira)
+
+Para fins de teste e demonstração do cronograma, o sistema disponibiliza três formas fáceis e integradas de simular qualquer dia da semana:
+
+### 6.1 Pela Interface do Front-end (Barra de Simulação)
+No topo da página do Cronograma (`cronograma.html`), há uma barra de controle de simulação com botões:
+- **`Hoje (Real)`**: Utiliza a data real do sistema.
+- **`Segunda`**, **`Terça`**, **`Quarta`**, **`Quinta`**, **`Sexta`**, **`Sábado`**:
+  Ao clicar em **Quarta**, por exemplo:
+  1. A aba de Quarta-feira é ativada imediatamente com o indicador `• Hoje`.
+  2. As missões de Quarta são desbloqueadas (Tarefa 1 exibe o botão azul `INICIAR`).
+  3. Os demais dias (Segunda, Terça, Quinta, Sexta, Sábado) exibem `BLOQUEADO`.
+  4. Caso o usuário clique em tarefas de outros dias, a API rejeita com erro `400` e exibe o toast informativo.
+
+### 6.2 Pela URL (Query Params no Front-end)
+Você pode abrir o navegador diretamente simulando qualquer dia:
+- `http://127.0.0.1:5500/src/pages/cronograma.html?simularDia=quarta`
+- `http://127.0.0.1:5500/src/pages/cronograma.html?simularDia=quinta`
+
+### 6.3 Diretamente nas Chamadas da API
+A API aceita a simulação via `query`, `body` ou cabeçalho HTTP:
+- **Query Param**: `GET /task/tasks?id=Henrique&simularDia=quarta`
+- **Body**: `{ "id_usuario": "Henrique", "simularDia": "quarta" }` em requisições `POST /task/:id/iniciar` ou `concluir`
+- **Header**: `X-Mock-Day: quarta`
+
