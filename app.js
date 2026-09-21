@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cron from 'node-cron';
 import taskService, { getCurrentWeekDays } from './src/services/task.service.js';
@@ -5,6 +8,8 @@ import tasksSemanaisModel from './src/models/tasksSemanais.js'
 import cors from 'cors';
 
 import authRoutes from './src/routes/auth.routes.js';
+import taskRoutes from './src/routes/task.routes.js';
+
 import { corsOptions } from './src/config/cors.js';
 import { rateLimiters } from './src/config/rateLimit.js';
 import { errorHandler, notFoundHandler } from './src/middlewares/errorHandler.js';
@@ -18,6 +23,7 @@ app.use(express.json());
 
 app.use(rateLimiters.general);
 app.use('/auth', rateLimiters.auth, authRoutes);
+app.use('/task', taskRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ ok: true, service: 'ArpovaDrive API' });
@@ -26,11 +32,11 @@ app.get('/health', (req, res) => {
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-/*
+
 app.listen(PORT, () => {
   console.log('app listening on port ' + PORT);
 });
-*/
+
 
 
 /*
@@ -54,7 +60,7 @@ taskService.setDailyTask(estudarCap3_p);
 */
 
 
-
+/*
 taskService.createWeeklySchedule("Henrique",
   [
     //segunda                  //terça                     //quarta
@@ -66,15 +72,9 @@ taskService.createWeeklySchedule("Henrique",
 
   ]
 )
+*/
 
+// Inicializa o cronograma completo para Henrique (simulação do usuário padrão)
+taskService.getUserSchedule("Henrique");
 
-taskService.createWeeklySchedule("Pedro",
-  [
-    //segunda                  //terça                 
-    "codigoTransitoCapitulo1", "codigoTransitoCapitulo2"
-
-  ]
-)
-
-
-console.log(taskService.getUserSchedule("Pedro"));
+console.log('Cronograma de Henrique inicializado com sucesso.');
