@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   listar,
   listarUsuarios,
+  verificarAdmin,
   buscarPorId,
   iniciar,
   concluir,
@@ -13,6 +14,7 @@ import {
 const router = Router();
 
 // Consultas
+router.get('/admin-check', verificarAdmin);
 router.get('/usuarios', listarUsuarios);
 router.get('/', listar);
 router.get('/tasks', listar);

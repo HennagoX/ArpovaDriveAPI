@@ -1,18 +1,29 @@
 import bcrypt from 'bcrypt';
 import pool from '../Repositories/db.js';
+import { isUserAdmin, getAdminConfig } from '../config/admin.config.js';
 
 export async function login(req, res, next) {
   const { email, senha } = req.body;
 
   try {
-    const { rows } = await pool.query('SELECT * FROM usuario WHERE email = $1', [email]);
+    const normalizedEmail = email?.toLowerCase().trim();
+    const { rows } = await pool.query('SELECT * FROM usuario WHERE LOWER(email) = LOWER($1)', [normalizedEmail]);
 
     if (rows.length === 0) {
       return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
     }
 
     const usuario = rows[0];
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+    const admin = getAdminConfig();
+    const isAdm = isUserAdmin(usuario);
+
+    let senhaValida = false;
+    // Se for o admin e a senha do .env foi informada, permite autenticar com ela
+    if (isAdm && admin.password && senha === admin.password) {
+      senhaValida = true;
+    } else {
+      senhaValida = await bcrypt.compare(senha, usuario.senha);
+    }
 
     if (!senhaValida) {
       return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
@@ -23,7 +34,8 @@ export async function login(req, res, next) {
       usuario: {
         id: usuario.id_usuario,
         nome: usuario.nome,
-        email: usuario.email
+        email: usuario.email,
+        is_admin: isAdm
       }
     });
   } catch (error) {

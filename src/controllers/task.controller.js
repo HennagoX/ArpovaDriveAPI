@@ -1,8 +1,10 @@
 import taskService from '../services/task.service.js';
+import { isUserAdmin } from '../config/admin.config.js';
 
 /**
  * Utilitário para extração padronizada de parâmetros da requisição.
  * Evita colisões e suporta IDs passados via params, body ou query.
+ * Identifica também se o solicitante possui permissão de Administrador.
  * @param {import('express').Request} req 
  */
 export function extrairParametros(req) {
@@ -13,24 +15,51 @@ export function extrairParametros(req) {
                  req.query?.userId || 
                  req.query?.id_usuario || 
                  req.query?.usuario || 
-                 req.headers?.['x-user-id'] || 
-                 req.headers?.['x-usuario-id'] || 
                  (!req.params?.id ? req.query?.id : null);
+
+  const requesterId = req.headers?.['x-admin-id'] || 
+                      req.headers?.['x-user-id'] || 
+                      req.headers?.['x-usuario-id'] || 
+                      req.body?.requesterId || 
+                      req.query?.requesterId || 
+                      userId;
+
+  const isAdmin = isUserAdmin(requesterId);
   
   // Suporte a simulação de dia / mock (ex: ?simularDia=quarta, ?mockDay=quarta, ?dia=3, headers['x-mock-day'], etc.)
   const rawDateOrDay = req.query?.simularDia || req.query?.mockDay || req.query?.dia || req.body?.simularDia || req.body?.mockDay || req.body?.dia || req.headers?.['x-mock-day'] || req.query?.date || req.body?.date || req.headers?.['x-mock-date'];
 
   const date = taskService.resolveReferenceDate(rawDateOrDay);
 
-  return { taskId, userId, date, rawDateOrDay };
+  return { taskId, userId, requesterId, isAdmin, date, rawDateOrDay };
+}
+
+/**
+ * GET /task/admin-check
+ * Retorna se o usuário que fez a requisição é o Administrador do sistema.
+ */
+export function verificarAdmin(req, res) {
+  const { requesterId, isAdmin } = extrairParametros(req);
+  return res.status(200).json({
+    isAdmin,
+    requesterId
+  });
 }
 
 /**
  * GET /task/usuarios
- * Retorna todos os usuários cadastrados para permitir seleção e validação no front-end.
+ * Retorna todos os usuários cadastrados.
+ * RESTRITO: Apenas o Administrador pode listar usuários.
  */
 export async function listarUsuarios(req, res, next) {
   try {
+    const { isAdmin } = extrairParametros(req);
+    if (!isAdmin) {
+      return res.status(403).json({
+        error: 'Acesso negado. Apenas o administrador tem permissão para listar todos os usuários.'
+      });
+    }
+
     const usuarios = await taskService.listarUsuarios();
     return res.status(200).json({ success: true, usuarios });
   } catch (error) {
@@ -44,7 +73,22 @@ export async function listarUsuarios(req, res, next) {
  */
 export async function listar(req, res, next) {
   try {
-    const { userId, date } = extrairParametros(req);
+    const { userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
+
+    // Se solicitou simulação de dia e não for admin, bloqueia
+    if (rawDateOrDay && !isAdmin) {
+      return res.status(403).json({
+        error: 'Acesso negado. Apenas o administrador tem permissão para simular dias da semana.'
+      });
+    }
+
+    // Usuário comum só pode acessar suas próprias tarefas
+    if (!isAdmin && requesterId && userId && requesterId !== userId) {
+      return res.status(403).json({
+        error: 'Acesso negado. Você só tem permissão para acessar suas próprias tarefas.'
+      });
+    }
+
     const payload = await taskService.getUserTaskPayload(userId, date);
     return res.status(200).json(payload);
   } catch (error) {
@@ -75,9 +119,15 @@ export async function buscarPorId(req, res, next) {
  */
 export async function iniciar(req, res, next) {
   try {
-    const { taskId, userId, date } = extrairParametros(req);
+    const { taskId, userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
     if (!taskId) {
       return res.status(400).json({ error: 'ID da tarefa é obrigatório para iniciar.' });
+    }
+    if (rawDateOrDay && !isAdmin) {
+      return res.status(403).json({ error: 'Acesso negado. Apenas o administrador pode simular dias da semana.' });
+    }
+    if (!isAdmin && requesterId && userId && requesterId !== userId) {
+      return res.status(403).json({ error: 'Acesso negado. Você só tem permissão para gerenciar suas próprias tarefas.' });
     }
     const result = await taskService.startTask(taskId, userId, date);
     return res.status(200).json(result);
@@ -92,9 +142,15 @@ export async function iniciar(req, res, next) {
  */
 export async function concluir(req, res, next) {
   try {
-    const { taskId, userId, date } = extrairParametros(req);
+    const { taskId, userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
     if (!taskId) {
       return res.status(400).json({ error: 'ID da tarefa é obrigatório para concluir.' });
+    }
+    if (rawDateOrDay && !isAdmin) {
+      return res.status(403).json({ error: 'Acesso negado. Apenas o administrador pode simular dias da semana.' });
+    }
+    if (!isAdmin && requesterId && userId && requesterId !== userId) {
+      return res.status(403).json({ error: 'Acesso negado. Você só tem permissão para gerenciar suas próprias tarefas.' });
     }
     const result = await taskService.completeTask(taskId, userId, date);
     return res.status(200).json(result);
@@ -109,9 +165,15 @@ export async function concluir(req, res, next) {
  */
 export async function pausar(req, res, next) {
   try {
-    const { taskId, userId, date } = extrairParametros(req);
+    const { taskId, userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
     if (!taskId) {
       return res.status(400).json({ error: 'ID da tarefa é obrigatório para pausar.' });
+    }
+    if (rawDateOrDay && !isAdmin) {
+      return res.status(403).json({ error: 'Acesso negado. Apenas o administrador pode simular dias da semana.' });
+    }
+    if (!isAdmin && requesterId && userId && requesterId !== userId) {
+      return res.status(403).json({ error: 'Acesso negado. Você só tem permissão para gerenciar suas próprias tarefas.' });
     }
     const result = await taskService.pauseTask(taskId, userId, date);
     return res.status(200).json(result);
@@ -126,9 +188,15 @@ export async function pausar(req, res, next) {
  */
 export async function reiniciar(req, res, next) {
   try {
-    const { taskId, userId, date } = extrairParametros(req);
+    const { taskId, userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
     if (!taskId) {
       return res.status(400).json({ error: 'ID da tarefa é obrigatório para reiniciar.' });
+    }
+    if (rawDateOrDay && !isAdmin) {
+      return res.status(403).json({ error: 'Acesso negado. Apenas o administrador pode simular dias da semana.' });
+    }
+    if (!isAdmin && requesterId && userId && requesterId !== userId) {
+      return res.status(403).json({ error: 'Acesso negado. Você só tem permissão para gerenciar suas próprias tarefas.' });
     }
     const result = await taskService.resetTask(taskId, userId, date);
     return res.status(200).json(result);
@@ -140,10 +208,14 @@ export async function reiniciar(req, res, next) {
 /**
  * POST /task/reset-schedule
  * Limpa e reinicializa todo o cronograma da semana do usuário no PostgreSQL.
+ * RESTRITO: Apenas o Administrador pode resetar cronogramas.
  */
 export async function resetarCronograma(req, res, next) {
   try {
-    const { userId, date } = extrairParametros(req);
+    const { userId, isAdmin, date } = extrairParametros(req);
+    if (!isAdmin) {
+      return res.status(403).json({ error: 'Acesso negado. Apenas o administrador pode reinicializar cronogramas.' });
+    }
     const result = await taskService.resetSchedule(userId, date);
     return res.status(200).json(result);
   } catch (error) {
