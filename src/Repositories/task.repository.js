@@ -7,37 +7,43 @@ import pool from './db.js';
 export const taskRepository = {
   /**
    * Localiza um usuário pelo UUID, nome de usuário ou e-mail.
-   * Caso nenhum identificador seja informado ou não seja encontrado, faz fallback para o usuário padrão.
+   * Retorna null caso o identificador não seja informado ou não conste na lista de usuários cadastrados.
    * @param {string} [identifier] 
    * @returns {Promise<Object|null>}
    */
   async findUser(identifier) {
-    if (!identifier) {
-      const res = await pool.query(
-        'SELECT id_usuario, nome, email, exp FROM usuario ORDER BY criado_em ASC LIMIT 1'
-      );
-      return res.rows[0] || null;
+    if (!identifier || typeof identifier !== 'string' || !identifier.trim()) {
+      return null;
     }
 
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+    const cleanId = identifier.trim();
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanId);
     if (isUuid) {
       const res = await pool.query(
         'SELECT id_usuario, nome, email, exp FROM usuario WHERE id_usuario = $1',
-        [identifier]
+        [cleanId]
       );
       if (res.rows.length > 0) return res.rows[0];
     }
 
     const res = await pool.query(
       'SELECT id_usuario, nome, email, exp FROM usuario WHERE LOWER(nome) = LOWER($1) OR LOWER(email) = LOWER($1) LIMIT 1',
-      [identifier]
+      [cleanId]
     );
     if (res.rows.length > 0) return res.rows[0];
 
-    const fallback = await pool.query(
-      'SELECT id_usuario, nome, email, exp FROM usuario ORDER BY criado_em ASC LIMIT 1'
+    return null;
+  },
+
+  /**
+   * Retorna a lista de usuários cadastrados no banco de dados.
+   * @returns {Promise<Array>}
+   */
+  async listUsers() {
+    const res = await pool.query(
+      'SELECT id_usuario, nome, email, exp, criado_em FROM usuario ORDER BY nome ASC'
     );
-    return fallback.rows[0] || null;
+    return res.rows;
   },
 
   /**

@@ -322,17 +322,32 @@ export const DEFAULT_WEEK_TEMPLATES = [
 
 const taskService = {
   /**
-   * Obtém o usuário associado a um identificador.
+   * Obtém o usuário associado a um identificador específico.
+   * Só aceita requisições se houver um id/identificador fornecido E que conste na lista de usuários cadastrados.
    * @param {string} [identifier] 
    */
   async getUsuario(identifier) {
-    const user = await taskRepository.findUser(identifier);
+    if (!identifier || typeof identifier !== 'string' || !identifier.trim()) {
+      const err = new Error('ID de usuário é obrigatório. Forneça o identificador de um usuário cadastrado.');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const user = await taskRepository.findUser(identifier.trim());
     if (!user) {
-      const err = new Error('Usuário não encontrado.');
+      const err = new Error(`Usuário "${identifier.trim()}" não encontrado. O ID fornecido não consta na lista de usuários cadastrados.`);
       err.statusCode = 404;
       throw err;
     }
     return user;
+  },
+
+  /**
+   * Retorna a lista de todos os usuários cadastrados no banco de dados.
+   * @returns {Promise<Array>}
+   */
+  async listarUsuarios() {
+    return await taskRepository.listUsers();
   },
 
   /**
@@ -523,7 +538,6 @@ const taskService = {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
     const diaSemanaHoje = date.getDay(); // 0 = Domingo, 1..6 = Segunda..Sábado
-    console.log(diaSemanaHoje);
     const task = await taskRepository.getTaskById(taskId);
     if (!task) {
       const err = new Error('Tarefa não encontrada.');

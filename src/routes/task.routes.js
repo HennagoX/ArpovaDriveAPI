@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   listar,
+  listarUsuarios,
   buscarPorId,
   iniciar,
   concluir,
@@ -12,6 +13,7 @@ import {
 const router = Router();
 
 // Consultas
+router.get('/usuarios', listarUsuarios);
 router.get('/', listar);
 router.get('/tasks', listar);
 router.get('/tasks/:id', buscarPorId);
