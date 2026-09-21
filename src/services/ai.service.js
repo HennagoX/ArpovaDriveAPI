@@ -3,11 +3,11 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const client = new Groq({apiKey : process.env.GROQ_API_KEY})
+const client = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
 async function getResponse() {
     const response = await client.chat.completions.create({
-        model:"openai/gpt-oss-20b",
+        model: "openai/gpt-oss-20b",
         messages: [
             {
                 role: "system",
@@ -101,8 +101,8 @@ async function getResponse() {
                 content: "Como funciona a progressão de xp do aprovadrive?"
             }
         ],
-        temperature : 0.4,
-        response_format : {type : "json_object"}
+        temperature: 0.4,
+        response_format: { type: "json_object" }
     })
     return response;
 }
