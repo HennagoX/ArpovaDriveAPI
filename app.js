@@ -34,7 +34,17 @@ app.get('/health', (req, res) => {
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Servidor local na porta ${PORT}`));
+}
+
+
+/*
 app.listen(PORT, () => {
   console.log('App listening on port ' + PORT);
 
 });
+*/
+
+export default app;
