@@ -68,7 +68,7 @@ export async function getCurrent(content, userId) {
   const query = await getCurrentModuloDB(column, resolvedUserId);
   const row = query?.rows[0];
   const rawValue = row && row[column] !== undefined ? Number(row[column]) : 1;
-  const moduloAtual = Math.max(1, rawValue || 1);
+  const moduloAtual = Math.min(10, Math.max(1, rawValue || 1));
   const canonical = CANONICAL_NAMES[column] || content;
 
   return {
@@ -90,7 +90,7 @@ export async function moveToNext(content, userId) {
   const query = await nextCurrentModuloDB(column, resolvedUserId);
   const row = query?.rows[0];
   const rawValue = row && row[column] !== undefined ? Number(row[column]) : 1;
-  const moduloAtual = Math.max(1, rawValue || 1);
+  const moduloAtual = Math.min(10, Math.max(1, rawValue || 1));
   const canonical = CANONICAL_NAMES[column] || content;
 
   // Concede XP adicional pela progressão de módulo
