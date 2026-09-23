@@ -1,4 +1,4 @@
-import pool from '../Repositories/db'
+import pool from '../Repositories/db.js'
 
 export  async function getCurrentXp(user_Id){
     const currentXp = await pool.query(`SELECT exp FROM usuario WHERE id = $1`, user_Id)

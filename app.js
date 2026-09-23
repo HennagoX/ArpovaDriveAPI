@@ -27,7 +27,7 @@ app.use(express.json());
 
 app.use('/auth', authRoutes);
 app.use('/task', taskRoutes);
-app.use('/questoes', taskRoutes);
+app.use('/questoes', questoesRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ ok: true, service: 'AprovaDrive API' });
