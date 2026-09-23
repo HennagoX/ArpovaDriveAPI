@@ -87,18 +87,45 @@ export async function moveToNext(content, userId) {
   }
 
   const resolvedUserId = await resolveUserId(userId);
+  const canonical = CANONICAL_NAMES[column] || content;
+
+  // Consulta o progresso antes de tentar avançar
+  const currentQuery = await getCurrentModuloDB(column, resolvedUserId);
+  const currentRow = currentQuery?.rows[0];
+  const currentRaw = currentRow && currentRow[column] !== undefined ? Number(currentRow[column]) : 1;
+  const moduloAnterior = Math.min(10, Math.max(1, currentRaw || 1));
+
+  // Se já atingiu o limite de 10 módulos, NÃO incrementa e NÃO dá XP!
+  if (moduloAnterior >= 10) {
+    return {
+      success: true,
+      conteudo: canonical,
+      coluna: column,
+      modulo_atual: 10,
+      modulo_anterior: 10,
+      xp_ganha: 0,
+      exp_total: null,
+      message: `Você já concluiu todos os 10 módulos de ${canonical}.`,
+      userId: resolvedUserId
+    };
+  }
+
   const query = await nextCurrentModuloDB(column, resolvedUserId);
   const row = query?.rows[0];
   const rawValue = row && row[column] !== undefined ? Number(row[column]) : 1;
   const moduloAtual = Math.min(10, Math.max(1, rawValue || 1));
-  const canonical = CANONICAL_NAMES[column] || content;
 
-  // Concede XP adicional pela progressão de módulo
+  // Só concede XP se realmente avançou de módulo
   let expTotal = null;
-  try {
-    expTotal = await incrementXp(resolvedUserId, 25);
-  } catch (err) {
-    console.warn('[ModuloService] Não foi possível incrementar XP:', err.message);
+  const realmenteAvancou = moduloAtual > moduloAnterior;
+  const xpGanha = realmenteAvancou ? 25 : 0;
+
+  if (realmenteAvancou) {
+    try {
+      expTotal = await incrementXp(resolvedUserId, xpGanha);
+    } catch (err) {
+      console.warn('[ModuloService] Não foi possível incrementar XP:', err.message);
+    }
   }
 
   return {
@@ -106,10 +133,12 @@ export async function moveToNext(content, userId) {
     conteudo: canonical,
     coluna: column,
     modulo_atual: moduloAtual,
-    modulo_anterior: Math.max(1, moduloAtual - 1),
-    xp_ganha: 25,
+    modulo_anterior: moduloAnterior,
+    xp_ganha: xpGanha,
     exp_total: expTotal,
-    message: `Avanço realizado com sucesso! Você entrou no Módulo ${moduloAtual} de ${canonical}.`,
+    message: realmenteAvancou 
+      ? `Avanço realizado com sucesso! Você entrou no Módulo ${moduloAtual} de ${canonical}.`
+      : `Você já concluiu todos os módulos de ${canonical}.`,
     userId: resolvedUserId
   };
 }
