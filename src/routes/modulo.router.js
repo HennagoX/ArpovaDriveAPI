@@ -4,8 +4,12 @@ import { getCurrentModule, moveToNextModule } from "../controllers/modulo.contro
 const router = Router();
 
 router.get("/get", getCurrentModule);
+router.get("/:id", getCurrentModule);
 router.get("/", getCurrentModule);
+
 router.post("/next", moveToNextModule);
+router.post("/:id/next", moveToNextModule);
+router.post("/:id", moveToNextModule);
 router.post("/", moveToNextModule);
 
 export default router;
