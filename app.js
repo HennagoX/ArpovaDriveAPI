@@ -12,6 +12,7 @@ import cors from 'cors';
 
 import authRoutes from './src/routes/auth.routes.js';
 import taskRoutes from './src/routes/task.routes.js';
+import questoesRoutes from './src/routes/questoes.routes.js';
 
 import { corsOptions } from './src/config/cors.js';
 import { rateLimiters } from './src/config/rateLimit.js';
@@ -26,6 +27,7 @@ app.use(express.json());
 
 app.use('/auth', authRoutes);
 app.use('/task', taskRoutes);
+app.use('/questoes', taskRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ ok: true, service: 'AprovaDrive API' });
