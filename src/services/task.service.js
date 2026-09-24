@@ -1,7 +1,7 @@
 import taskRepository from '../Repositories/task.repository.js';
 
 export const MAX_PER_DAY = 3;
-export const MAX_DAYS_WEEK = 6; // Segunda a Sábado
+export const MAX_DAYS_WEEK = 6;
 
 export const NOMES_DIAS = {
   1: 'Segunda-feira',
@@ -30,16 +30,9 @@ export const CHAVE_PARA_NUMERO = {
   sabado: 6
 };
 
-/**
- * Retorna a data (segunda-feira) que dá início à semana da data de referência informada.
- * Horário zerado: 00:00:00.000.
- * @param {Date|string} date 
- * @returns {Date}
- */
 export function getInicioSemana(date = new Date()) {
   const d = new Date(date);
-  const day = d.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-  // Se for Domingo (0), a semana letiva começou na Segunda-feira anterior (6 dias atrás)
+  const day = d.getDay();
   const diff = day === 0 ? 6 : day - 1;
   const segunda = new Date(d);
   segunda.setDate(d.getDate() - diff);
@@ -47,11 +40,6 @@ export function getInicioSemana(date = new Date()) {
   return segunda;
 }
 
-/**
- * Formata um objeto Date para string no padrão YYYY-MM-DD.
- * @param {Date|string} date 
- * @returns {string}
- */
 export function formatToYmd(date) {
   const d = new Date(date);
   const year = d.getFullYear();
@@ -60,12 +48,6 @@ export function formatToYmd(date) {
   return `${year}-${month}-${day}`;
 }
 
-/**
- * Converte um valor (nome do dia, número do dia ou data ISO) em um objeto Date de referência.
- * Permite simulações como ?simularDia=quarta ou ?mockDay=3.
- * @param {Date|string|number} [dateOrDay]
- * @returns {Date}
- */
 export function resolveReferenceDate(dateOrDay) {
   if (!dateOrDay) {
     return new Date();
@@ -129,11 +111,6 @@ export function resolveReferenceDate(dateOrDay) {
   return new Date();
 }
 
-/**
- * Retorna um array com os 6 dias da semana (Segunda a Sábado) como objetos Date.
- * @param {Date|string} date 
- * @returns {Date[]}
- */
 export function getCurrentWeekDays(date = new Date()) {
   const startOfWeek = getInicioSemana(date);
   const days = [];
@@ -145,12 +122,7 @@ export function getCurrentWeekDays(date = new Date()) {
   return days;
 }
 
-/**
- * Lista de 18 tarefas padrão da semana com dados didáticos do AprovaDrive.
- * 3 tarefas por dia (sort 1, 2, 3), de Segunda a Sábado.
- */
 export const DEFAULT_WEEK_TEMPLATES = [
-  // Segunda (Dia 1)
   {
     dia_semana: 1,
     sort: 1,
@@ -178,7 +150,6 @@ export const DEFAULT_WEEK_TEMPLATES = [
     horario: '19:00',
     duracao: '40 min'
   },
-  // Terça (Dia 2)
   {
     dia_semana: 2,
     sort: 1,
@@ -206,7 +177,6 @@ export const DEFAULT_WEEK_TEMPLATES = [
     horario: '19:00',
     duracao: '40 min'
   },
-  // Quarta (Dia 3)
   {
     dia_semana: 3,
     sort: 1,
@@ -234,7 +204,6 @@ export const DEFAULT_WEEK_TEMPLATES = [
     horario: '19:00',
     duracao: '40 min'
   },
-  // Quinta (Dia 4)
   {
     dia_semana: 4,
     sort: 1,
@@ -262,7 +231,6 @@ export const DEFAULT_WEEK_TEMPLATES = [
     horario: '19:00',
     duracao: '40 min'
   },
-  // Sexta (Dia 5)
   {
     dia_semana: 5,
     sort: 1,
@@ -290,7 +258,6 @@ export const DEFAULT_WEEK_TEMPLATES = [
     horario: '19:00',
     duracao: '40 min'
   },
-  // Sábado (Dia 6)
   {
     dia_semana: 6,
     sort: 1,
@@ -321,11 +288,6 @@ export const DEFAULT_WEEK_TEMPLATES = [
 ];
 
 const taskService = {
-  /**
-   * Obtém o usuário associado a um identificador específico.
-   * Só aceita requisições se houver um id/identificador fornecido E que conste na lista de usuários cadastrados.
-   * @param {string} [identifier] 
-   */
   async getUsuario(identifier) {
     if (!identifier || typeof identifier !== 'string' || !identifier.trim()) {
       const err = new Error('ID de usuário é obrigatório. Forneça o identificador de um usuário cadastrado.');
@@ -342,31 +304,17 @@ const taskService = {
     return user;
   },
 
-  /**
-   * Retorna a lista de todos os usuários cadastrados no banco de dados.
-   * @returns {Promise<Array>}
-   */
   async listarUsuarios() {
     return await taskRepository.listUsers();
   },
 
-  /**
-   * Garante que o usuário possua as 18 tarefas da semana atual salvas no banco PostgreSQL.
-   * Se for uma nova semana, as tarefas anteriores não são retornadas na consulta semanal,
-   * e novas tarefas são geradas e inseridas no banco para o usuário.
-   * @param {string} userId 
-   * @param {Date|string} [refDate] 
-   * @returns {Promise<Array>}
-   */
   async ensureWeeklyTasks(userId, refDate = new Date()) {
     const inicioSemanaDate = getInicioSemana(refDate);
     const inicioSemanaStr = formatToYmd(inicioSemanaDate);
     const weekDays = getCurrentWeekDays(refDate);
 
-    // Consulta tarefas existentes para a semana atual
     let tasks = await taskRepository.getTasksByUserAndWeek(userId, inicioSemanaStr);
 
-    // Se ainda não existem tarefas cadastradas no banco para esta semana, gera e insere as 18 tarefas
     if (!tasks || tasks.length === 0) {
       const tasksToInsert = DEFAULT_WEEK_TEMPLATES.map((tmpl) => {
         const dayDate = weekDays[tmpl.dia_semana - 1];
@@ -375,8 +323,6 @@ const taskService = {
           titulo: tmpl.titulo,
           descricao: tmpl.descricao,
           xp_reward: tmpl.xp_reward,
-          // A primeira tarefa de cada dia inicia como 'current' no banco (independente dos outros dias!)
-          // As tarefas 2 e 3 iniciam como 'pending'
           status: tmpl.sort === 1 ? 'current' : 'pending',
           concluida: false,
           sort: tmpl.sort,
@@ -394,26 +340,14 @@ const taskService = {
     return tasks;
   },
 
-  /**
-   * Retorna o payload completo do cronograma semanal para o usuário e data de referência.
-   * Aplica a regra de negócio:
-   * - O usuário só pode realizar tasks do dia atual.
-   * - A primeira tarefa de cada dia não depende dos outros dias.
-   * - Para os dias diferentes de hoje, as tarefas pendentes são apresentadas bloqueadas (status: 'pending').
-   * @param {string} [identifier] 
-   * @param {Date|string} [refDate] 
-   * @returns {Promise<Object>}
-   */
   async getUserTaskPayload(identifier, refDate = new Date()) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
-    const diaSemanaAtual = date.getDay(); // 0 = Domingo, 1..6 = Segunda..Sábado
+    const diaSemanaAtual = date.getDay();
     const diaAtualChave = MAPA_DIAS[diaSemanaAtual] || null;
 
-    // Garante tarefas da semana no banco de dados
     const rawTasks = await this.ensureWeeklyTasks(user.id_usuario, date);
 
-    // Mapeia tarefas por dia da semana
     const dias = {
       segunda: [],
       terca: [],
@@ -434,25 +368,21 @@ const taskService = {
       }
     });
 
-    // Ordena cada dia por sort
     Object.keys(dias).forEach((k) => {
       dias[k].sort((a, b) => a.sort - b.sort);
     });
 
-    // Calcula tarefas do dia de hoje e status do dia
     let tarefasDoDia = [];
     let taskAtual = null;
     let diaConcluido = false;
 
     if (diaSemanaAtual === 0) {
-      // Domingo: sem tarefas letivas
       diaConcluido = true;
       taskAtual = null;
       tarefasDoDia = [];
     } else if (diaAtualChave && dias[diaAtualChave]) {
       tarefasDoDia = dias[diaAtualChave];
 
-      // Busca tarefa em andamento ou atual de hoje
       const inProgress = tarefasDoDia.find((t) => t.status === 'in_progress');
       const current = tarefasDoDia.find((t) => t.status === 'current' && !t.concluida);
 
@@ -467,22 +397,14 @@ const taskService = {
       }
     }
 
-    // Formata o payload para o frontend respeitando a regra:
-    // "Não pode fazer tasks do outro dia, só no outro dia"
-    // Para dias diferentes de hoje, as tarefas não concluídas aparecem como 'pending' (com botão BLOQUEADO no frontend)
     const diasFormatados = {};
     for (let d = 1; d <= MAX_DAYS_WEEK; d++) {
       const chave = MAPA_DIAS[d];
       const listaTarefas = dias[chave] || [];
 
       if (d === diaSemanaAtual) {
-        // No dia de hoje: exibe status reais (done, in_progress, current, pending)
         diasFormatados[chave] = listaTarefas;
       } else {
-        // Nos demais dias:
-        // - Se concluída: exibe 'done'
-        // - Se pendente/current: exibe 'pending' (botão BLOQUEADO)
-        // Ao ser clicado, a requisição vai para a API, que valida e retorna erro 400
         diasFormatados[chave] = listaTarefas.map((t) => ({
           ...t,
           status: t.concluida || t.status === 'done' ? 'done' : 'pending'
@@ -508,11 +430,6 @@ const taskService = {
     };
   },
 
-  /**
-   * Busca os detalhes de uma tarefa específica por ID.
-   * @param {string} taskId 
-   * @returns {Promise<Object>}
-   */
   async getTaskById(taskId) {
     const task = await taskRepository.getTaskById(taskId);
     if (!task) {
@@ -523,21 +440,10 @@ const taskService = {
     return task;
   },
 
-  /**
-   * Inicia uma tarefa (status vira 'in_progress').
-   * Aplica estritamente as regras de negócio:
-   * 1. A tarefa deve pertencer ao dia atual do sistema. Não pode fazer tasks de outro dia!
-   * 2. A primeira tarefa de cada dia não depende dos outros dias.
-   * 3. Dentro do mesmo dia, as tarefas devem seguir a ordem (tarefa 2 requer tarefa 1 concluída, etc.).
-   * @param {string} taskId 
-   * @param {string} [identifier] 
-   * @param {Date|string} [refDate] 
-   * @returns {Promise<Object>}
-   */
   async startTask(taskId, identifier, refDate = new Date()) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
-    const diaSemanaHoje = date.getDay(); // 0 = Domingo, 1..6 = Segunda..Sábado
+    const diaSemanaHoje = date.getDay();
     const task = await taskRepository.getTaskById(taskId);
     if (!task) {
       const err = new Error('Tarefa não encontrada.');
@@ -551,7 +457,6 @@ const taskService = {
       throw err;
     }
 
-    // REGRA FUNDAMENTAL: Não pode fazer tasks do outro dia, só no outro dia!
     if (task.dia_semana !== diaSemanaHoje) {
       const nomeDiaTarefa = NOMES_DIAS[task.dia_semana] || `Dia ${task.dia_semana}`;
       const nomeDiaHoje = diaSemanaHoje === 0 ? 'Domingo' : (NOMES_DIAS[diaSemanaHoje] || 'Hoje');
@@ -568,9 +473,6 @@ const taskService = {
       throw err;
     }
 
-    // REGRA DE SEQUÊNCIA INTERNA DO DIA:
-    // A primeira do dia (sort === 1) não depende de nada de outros dias!
-    // A tarefa 2 requer a tarefa 1 do mesmo dia concluída; a tarefa 3 requer a tarefa 2 concluída.
     if (task.sort > 1) {
       const tarefasSemana = await taskRepository.getTasksByUserAndWeek(user.id_usuario, task.inicio_semana);
       const tarefasDoMesmoDia = tarefasSemana.filter((t) => t.dia_semana === task.dia_semana);
@@ -585,7 +487,6 @@ const taskService = {
       }
     }
 
-    // Pausa qualquer outra tarefa que esteja 'in_progress' hoje
     const tarefasSemana = await taskRepository.getTasksByUserAndWeek(user.id_usuario, task.inicio_semana);
     for (const t of tarefasSemana) {
       if (t.id !== task.id && t.status === 'in_progress') {
@@ -593,7 +494,6 @@ const taskService = {
       }
     }
 
-    // Atualiza status da tarefa selecionada no PostgreSQL
     const updatedTask = await taskRepository.updateTask(task.id, {
       status: 'in_progress'
     });
@@ -608,14 +508,6 @@ const taskService = {
     };
   },
 
-  /**
-   * Conclui uma tarefa (status vira 'done', concluida = true, concede XP).
-   * Desbloqueia a próxima tarefa do mesmo dia (se houver).
-   * @param {string} taskId 
-   * @param {string} [identifier] 
-   * @param {Date|string} [refDate] 
-   * @returns {Promise<Object>}
-   */
   async completeTask(taskId, identifier, refDate = new Date()) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
@@ -634,7 +526,6 @@ const taskService = {
       throw err;
     }
 
-    // REGRA: Só pode concluir tarefa no dia correspondente
     if (task.dia_semana !== diaSemanaHoje) {
       const nomeDiaTarefa = NOMES_DIAS[task.dia_semana] || `Dia ${task.dia_semana}`;
       const nomeDiaHoje = diaSemanaHoje === 0 ? 'Domingo' : (NOMES_DIAS[diaSemanaHoje] || 'Hoje');
@@ -651,17 +542,14 @@ const taskService = {
       throw err;
     }
 
-    // Conclui a tarefa no PostgreSQL
     const updatedTask = await taskRepository.updateTask(task.id, {
       status: 'done',
       concluida: true
     });
 
-    // Credita XP ao usuário no banco
     const xpReward = Number(task.xp_reward || 30);
     const novoXp = await taskRepository.updateUserXp(user.id_usuario, xpReward);
 
-    // Se houver uma próxima tarefa no mesmo dia (sort + 1 <= 3), desbloqueia para 'current'
     if (task.sort < MAX_PER_DAY) {
       const tarefasSemana = await taskRepository.getTasksByUserAndWeek(user.id_usuario, task.inicio_semana);
       const proximaTarefa = tarefasSemana.find(
@@ -685,13 +573,6 @@ const taskService = {
     };
   },
 
-  /**
-   * Pausa uma tarefa que está em andamento (volta para 'current').
-   * @param {string} taskId 
-   * @param {string} [identifier] 
-   * @param {Date|string} [refDate] 
-   * @returns {Promise<Object>}
-   */
   async pauseTask(taskId, identifier, refDate = new Date()) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
@@ -729,13 +610,6 @@ const taskService = {
     };
   },
 
-  /**
-   * Reinicia o status de uma tarefa para 'pending' ou 'current'.
-   * @param {string} taskId 
-   * @param {string} [identifier] 
-   * @param {Date|string} [refDate] 
-   * @returns {Promise<Object>}
-   */
   async resetTask(taskId, identifier, refDate = new Date()) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
@@ -768,22 +642,14 @@ const taskService = {
     };
   },
 
-  /**
-   * Limpa e reinicializa todo o cronograma da semana do usuário no PostgreSQL.
-   * @param {string} [identifier] 
-   * @param {Date|string} [refDate] 
-   * @returns {Promise<Object>}
-   */
   async resetSchedule(identifier, refDate = new Date()) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
     const inicioSemanaDate = getInicioSemana(date);
     const inicioSemanaStr = formatToYmd(inicioSemanaDate);
 
-    // Remove tarefas existentes da semana atual no banco
     await taskRepository.deleteTasksByUserAndWeek(user.id_usuario, inicioSemanaStr);
 
-    // Recria as tarefas da semana
     await this.ensureWeeklyTasks(user.id_usuario, date);
 
     const payload = await this.getUserTaskPayload(user.id_usuario, date);

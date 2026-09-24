@@ -18,7 +18,6 @@ export async function login(req, res, next) {
     const isAdm = isUserAdmin(usuario);
 
     let senhaValida = false;
-    // Se for o admin e a senha do .env foi informada, permite autenticar com ela
     if (isAdm && admin.password && senha === admin.password) {
       senhaValida = true;
     } else {

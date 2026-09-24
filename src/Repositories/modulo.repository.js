@@ -1,11 +1,5 @@
 import pool from './db.js';
 
-/**
- * Resolve o identificador do usuário para um UUID válido cadastrado no PostgreSQL.
- * Aceita UUID direto, nome de usuário ou e-mail. Caso não localize, faz fallback para Henrique.
- * @param {string} [identifier]
- * @returns {Promise<string>}
- */
 export async function resolveUserId(identifier) {
   if (!identifier || typeof identifier !== 'string' || !identifier.trim()) {
     const defaultUser = await pool.query("SELECT id_usuario FROM usuario WHERE LOWER(nome) = 'henrique' LIMIT 1");

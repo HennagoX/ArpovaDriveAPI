@@ -1,16 +1,6 @@
 import pool from './db.js';
 
-/**
- * Repositório de Tarefas (PostgreSQL)
- * Gerencia todas as operações de persistência relacionadas às tarefas e usuários.
- */
 export const taskRepository = {
-  /**
-   * Localiza um usuário pelo UUID, nome de usuário ou e-mail.
-   * Retorna null caso o identificador não seja informado ou não conste na lista de usuários cadastrados.
-   * @param {string} [identifier] 
-   * @returns {Promise<Object|null>}
-   */
   async findUser(identifier) {
     if (!identifier || typeof identifier !== 'string' || !identifier.trim()) {
       return null;
@@ -35,10 +25,6 @@ export const taskRepository = {
     return null;
   },
 
-  /**
-   * Retorna a lista de usuários cadastrados no banco de dados.
-   * @returns {Promise<Array>}
-   */
   async listUsers() {
     const res = await pool.query(
       'SELECT id_usuario, nome, email, exp, criado_em FROM usuario ORDER BY nome ASC'
@@ -46,13 +32,6 @@ export const taskRepository = {
     return res.rows;
   },
 
-  /**
-   * Busca todas as tarefas de um usuário para a semana de referência especificada.
-   * Ordenadas cronologicamente por dia da semana e posição (sort).
-   * @param {string} userId 
-   * @param {string} inicioSemana - Data YYYY-MM-DD da segunda-feira de referência
-   * @returns {Promise<Array>}
-   */
   async getTasksByUserAndWeek(userId, inicioSemana) {
     const query = `
       SELECT 
@@ -77,11 +56,6 @@ export const taskRepository = {
     return res.rows;
   },
 
-  /**
-   * Busca uma tarefa específica pelo ID.
-   * @param {string} taskId 
-   * @returns {Promise<Object|null>}
-   */
   async getTaskById(taskId) {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskId);
     if (!isUuid) {
@@ -110,11 +84,6 @@ export const taskRepository = {
     return res.rows[0] || null;
   },
 
-  /**
-   * Insere em lote as tarefas de uma semana para o usuário no PostgreSQL.
-   * @param {Array<Object>} tasks 
-   * @returns {Promise<Array>}
-   */
   async insertWeeklyTasks(tasks) {
     if (!tasks || tasks.length === 0) return [];
 
@@ -169,12 +138,6 @@ export const taskRepository = {
     }
   },
 
-  /**
-   * Atualiza o status e/ou conclusão de uma tarefa.
-   * @param {string} taskId 
-   * @param {Object} updates 
-   * @returns {Promise<Object>}
-   */
   async updateTask(taskId, updates = {}) {
     const fields = [];
     const values = [taskId];
@@ -202,12 +165,6 @@ export const taskRepository = {
     return res.rows[0] || null;
   },
 
-  /**
-   * Incrementa o XP do usuário na tabela usuario.
-   * @param {string} userId 
-   * @param {number} xpAmount 
-   * @returns {Promise<number>} Novo total de XP
-   */
   async updateUserXp(userId, xpAmount) {
     const query = `
       UPDATE usuario
@@ -219,12 +176,6 @@ export const taskRepository = {
     return res.rows[0]?.exp || 0;
   },
 
-  /**
-   * Remove todas as tarefas de uma determinada semana para o usuário (usado no reset de cronograma).
-   * @param {string} userId 
-   * @param {string} inicioSemana 
-   * @returns {Promise<number>} Número de registros removidos
-   */
   async deleteTasksByUserAndWeek(userId, inicioSemana) {
     const res = await pool.query(
       'DELETE FROM tarefa WHERE id_usuario = $1 AND inicio_semana = $2',

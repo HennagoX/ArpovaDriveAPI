@@ -1,9 +1,5 @@
 import { getCurrent, moveToNext } from "../services/modulo.service.js";
 
-/**
- * Utilitário de extração e normalização de parâmetros para as rotas de módulo.
- * Garante compatibilidade tanto com params, body, query strings e headers de autenticação.
- */
 function extrairParametros(req) {
   const contentId = 
     req.params?.id || 
@@ -30,11 +26,6 @@ function extrairParametros(req) {
   return { contentId, userId };
 }
 
-/**
- * Retorna o progresso atual do módulo para o conteúdo e usuário informados.
- * GET /modulo?contentId=CodigoTransito&userId=...
- * GET /modulo/:id
- */
 export async function getCurrentModule(req, res) {
   try {
     const { contentId, userId } = extrairParametros(req);
@@ -52,12 +43,6 @@ export async function getCurrentModule(req, res) {
   }
 }
 
-/**
- * Avança o usuário para o próximo módulo do conteúdo especificado (+1 no banco de dados).
- * POST /modulo/next
- * POST /modulo/:id/next
- * POST /modulo
- */
 export async function moveToNextModule(req, res) {
   try {
     const { contentId, userId } = extrairParametros(req);

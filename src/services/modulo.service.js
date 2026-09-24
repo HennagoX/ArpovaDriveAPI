@@ -2,14 +2,12 @@ import { getCurrentModuloDB, nextCurrentModuloDB, resolveUserId } from '../Repos
 import { incrementXp } from './exp.service.js';
 
 const MODULE_COLUMNS = {
-  // Código de Trânsito / Legislação
   codigotransito: 'modulo_codigotransito',
   codigodetransito: 'modulo_codigotransito',
   'codigo-transito': 'modulo_codigotransito',
   legislacao: 'modulo_codigotransito',
   modulo_codigotransito: 'modulo_codigotransito',
 
-  // Placas de Trânsito / Sinalização
   placastransito: 'modulo_placastransito',
   placatransito: 'modulo_placastransito',
   'placas-transito': 'modulo_placastransito',
@@ -17,20 +15,17 @@ const MODULE_COLUMNS = {
   sinalizacao: 'modulo_placastransito',
   modulo_placastransito: 'modulo_placastransito',
 
-  // Direção Defensiva / Segurança
   direcaodefensiva: 'modulo_direcaodefensiva',
   direcaoofensiva: 'modulo_direcaodefensiva',
   'direcao-defensiva': 'modulo_direcaodefensiva',
   seguranca: 'modulo_direcaodefensiva',
   modulo_direcaodefensiva: 'modulo_direcaodefensiva',
 
-  // Primeiros Socorros / Saúde
   primeirossocorros: 'modulo_primeirossocorros',
   'primeiros-socorros': 'modulo_primeirossocorros',
   socorros: 'modulo_primeirossocorros',
   modulo_primeirossocorros: 'modulo_primeirossocorros',
 
-  // Meio Ambiente e Cidadania
   cidadania: 'modulo_cidadania',
   meioambiente: 'modulo_cidadania',
   'meio-ambiente': 'modulo_cidadania',
@@ -89,13 +84,11 @@ export async function moveToNext(content, userId) {
   const resolvedUserId = await resolveUserId(userId);
   const canonical = CANONICAL_NAMES[column] || content;
 
-  // Consulta o progresso antes de tentar avançar
   const currentQuery = await getCurrentModuloDB(column, resolvedUserId);
   const currentRow = currentQuery?.rows[0];
   const currentRaw = currentRow && currentRow[column] !== undefined ? Number(currentRow[column]) : 1;
   const moduloAnterior = Math.min(10, Math.max(1, currentRaw || 1));
 
-  // Se já atingiu o limite de 10 módulos, NÃO incrementa e NÃO dá XP!
   if (moduloAnterior >= 10) {
     return {
       success: true,
@@ -115,7 +108,6 @@ export async function moveToNext(content, userId) {
   const rawValue = row && row[column] !== undefined ? Number(row[column]) : 1;
   const moduloAtual = Math.min(10, Math.max(1, rawValue || 1));
 
-  // Só concede XP se realmente avançou de módulo
   let expTotal = null;
   const realmenteAvancou = moduloAtual > moduloAnterior;
   const xpGanha = realmenteAvancou ? 25 : 0;

@@ -13,7 +13,6 @@ import {
 
 const router = Router();
 
-// Consultas
 router.get('/admin-check', verificarAdmin);
 router.get('/usuarios', listarUsuarios);
 router.get('/', listar);
@@ -21,7 +20,6 @@ router.get('/tasks', listar);
 router.get('/tasks/:id', buscarPorId);
 router.get('/:id', buscarPorId);
 
-// Ações nas tarefas
 router.post('/iniciar', iniciar);
 router.post('/:id/iniciar', iniciar);
 
@@ -34,7 +32,6 @@ router.post('/:id/pausar', pausar);
 router.post('/reiniciar', reiniciar);
 router.post('/:id/reiniciar', reiniciar);
 
-// Reinicialização do cronograma
 router.post('/reset-schedule', resetarCronograma);
 
 export default router;

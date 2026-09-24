@@ -1,12 +1,6 @@
 import taskService from '../services/task.service.js';
 import { isUserAdmin } from '../config/admin.config.js';
 
-/**
- * Utilitário para extração padronizada de parâmetros da requisição.
- * Evita colisões e suporta IDs passados via params, body ou query.
- * Identifica também se o solicitante possui permissão de Administrador.
- * @param {import('express').Request} req 
- */
 export function extrairParametros(req) {
   const taskId = req.params?.id || req.body?.taskId || req.body?.id || req.body?.id_tarefa || req.query?.taskId;
   const userId = req.body?.id_usuario || 
@@ -26,7 +20,6 @@ export function extrairParametros(req) {
 
   const isAdmin = isUserAdmin(requesterId);
   
-  // Suporte a simulação de dia / mock (ex: ?simularDia=quarta, ?mockDay=quarta, ?dia=3, headers['x-mock-day'], etc.)
   const rawDateOrDay = req.query?.simularDia || req.query?.mockDay || req.query?.dia || req.body?.simularDia || req.body?.mockDay || req.body?.dia || req.headers?.['x-mock-day'] || req.query?.date || req.body?.date || req.headers?.['x-mock-date'];
 
   const date = taskService.resolveReferenceDate(rawDateOrDay);
@@ -34,10 +27,6 @@ export function extrairParametros(req) {
   return { taskId, userId, requesterId, isAdmin, date, rawDateOrDay };
 }
 
-/**
- * GET /task/admin-check
- * Retorna se o usuário que fez a requisição é o Administrador do sistema.
- */
 export function verificarAdmin(req, res) {
   const { requesterId, isAdmin } = extrairParametros(req);
   return res.status(200).json({
@@ -46,11 +35,6 @@ export function verificarAdmin(req, res) {
   });
 }
 
-/**
- * GET /task/usuarios
- * Retorna todos os usuários cadastrados.
- * RESTRITO: Apenas o Administrador pode listar usuários.
- */
 export async function listarUsuarios(req, res, next) {
   try {
     const { isAdmin } = extrairParametros(req);
@@ -67,22 +51,16 @@ export async function listarUsuarios(req, res, next) {
   }
 }
 
-/**
- * GET /task ou /task/tasks
- * Retorna o payload completo do cronograma semanal e a tarefa atual.
- */
 export async function listar(req, res, next) {
   try {
     const { userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
 
-    // Se solicitou simulação de dia e não for admin, bloqueia
     if (rawDateOrDay && !isAdmin) {
       return res.status(403).json({
         error: 'Acesso negado. Apenas o administrador tem permissão para simular dias da semana.'
       });
     }
 
-    // Usuário comum só pode acessar suas próprias tarefas
     if (!isAdmin && requesterId && userId && requesterId !== userId) {
       return res.status(403).json({
         error: 'Acesso negado. Você só tem permissão para acessar suas próprias tarefas.'
@@ -96,10 +74,6 @@ export async function listar(req, res, next) {
   }
 }
 
-/**
- * GET /task/:id ou /task/tasks/:id
- * Retorna os detalhes de uma tarefa específica por ID.
- */
 export async function buscarPorId(req, res, next) {
   try {
     const { taskId } = extrairParametros(req);
@@ -113,10 +87,6 @@ export async function buscarPorId(req, res, next) {
   }
 }
 
-/**
- * POST /task/:id/iniciar ou /task/iniciar
- * Inicia uma tarefa (status vira 'in_progress').
- */
 export async function iniciar(req, res, next) {
   try {
     const { taskId, userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
@@ -136,10 +106,6 @@ export async function iniciar(req, res, next) {
   }
 }
 
-/**
- * POST /task/:id/concluir ou /task/concluir
- * Conclui uma tarefa, concede XP ao usuário e atualiza os status das próximas tarefas do dia.
- */
 export async function concluir(req, res, next) {
   try {
     const { taskId, userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
@@ -159,10 +125,6 @@ export async function concluir(req, res, next) {
   }
 }
 
-/**
- * POST /task/:id/pausar ou /task/pausar
- * Pausa uma tarefa que está em andamento (volta para 'current').
- */
 export async function pausar(req, res, next) {
   try {
     const { taskId, userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
@@ -182,10 +144,6 @@ export async function pausar(req, res, next) {
   }
 }
 
-/**
- * POST /task/:id/reiniciar ou /task/reiniciar
- * Reinicia o status de uma tarefa.
- */
 export async function reiniciar(req, res, next) {
   try {
     const { taskId, userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
@@ -205,11 +163,6 @@ export async function reiniciar(req, res, next) {
   }
 }
 
-/**
- * POST /task/reset-schedule
- * Limpa e reinicializa todo o cronograma da semana do usuário no PostgreSQL.
- * RESTRITO: Apenas o Administrador pode resetar cronogramas.
- */
 export async function resetarCronograma(req, res, next) {
   try {
     const { userId, isAdmin, date } = extrairParametros(req);
@@ -223,7 +176,6 @@ export async function resetarCronograma(req, res, next) {
   }
 }
 
-// Aliases para compatibilidade retroativa
 export const reqTasks = listar;
 export const startTask = iniciar;
 export const completeTask = concluir;
