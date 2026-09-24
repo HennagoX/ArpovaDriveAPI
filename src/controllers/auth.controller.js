@@ -34,6 +34,8 @@ export async function login(req, res, next) {
         id: usuario.id_usuario,
         nome: usuario.nome,
         email: usuario.email,
+        exp: Number(usuario.exp || 0),
+        lv: Number(usuario.lv || 1),
         is_admin: isAdm
       }
     });

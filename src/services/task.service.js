@@ -1,4 +1,5 @@
 import taskRepository from '../Repositories/task.repository.js';
+import { getLevelInfo } from './exp.service.js';
 
 export const MAX_PER_DAY = 3;
 export const MAX_DAYS_WEEK = 6;
@@ -412,13 +413,20 @@ const taskService = {
       }
     }
 
+    const levelInfo = getLevelInfo(user.exp);
+
     return {
       usuario: {
         id: user.id_usuario,
         id_usuario: user.id_usuario,
         nome: user.nome,
         email: user.email,
-        exp: Number(user.exp || 0)
+        exp: Number(user.exp || 0),
+        lv: Number(user.lv || levelInfo.nivel || 1),
+        tituloNivel: levelInfo.tituloNivel,
+        xpNoNivel: levelInfo.xpNoNivel,
+        xpNecessarioNivel: levelInfo.xpNecessarioNivel,
+        progressoPct: levelInfo.progressoPct
       },
       dataReferencia: date.toISOString(),
       diaAtual: diaAtualChave || 'domingo',

@@ -10,11 +10,28 @@ import {
   reiniciar,
   resetarCronograma
 } from '../controllers/task.controller.js';
+import {
+  listarFixas,
+  buscarFixaPorId,
+  concluirFixa
+} from '../controllers/taskFixa.controller.js';
 
 const router = Router();
 
 router.get('/admin-check', verificarAdmin);
 router.get('/usuarios', listarUsuarios);
+
+// Rotas de Tarefas Fixas / Permanentes por Conteúdo
+router.get('/fixas', listarFixas);
+router.get('/fixas/:id', buscarFixaPorId);
+router.post('/fixas/:id/concluir', concluirFixa);
+router.post('/fixas/concluir', concluirFixa);
+
+router.get('/conteudos', listarFixas);
+router.get('/conteudos/:id', buscarFixaPorId);
+router.post('/conteudos/:id/concluir', concluirFixa);
+router.post('/conteudos/concluir', concluirFixa);
+
 router.get('/', listar);
 router.get('/tasks', listar);
 router.get('/tasks/:id', buscarPorId);
