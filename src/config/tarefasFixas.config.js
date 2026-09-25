@@ -266,7 +266,7 @@ export const TAREFAS_FIXAS_CONFIG = {
         id: 'fixa_dir_mod_1',
         tipo: 'modulo',
         moduloNumero: 1,
-        titulo: 'Concluir Módulo 01: Fundamentos da Condução Defensiva',
+        titulo: 'Concluir Módulo 01: O que é Direção Defensiva?',
         descricao: 'Aprenda os 5 pilares: Conhecimento, Atenção, Previsão, Decisão e Habilidade.',
         xp_reward: 150
       },
@@ -274,16 +274,16 @@ export const TAREFAS_FIXAS_CONFIG = {
         id: 'fixa_dir_mod_2',
         tipo: 'modulo',
         moduloNumero: 2,
-        titulo: 'Concluir Módulo 02: Condições Adversas de Clima e Luz',
-        descricao: 'Domine as técnicas de segurança sob chuva, aquaplanagem, neblina e ofuscamento solar.',
+        titulo: 'Concluir Módulo 02: Condições Adversas',
+        descricao: 'Identifique riscos de luz, tempo, via, trânsito, veículo e condutor e adapte sua condução.',
         xp_reward: 150
       },
       {
         id: 'fixa_dir_mod_3',
         tipo: 'modulo',
         moduloNumero: 3,
-        titulo: 'Concluir Módulo 03: Distâncias e Tempos de Frenagem',
-        descricao: 'Entenda os conceitos de tempo de reação, frenagem e a regra dos dois segundos de distância.',
+        titulo: 'Concluir Módulo 03: Atenção e Estado do Condutor',
+        descricao: 'Entenda os perigos da distração por celular, cansaço e ingestão de álcool ao volante.',
         xp_reward: 150
       },
       {
@@ -294,27 +294,101 @@ export const TAREFAS_FIXAS_CONFIG = {
         percentualAlvo: 70,
         modulosNecessarios: 3,
         titulo: 'Desafio de Questões: 70%+ na Bateria 1 (Defensiva)',
-        descricao: 'Acerte no mínimo 70% nas questões sobre os 5 pilares, condições adversas e frenagem.',
-        xp_reward: 350
+        descricao: 'Acerte no mínimo 70% nas questões sobre os 5 pilares, condições adversas e estado do condutor.',
+        xp_reward: 350,
+        isQuestion: true
       },
       {
         id: 'fixa_dir_mod_4',
         tipo: 'modulo',
         moduloNumero: 4,
-        titulo: 'Concluir Módulo 04: Prevenção de Colisões e Emergências',
-        descricao: 'Aprenda a evitar colisões com veículos à frente, na traseira e em cruzamentos perigosos.',
-        xp_reward: 200
+        titulo: 'Concluir Módulo 04: Preparação e Conservação do Veículo',
+        descricao: 'Domine o checklist preventivo de pneus, freios, luzes e exigências do art. 27 do CTB.',
+        xp_reward: 150
+      },
+      {
+        id: 'fixa_dir_mod_5',
+        tipo: 'modulo',
+        moduloNumero: 5,
+        titulo: 'Concluir Módulo 05: Velocidade e Distância de Segurança',
+        descricao: 'Aprenda tempos de reação, frenagem e a regra prática dos dois segundos.',
+        xp_reward: 150
+      },
+      {
+        id: 'fixa_dir_mod_6',
+        tipo: 'modulo',
+        moduloNumero: 6,
+        titulo: 'Concluir Módulo 06: Chuva e Pista Molhada',
+        descricao: 'Compreenda a perda de aderência e como agir com segurança na aquaplanagem.',
+        xp_reward: 150
       },
       {
         id: 'fixa_dir_quest_2',
         tipo: 'questao',
         bateriaNumero: 2,
-        modulosReferencia: 'Módulo 04',
+        modulosReferencia: 'Módulos 04 a 06',
         percentualAlvo: 70,
-        modulosNecessarios: 4,
+        modulosNecessarios: 6,
         titulo: 'Desafio de Questões: 70%+ na Bateria 2 (Defensiva)',
-        descricao: 'Acerte no mínimo 70% nas questões de manobras evasivas, pontos cegos e prevenção de sinistros.',
-        xp_reward: 350
+        descricao: 'Acerte no mínimo 70% nas questões de conservação veicular, velocidades e pista molhada.',
+        xp_reward: 350,
+        isQuestion: true
+      },
+      {
+        id: 'fixa_dir_mod_7',
+        tipo: 'modulo',
+        moduloNumero: 7,
+        titulo: 'Concluir Módulo 07: Noite, Neblina e Ofuscamento',
+        descricao: 'Aprenda o uso correto da iluminação, faróis na neblina e condução sob ofuscamento.',
+        xp_reward: 150
+      },
+      {
+        id: 'fixa_dir_mod_8',
+        tipo: 'modulo',
+        moduloNumero: 8,
+        titulo: 'Concluir Módulo 08: Cruzamentos e Ultrapassagens',
+        descricao: 'Saiba regras de preferência pela direita, sinalização com antecedência e ultrapassagem segura.',
+        xp_reward: 150
+      },
+      {
+        id: 'fixa_dir_mod_9',
+        tipo: 'modulo',
+        moduloNumero: 9,
+        titulo: 'Concluir Módulo 09: Proteção de Usuários Vulneráveis',
+        descricao: 'Pratique a distância lateral de 1,5m para ciclistas e a prioridade absoluta a pedestres.',
+        xp_reward: 150
+      },
+      {
+        id: 'fixa_dir_quest_3',
+        tipo: 'questao',
+        bateriaNumero: 3,
+        modulosReferencia: 'Módulos 07 a 09',
+        percentualAlvo: 70,
+        modulosNecessarios: 9,
+        titulo: 'Desafio de Questões: 70%+ na Bateria 3 (Defensiva)',
+        descricao: 'Acerte no mínimo 70% nas questões sobre visibilidade, manobras e pedestres/ciclistas.',
+        xp_reward: 350,
+        isQuestion: true
+      },
+      {
+        id: 'fixa_dir_mod_10',
+        tipo: 'modulo',
+        moduloNumero: 10,
+        titulo: 'Concluir Módulo 10: Prevenção de Colisões',
+        descricao: 'Elimine pontos cegos, evite colisão traseira e frontal e mantenha postura pacífica na via.',
+        xp_reward: 200
+      },
+      {
+        id: 'fixa_dir_quest_final',
+        tipo: 'questao',
+        bateriaNumero: 4,
+        modulosReferencia: 'Todos os Módulos (01 a 10)',
+        percentualAlvo: 70,
+        modulosNecessarios: 10,
+        titulo: 'Desafio Final: 70%+ no Simulado Geral (Defensiva)',
+        descricao: 'Complete a bateria final de Direção Defensiva com no mínimo 70% de aproveitamento.',
+        xp_reward: 500,
+        isQuestion: true
       }
     ]
   },

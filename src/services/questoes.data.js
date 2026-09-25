@@ -2287,284 +2287,568 @@ PlacasTransito: {
           {
               numero: 1,
               modulo: 1,
-              texto: 'Quais são os cinco pilares fundamentais que compõem o conceito oficial de Direção Defensiva?',
+              texto: "Quais são os cinco pilares fundamentais que compõem o conceito oficial de Direção Defensiva?",
               opcoes: [
-                  'Multa, Fiscalização, Radar, Guarda e Boletim.',
-                  'Agilidade, Impulsividade, Firmeza, Força e Destreza.',
-                  'Conhecimento, Atenção, Previsão, Decisão e Habilidade.',
-                  'Velocidade, Potência, Audácia, Ousadia e Freio.'
+                  "Multa, Fiscalização, Radar, Guarda e Boletim.",
+                  "Agilidade, Impulsividade, Firmeza, Força e Destreza.",
+                  "Conhecimento, Atenção, Previsão, Decisão e Habilidade.",
+                  "Velocidade, Potência, Audácia, Ousadia e Freio."
               ],
               correta: 2,
-              corretaLetra: 'C',
-              explicacao: 'A direção defensiva fundamenta-se nos 5 pilares: Conhecimento, Atenção, Previsão, Decisão e Habilidade.'
+              corretaLetra: "C",
+              explicacao: "A direção defensiva fundamenta-se nos 5 pilares: Conhecimento, Atenção, Previsão, Decisão e Habilidade."
           },
           {
               numero: 2,
               modulo: 1,
-              texto: 'O que define a direção defensiva preventiva no trânsito diário?',
+              texto: "O que define a direção defensiva preventiva no trânsito diário?",
               opcoes: [
-                  'Dirigir focado apenas no veículo que vem imediatamente atrás pelo retrovisor.',
-                  'Reagir agressivamente contra pedestres que atravessam fora da faixa.',
-                  'Dirigir em velocidade máxima para chegar rápido antes que comece a chover.',
-                  'Antecipar situações de risco e agir preventivamente para evitar colisões, independente das falhas de outros condutores.'
+                  "Dirigir focado apenas no veículo que vem imediatamente atrás pelo retrovisor.",
+                  "Reagir agressivamente contra pedestres que atravessam fora da faixa.",
+                  "Dirigir em velocidade máxima para chegar rápido antes que comece a chover.",
+                  "Antecipar situações de risco e agir preventivamente para evitar colisões, independente das falhas de outros condutores."
               ],
               correta: 3,
-              corretaLetra: 'D',
-              explicacao: 'A direção preventiva consiste em prever o perigo com antecedência e adotar medidas que garantam a segurança coletiva.'
+              corretaLetra: "D",
+              explicacao: "A direção preventiva consiste em prever o perigo com antecedência e adotar medidas que garantam a segurança coletiva, mesmo diante de falhas de terceiros."
           },
           {
               numero: 3,
               modulo: 1,
-              texto: 'Qual tipo de atenção é exigido do motorista para exercer a verdadeira condução defensiva?',
+              texto: "De acordo com os preceitos da Direção Defensiva, ter a preferência legal de passagem em um cruzamento ou via significa que o condutor:",
               opcoes: [
-                  'Atenção passiva, confiando que os outros veículos farão as manobras corretas.',
-                  'Atenção dispersa, ouvindo música alta e interagindo com o celular.',
-                  'Atenção fixa em um único ponto à frente do capô sem olhar os lados.',
-                  'Atenção difusa ou distribuída, mantendo vigilância contínua na pista, espelhos retrovisores e painel de instrumentos.'
+                  "Deve avançar sem olhar para os lados, pois a lei garante indenização em caso de batida.",
+                  "Não está dispensado de redobrar os cuidados com outros usuários que possam cometer erros ou desrespeitar a sinalização.",
+                  "Pode acelerar para impedir que outros veículos atravessem à sua frente.",
+                  "Deve sempre buzinar continuamente para obrigar pedestres a correrem."
               ],
-              correta: 3,
-              corretaLetra: 'D',
-              explicacao: 'A atenção difusa permite monitorar tudo o que acontece ao redor do veículo em um ângulo de 360 graus.'
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "Ter a preferência legal não isenta o motorista defensivo de certificar-se de que o cruzamento está livre e seguro para a travessia."
           },
           {
               numero: 4,
               modulo: 2,
-              texto: 'O que é o fenômeno da aquaplanagem ou hidroplanagem e quando ele ocorre?',
+              texto: "No estudo da Direção Defensiva, o que são consideradas 'Condições Adversas'?",
               opcoes: [
-                  'A perda de contato e aderência dos pneus com o solo devido a uma camada de água acumulada sobre a pista.',
-                  'O travamento automático dos freios em descidas íngremes de serra.',
-                  'A quebra do radiador provocada pelo superaquecimento da água do motor.',
-                  'A derrapagem de pneus em asfalto quente com poeira seca.'
+                  "Fatores ou circunstâncias desfavoráveis (luz, tempo, via, trânsito, veículo e condutor) que aumentam o risco de sinistros.",
+                  "Apenas as multas e penalidades aplicadas pelos órgãos de trânsito.",
+                  "A documentação vencida do condutor ou do veículo automotor.",
+                  "Exclusivamente a falta de combustível em rodovias pedagiadas."
               ],
               correta: 0,
-              corretaLetra: 'A',
-              explicacao: 'A aquaplanagem acontece quando os sulcos dos pneus não conseguem drenar a lâmina de água, fazendo o carro flutuar.'
+              corretaLetra: "A",
+              explicacao: "Condições adversas são situações ambientais, mecânicas, viárias e humanas que tornam a condução mais desafiadora e perigosa."
           },
           {
               numero: 5,
               modulo: 2,
-              texto: 'Qual deve ser a reação do condutor ao perceber que o veículo está aquaplanando na pista molhada?',
+              texto: "Ao se deparar com condições adversas na via (como pista escorregadia ou tráfego pesado), a regra de ouro do condutor defensivo é:",
               opcoes: [
-                  'Girar o volante bruscamente de um lado para o outro para limpar os pneus.',
-                  'Tirar o pé do acelerador, segurar o volante com firmeza em linha reta e não frear bruscamente até recuperar o contato.',
-                  'Pisar bruscamente no freio com toda a força e puxar o freio de mão.',
-                  'Acelerar ao máximo para que o motor vença a resistência da água.'
+                  "Manter a velocidade máxima permitida na placa para não atrasar a viagem.",
+                  "Adaptar a condução ao risco, reduzindo a velocidade e ampliando a distância de segurança.",
+                  "Transitar sempre pelo acostamento com pisca-alerta ligado.",
+                  "Acelerar nas curvas para evitar perder tração e aderência."
               ],
               correta: 1,
-              corretaLetra: 'B',
-              explicacao: 'Tirar o pé do acelerador e manter a direção reta permite que os pneus retomem a aderência sem que o carro rode na pista.'
+              corretaLetra: "B",
+              explicacao: "A velocidade regulamentada na via é para condições ideais; sob adversidades, a velocidade deve ser reduzida preventivamente."
           },
           {
               numero: 6,
               modulo: 2,
-              texto: 'Ao transitar sob neblina densa ou cerração durante o dia, qual luz o condutor deve utilizar?',
+              texto: "Ao avistar uma curva sombreada com piso potencialmente úmido ou irregular à frente, qual a atitude defensiva correta?",
               opcoes: [
-                  'Apenas o pisca-alerta com o veículo em movimento rápido.',
-                  'Todas as luzes apagadas para não ofuscar quem vem atrás.',
-                  'Farol alto para enxergar mais longe na fumaça.',
-                  'Luz baixa do farol ou faróis de neblina, nunca utilizando o farol alto.'
+                  "Frear bruscamente quando já estiver dentro do meio da curva.",
+                  "Antecipar a redução de velocidade antes de entrar na curva para manter o veículo estável e seguro.",
+                  "Puxar o freio de mão para fazer a curva derrapando de forma esportiva.",
+                  "Desligar os faróis para enxergar melhor os reflexos do asfalto."
               ],
-              correta: 3,
-              corretaLetra: 'D',
-              explicacao: 'O farol alto reflete nas gotículas da neblina criando uma parede branca ofuscante; a luz baixa ilumina o solo.'
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "Toda desaceleração deve ser realizada antes de ingressar na curva, prevenindo desestabilização da carroceria e perda de aderência."
           },
           {
               numero: 7,
-              modulo: 2,
-              texto: 'Como o motorista deve agir defensivamente quando for ofuscado pelos faróis altos de um carro em sentido oposto?',
+              modulo: 3,
+              texto: "Qual tipo de atenção é exigido do motorista para exercer a verdadeira condução defensiva?",
               opcoes: [
-                  'Fechar os olhos e manter a velocidade máxima até o cruzamento dos veículos.',
-                  'Frear repentinamente e parar o veículo no meio da pista de rolamento.',
-                  'Desviar suavemente a visão para a linha delimitadora da borda direita da pista e reduzir a velocidade.',
-                  'Acender o farol alto também para revidar e forçar o outro a baixar a luz.'
+                  "Atenção passiva, confiando que os outros veículos farão as manobras corretas.",
+                  "Atenção dispersa, ouvindo música alta e interagindo com o celular.",
+                  "Atenção fixa em um único ponto à frente do capô sem olhar os lados.",
+                  "Atenção difusa ou distribuída, mantendo vigilância contínua na pista, espelhos retrovisores e painel de instrumentos."
               ],
-              correta: 2,
-              corretaLetra: 'C',
-              explicacao: 'Olhar para a linha de margem direita da pista guia a trajetória do carro sem cegar a visão do condutor pelo farol contrário.'
+              correta: 3,
+              corretaLetra: "D",
+              explicacao: "A atenção difusa permite monitorar tudo o que acontece ao redor do veículo em um ângulo de 360 graus."
           },
           {
               numero: 8,
               modulo: 3,
-              texto: 'O que compreende o tempo de reação de um motorista no trânsito?',
+              texto: "Por que manusear ou digitar no celular ao volante contraria totalmente os preceitos da Direção Defensiva?",
               opcoes: [
-                  'A velocidade com que o velocímetro registra a desaceleração.',
-                  'O intervalo de tempo que transcorre entre o condutor avistar o perigo e pisar no pedal do freio.',
-                  'O tempo de troca das pastilhas de freio na oficina mecânica.',
-                  'O tempo total que o carro leva para parar completamente após parar de rodar.'
+                  "Porque desvia a atenção visual, manual e cognitiva, aumentando exponencialmente o risco de colisões e atropelamentos.",
+                  "Apenas porque consome rapidamente a bateria do aparelho telefônico.",
+                  "Porque impede o funcionamento do sistema ABS dos freios do automóvel.",
+                  "Porque reduz o consumo de combustível durante as paradas em semáforos."
               ],
-              correta: 1,
-              corretaLetra: 'B',
-              explicacao: 'Tempo de reação é o período entre a percepção do estímulo e o início da ação física no pedal de freio (cerca de 0,75 a 1 segundo).'
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "O celular retira o foco dos olhos, das mãos e do raciocínio da direção, impedindo que o motorista antecipe perigos iminentes."
           },
           {
               numero: 9,
               modulo: 3,
-              texto: 'A distância total de parada é calculada pela seguinte fórmula física de trânsito:',
+              texto: "Diante de sintomas de cansaço excessivo, fadiga visual ou sonolência durante uma viagem, o que o condutor deve fazer?",
               opcoes: [
-                  'Distância de frenagem multiplicada pela velocidade do veículo.',
-                  'Distância percorrida em marcha a ré em linha reta.',
-                  'Soma da distância de reação com a distância de frenagem do veículo.',
-                  'Distância de seguimento subtraída da largura dos pneus.'
+                  "Lavar o rosto com água fria e acelerar para chegar mais rápido ao destino.",
+                  "Parar o veículo em local seguro e permitido (como posto de serviços) para descansar ou dormir antes de prosseguir.",
+                  "Ligar o rádio no volume máximo e manter os olhos semicerrados.",
+                  "Tomar energéticos e seguir viagem mesmo sem condições físicas adequadas."
               ],
-              correta: 2,
-              corretaLetra: 'C',
-              explicacao: 'Distância de parada = Distância de reação (enquanto o pé vai ao freio) + Distância de frenagem (até o carro imobilizar).'
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "O sono e a fadiga afetam severamente os reflexos neurológicos e o tempo de reação; a única solução eficaz e segura é o repouso."
           },
           {
               numero: 10,
               modulo: 3,
-              texto: 'Para que serve a regra dos dois segundos de distância de seguimento entre veículos em pista seca?',
+              texto: "Como o consumo de bebidas alcoólicas e substâncias entorpecentes afeta a capacidade do condutor?",
               opcoes: [
-                  'Para garantir espaço de segurança suficiente para reagir e frear caso o carro à frente pare repentinamente.',
-                  'Para sincronizar as marchas com o veículo líder do comboio.',
-                  'Para economizar combustível andando colado no vácuo do caminhão da frente.',
-                  'Para ultrapassar veículos lentos pela direita sem usar seta.'
+                  "Melhora a capacidade de cálculo de distância e velocidade dos outros veículos.",
+                  "Não gera impactos caso a pessoa esteja acostumada a consumir bebidas alcoólicas.",
+                  "Reduz reflexos, compromete a coordenação motora, diminui o campo de visão periférica e gera falsa sensação de segurança.",
+                  "Aumenta a agilidade e a precisão em manobras de emergência em pistas sinuosas."
               ],
-              correta: 0,
-              corretaLetra: 'A',
-              explicacao: 'A regra dos 2 segundos fornece margem de segurança temporal para frear a tempo sem colidir na traseira do veículo adiante.'
+              correta: 2,
+              corretaLetra: "C",
+              explicacao: "O álcool atua como depressor do sistema nervoso central, reduzindo reflexos e induzindo o condutor a assumir riscos desnecessários."
           }
       ],
       2: [
           {
               numero: 1,
               modulo: 4,
-              texto: 'Como o condutor defensivo pode evitar ser colidido na traseira por outro veículo?',
+              texto: "De acordo com o artigo 27 do CTB e a direção defensiva, o que o condutor deve verificar antes de colocar o veículo em circulação?",
               opcoes: [
-                  'Frear bruscamente a qualquer momento sem sinalizar.',
-                  'Dirigir com o porta-malas aberto para chamar a atenção dos outros.',
-                  'Andar sempre pelo acostamento com farol desligado.',
-                  'Verificar os espelhos antes de frear, sinalizar intenções com antecedência e manter distância do carro da frente.'
+                  "Apenas se a cor da lataria está limpa e polida.",
+                  "Se há som automotivo de alta potência instalado no porta-malas.",
+                  "O funcionamento dos equipamentos obrigatórios, estado de pneus, freios, luzes e combustível suficiente para o trajeto.",
+                  "Somente a validade do extintor de incêndio nos carros de passeio."
               ],
-              correta: 3,
-              corretaLetra: 'D',
-              explicacao: 'Sinalizar com antecedência e frear suavemente alerta o veículo de trás, dando tempo para ele desacelerar.'
+              correta: 2,
+              corretaLetra: "C",
+              explicacao: "O art. 27 do CTB torna obrigatório inspecionar as boas condições de funcionamento dos equipamentos e abastecimento antes de viajar."
           },
           {
               numero: 2,
               modulo: 4,
-              texto: 'O que são os pontos cegos de um veículo automotor e como minimizá-los?',
+              texto: "Por que manter as palhetas do limpador de para-brisa em perfeito estado é uma medida defensiva essencial?",
               opcoes: [
-                  'Áreas ao redor do veículo que não são cobertas pelos espelhos retrovisores; minimizam-se com ajuste correto e rápida olhada lateral.',
-                  'Arranhões superficiais no vidro do para-brisa.',
-                  'Pontos da estrada onde os radares da polícia não conseguem fiscalizar.',
-                  'Lâmpadas queimadas nos faróis dianteiros do veículo.'
+                  "Palhetas desgastadas riscam o vidro e reduzem drasticamente a visibilidade sob chuva, ampliando o risco de acidentes.",
+                  "Para evitar multas por excesso de ruído na lataria do veículo.",
+                  "Porque palhetas velhas descarregam a bateria do alternador.",
+                  "Apenas para valorizar esteticamente o veículo na vistoria anual."
               ],
               correta: 0,
-              corretaLetra: 'A',
-              explicacao: 'Pontos cegos são regiões não refletidas nos espelhos; regular os espelhos para fora e girar de leve a cabeça evita acidentes.'
+              corretaLetra: "A",
+              explicacao: "Borrachas ressecadas ou danificadas não escoam a água do para-brisa, criando borrões que cegam a visão do motorista na chuva."
           },
           {
               numero: 3,
               modulo: 4,
-              texto: 'Ao aproximar-se de um cruzamento sem sinalização alguma, qual é a atitude defensiva e legal a tomar?',
+              texto: "Conduzir com pneus carecas (com sulcos abaixo do limite regulamentar de 1,6 mm) ou com calibragem incorreta acarreta:",
               opcoes: [
-                  'Dar sempre a preferência ao carro maior ou mais pesado.',
-                  'Reduzir a velocidade, redobrar a atenção e dar preferência de passagem ao veículo que se aproxima pela direita.',
-                  'Acelerar para passar primeiro antes de qualquer outro carro.',
-                  'Buzinar continuamente e fechar os olhos ao atravessar.'
+                  "Maior aderência nas curvas e economia acentuada de combustível.",
+                  "Perda substancial de aderência, aumento da distância de frenagem e risco elevado de aquaplanagem e estouro do pneu.",
+                  "Aumento automático da potência do motor em subidas íngremes.",
+                  "Nenhum impacto na dirigibilidade se o asfalto estiver quente e seco."
               ],
               correta: 1,
-              corretaLetra: 'B',
-              explicacao: 'Em cruzamentos não sinalizados, a preferência é do veículo que vem pela direita do condutor (artigo 29 do CTB).'
+              corretaLetra: "B",
+              explicacao: "Pneus com sulcos desgastados não drenam água e perdem atrito, tornando frenagens ineficientes e perigosas."
           },
           {
               numero: 4,
-              modulo: 4,
-              texto: 'Por que a colisão frontal é considerada uma das ocorrências mais trágicas e violentas no trânsito?',
+              modulo: 5,
+              texto: "O que compreende o tempo e a distância de reação de um condutor no trânsito?",
               opcoes: [
-                  'Apenas porque os dois automóveis ficam engavetados na pista.',
-                  'Porque as velocidades dos dois veículos se somam na desaceleração do impacto, multiplicando a energia destrutiva.',
-                  'Porque ocorre exclusivamente durante o dia em retas perfeitas.',
-                  'Porque os seguros particulares não cobrem sinistros frontais.'
+                  "O tempo que o freio mecânico leva para imobilizar os eixos das rodas após o pedal ser acionado.",
+                  "O intervalo e o espaço percorrido entre o momento em que o condutor avista o perigo e o instante em que toca o pedal do freio.",
+                  "O tempo que a concessionária leva para enviar um guincho de socorro.",
+                  "A distância percorrida pelo veículo com o motor desligado no ponto morto."
               ],
               correta: 1,
-              corretaLetra: 'B',
-              explicacao: 'A colisão frontal soma as energias cinéticas dos dois veículos que colidem em sentidos contrários, gerando desaceleração brutal.'
+              corretaLetra: "B",
+              explicacao: "A reação é um processo humano neurológico: o cérebro processa a ameaça e envia comando motor ao pé (média de 0,75 a 1 segundo)."
           },
           {
               numero: 5,
-              modulo: 4,
-              texto: 'Ao descer trechos longos de serra ou declives acentuados, qual a técnica correta para preservar os freios?',
+              modulo: 5,
+              texto: "A distância total de parada de um veículo automotor é calculada por qual soma física?",
               opcoes: [
-                  'Descer em ponto morto (na banguela) e segurar o carro apenas no pedal de freio.',
-                  'Desligar a chave do motor durante toda a descida para economizar combustível.',
-                  'Descer com marcha engrenada compatível para utilizar o freio motor e evitar o superaquecimento do sistema de freios.',
-                  'Acionar o freio de mão continuamente até o final da descida.'
+                  "Distância de frenagem subtraída da distância percorrida no velocímetro.",
+                  "Soma da distância de reação com a distância de frenagem do veículo.",
+                  "Distância de seguimento multiplicada pela velocidade da via.",
+                  "Distância do acostamento dividida pelo peso total da carga."
               ],
-              correta: 2,
-              corretaLetra: 'C',
-              explicacao: 'O freio motor poupa as pastilhas e discos; o superaquecimento por uso contínuo pode causar perda total do freio (fading).'
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "Distância de Parada = Distância de Reação (até pisar no pedal) + Distância de Frenagem (até o carro parar totalmente)."
           },
           {
               numero: 6,
-              modulo: 4,
-              texto: 'Se um pneu dianteiro estourar repentinamente enquanto o veículo transita em alta velocidade em rodovia, o condutor deve:',
+              modulo: 5,
+              texto: "Para que serve a regra prática dos 2 (dois) segundos adotada na Direção Defensiva em pista seca?",
               opcoes: [
-                  'Girar o volante para o acostamento imediatamente em manobra brusca.',
-                  'Saltar do veículo em movimento antes que ele saia da pista.',
-                  'Pisar com força no pedal de freio e puxar o freio de mão de imediato.',
-                  'Segurar a direção com firmeza, tirar o pé do acelerador e desacelerar gradativamente, freando suavemente quando tiver controle.'
+                  "Garantir um intervalo e espaço seguro de seguimento em relação ao veículo à frente para reagir e frear a tempo.",
+                  "Tempo máximo permitido para o motorista olhar mensagens no celular enquanto dirige.",
+                  "Limite de tempo para ultrapassar veículos pesados em faixa dupla contínua.",
+                  "Tempo de permanência obrigatório no interior de rotatórias movimentadas."
               ],
-              correta: 3,
-              corretaLetra: 'D',
-              explicacao: 'Frear no susto com pneu estourado faz o carro capotar; deve-se firmar o volante, aliviar o acelerador e frear com muita suavidade.'
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "A regra dos 2 segundos (tomando um ponto fixo como referência) assegura margem de reação e frenagem segura sem bater no veículo adiante."
           },
           {
               numero: 7,
-              modulo: 4,
-              texto: 'Qual deve ser a conduta do condutor defensivo ao perceber que outro veículo iniciou uma ultrapassagem sobre ele?',
+              modulo: 5,
+              texto: "A velocidade máxima estabelecida na placa de sinalização de trânsito:",
               opcoes: [
-                  'Acelerar para impedir a ultrapassagem e não perder sua posição na fila.',
-                  'Mudar de faixa para a esquerda bloqueando a ultrapassagem.',
-                  'Acionar os faróis altos e buzinar para intimidar o outro motorista.',
-                  'Facilitar a manobra, mantendo sua faixa de direção sem aumentar a velocidade e até reduzindo se necessário.'
+                  "Deve ser mantida obrigatoriamente em qualquer condição climática ou viária.",
+                  "Não substitui a necessidade de avaliar as condições reais da via, devendo ser reduzida quando a segurança exigir.",
+                  "É válida apenas para caminhões e ônibus, não se aplicando a automóveis leves.",
+                  "Pode ser superada em até 50% caso o motorista esteja atrasado para o trabalho."
               ],
-              correta: 3,
-              corretaLetra: 'D',
-              explicacao: 'O condutor que é ultrapassado deve colaborar com a segurança da via, mantendo-se em sua faixa sem acelerar.'
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "O limite da via refere-se a condições favoráveis; havendo chuva, neblina ou pedestres, o condutor deve manter velocidade compatível com a segurança."
           },
           {
               numero: 8,
-              modulo: 4,
-              texto: 'Ao passar ao lado de um ciclista na pista, qual distância lateral mínima de segurança deve ser mantida obrigatoriamente?',
+              modulo: 6,
+              texto: "O que é o fenômeno da aquaplanagem ou hidroplanagem e quando ele ocorre?",
               opcoes: [
-                  '3,0 metros.',
-                  '0,5 metro.',
-                  '1,5 metro.',
-                  'Qualquer distância, desde que o condutor dê um toque breve na buzina.'
+                  "A perda de contato e aderência dos pneus com o solo devido a uma camada de água acumulada sobre a pista.",
+                  "O travamento automático dos freios em descidas íngremes de serra.",
+                  "A quebra do radiador provocada pelo superaquecimento da água do motor.",
+                  "A derrapagem de pneus em asfalto quente com poeira seca."
               ],
-              correta: 2,
-              corretaLetra: 'C',
-              explicacao: 'O artigo 201 do CTB determina expressamente a distância lateral mínima de 1,50 metro ao ultrapassar ciclistas.'
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "A aquaplanagem acontece quando os pneus perdem contato com o asfalto e passam a deslizar sobre a lâmina de água."
           },
           {
               numero: 9,
-              modulo: 4,
-              texto: 'Como o consumo de álcool interfere nas faculdades de direção defensiva do motorista?',
+              modulo: 6,
+              texto: "Qual deve ser a reação correta do condutor ao constatar que o veículo entrou em aquaplanagem?",
               opcoes: [
-                  'Não gera impacto algum caso a pessoa esteja acostumada a beber.',
-                  'Apenas causa sono profundo após 24 horas da ingestão.',
-                  'Reduz reflexos, compromete a coordenação motora, diminui a visão periférica e gera falsa sensação de autoconfiança.',
-                  'Aumenta a acuidade visual e melhora a agilidade motora nos reflexos.'
+                  "Puxar imediatamente a alavanca de freio de mão com força total.",
+                  "Girar rapidamente o volante para a esquerda e para a direita até o pneu raspar no asfalto.",
+                  "Aliviar o pé do acelerador, segurar o volante com firmeza em linha reta e não pisar bruscamente no freio.",
+                  "Pisar até o fundo no acelerador para cortar a água com as rodas em rotação."
               ],
               correta: 2,
-              corretaLetra: 'C',
-              explicacao: 'O álcool atua como depressor do sistema nervoso central, retardando respostas e distorcendo a percepção de riscos.'
+              corretaLetra: "C",
+              explicacao: "Não frear bruscamente nem virar as rodas; aliviar o acelerador suavemente até que o peso do carro restabeleça o contato dos pneus com o solo."
           },
           {
               numero: 10,
-              modulo: 4,
-              texto: 'Se as rodas direitas do veículo caírem acidentalmente no degrau do acostamento em velocidade, a atitude mais segura é:',
+              modulo: 6,
+              texto: "Ao se aproximar de um trecho da via pública inundado cuja profundidade da água não possa ser constatada com segurança, a atitude defensiva é:",
               opcoes: [
-                  'Segurar a direção firme, tirar o pé do acelerador, desacelerar no acostamento e só retornar à pista quando estiver em baixa velocidade e seguro.',
-                  'Frear bruscamente travando as quatro rodas imediatamente no acostamento.',
-                  'Acelerar ao máximo para que o carro suba o desnível com impulso rápido.',
-                  'Puxar violentamente o volante para a esquerda para subir de volta na pista na mesma hora.'
+                  "Acelerar em alta velocidade para criar ondas e passar antes que a água suba mais.",
+                  "Não atravessar o trecho alagado e buscar imediatamente uma rota alternativa segura.",
+                  "Engatar ré e andar pela contramão em velocidade sem sinalizar.",
+                  "Descer do carro e empurrá-lo com o motor ligado no meio da enchente."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "Tentar atravessar alagamentos desconhecidos expõe o veículo a calço hidráulico no motor, arraste pela correnteza e queda em buracos submersos."
+          }
+      ],
+      3: [
+          {
+              numero: 1,
+              modulo: 7,
+              texto: "Ao transitar sob neblina densa ou cerração espessa durante o dia ou à noite, qual luz o condutor deve utilizar?",
+              opcoes: [
+                  "Apenas o pisca-alerta com o veículo em movimento rápido.",
+                  "Luz baixa dos faróis ou faróis de neblina, nunca utilizando o farol alto.",
+                  "Farol alto para tentar furar a densidade da neblina com mais luz.",
+                  "Todas as luzes apagadas para economizar energia do alternador."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "O farol alto reflete nas gotículas suspensas criando uma parede branca ofuscante; a luz baixa projeta o feixe rente ao piso."
+          },
+          {
+              numero: 2,
+              modulo: 7,
+              texto: "Como o motorista deve agir defensivamente quando for ofuscado pelos faróis altos de um carro que vem em sentido oposto?",
+              opcoes: [
+                  "Acender o farol alto também para revidar e forçar o outro condutor a baixar a luz.",
+                  "Frear bruscamente e desligar o veículo no meio da rodovia.",
+                  "Desviar suavemente a visão para a linha delimitadora da borda direita da pista e reduzir a velocidade.",
+                  "Fechar os olhos e manter a direção fixa na faixa divisória central."
+              ],
+              correta: 2,
+              corretaLetra: "C",
+              explicacao: "Fixar o olhar na faixa lateral direita serve de guia visual de trajetória sem expor a retina à luminosidade direta do farol oposto."
+          },
+          {
+              numero: 3,
+              modulo: 7,
+              texto: "Por que a condução durante a noite exige velocidade reduzida em comparação com o período diurno?",
+              opcoes: [
+                  "Porque os limites de velocidade das placas são reduzidos pela metade automaticamente à noite.",
+                  "Porque o campo de visão fica restrito ao alcance do feixe de luz dos faróis, encurtando o tempo hábil para reagir a imprevistos.",
+                  "Porque os freios do veículo perdem eficácia na ausência de radiação solar.",
+                  "Porque os radares eletrônicos não conseguem fotografar veículos à noite."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "À noite, enxergamos apenas o que os faróis iluminam; velocidades elevadas fazem a distância de parada superar o alcance da visão iluminada."
+          },
+          {
+              numero: 4,
+              modulo: 8,
+              texto: "Ao aproximar-se de um cruzamento sem qualquer tipo de sinalização de trânsito, qual é a atitude defensiva e legal a adotar?",
+              opcoes: [
+                  "Acelerar para passar antes dos outros e garantir sua vez na via.",
+                  "Reduzir a velocidade, redobrar a atenção e dar preferência de passagem ao veículo que se aproxima pela direita.",
+                  "Buzinar e passar sem frear, assumindo que veículos menores irão desviar.",
+                  "Dar preferência sempre ao veículo que estiver em maior velocidade."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "Pelo art. 29 do CTB, em cruzamentos não sinalizados, a preferência é de quem vem pela direita do condutor."
+          },
+          {
+              numero: 5,
+              modulo: 8,
+              texto: "Sobre o uso da seta ao realizar manobras, conversões ou mudanças de faixa, é correto afirmar:",
+              opcoes: [
+                  "A seta sinaliza a intenção com antecedência, mas não confere prioridade nem garante passagem automática na pista.",
+                  "Acionar a seta obriga todos os demais veículos a frearem e abrirem caminho.",
+                  "A seta só é necessária em rodovias, sendo dispensável em vias urbanas.",
+                  "Pode-se ligar a seta apenas no momento em que já estiver girando as rodas."
               ],
               correta: 0,
-              corretaLetra: 'A',
-              explicacao: 'Girar o volante bruscamente para voltar com velocidade faz o pneu traseiro morder o degrau e lança o carro desgovernado na contramão.'
+              corretaLetra: "A",
+              explicacao: "Sinalizar antecipadamente alerta os outros usuários sobre a manobra, cabendo ao condutor confirmar se há espaço e segurança antes de mudar de faixa."
+          },
+          {
+              numero: 6,
+              modulo: 8,
+              texto: "Antes de iniciar uma manobra de ultrapassagem em rodovia de pista simples, qual verificação o condutor defensivo DEVE realizar?",
+              opcoes: [
+                  "Verificar se a manobra é permitida pela sinalização, se há visibilidade suficiente e espaço livre na contramão para retornar com segurança.",
+                  "Colar o para-choque na traseira do veículo da frente para ganhar impulso aerodinâmico.",
+                  "Buzinar três vezes e ultrapassar mesmo que haja placa de proibição (R-7).",
+                  "Iniciar a manobra em curvas ou pontes estreitas se o carro for potente."
+              ],
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "Ultrapassar exige verificar permissão da via, visibilidade desimpedida e extensão suficiente para concluir sem forçar outros condutores a frearem."
+          },
+          {
+              numero: 7,
+              modulo: 8,
+              texto: "Qual deve ser a conduta do condutor defensivo ao perceber que outro veículo iniciou uma ultrapassagem sobre ele?",
+              opcoes: [
+                  "Acelerar para impedir a conclusão da ultrapassagem.",
+                  "Mudar de faixa para a esquerda para fechar a passagem do outro veículo.",
+                  "Facilitar a manobra, mantendo-se na faixa sem aumentar a velocidade e até reduzindo ligeiramente se houver perigo para o outro.",
+                  "Ligar o farol alto e encostar perigosamente no acostamento de terra."
+              ],
+              correta: 2,
+              corretaLetra: "C",
+              explicacao: "Facilitar a ultrapassagem alheia evita acidentes e colisões frontais graves com veículos em sentido contrário."
+          },
+          {
+              numero: 8,
+              modulo: 9,
+              texto: "Ao passar ou ultrapassar uma bicicleta na via, qual a distância lateral mínima que o condutor deve manter, conforme o art. 201 do CTB?",
+              opcoes: [
+                  "0,50 metro.",
+                  "1,50 metro (um metro e meio).",
+                  "3,00 metros.",
+                  "Nenhuma distância específica, bastando buzinar levemente."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "O art. 201 do CTB estipula a distância lateral mínima de 1,50m ao ultrapassar ciclistas, devendo também reduzir a velocidade ao passar por eles."
+          },
+          {
+              numero: 9,
+              modulo: 9,
+              texto: "Qual é a obrigação legal e defensiva do condutor em relação aos pedestres que estão iniciando a travessia na faixa delimitada?",
+              opcoes: [
+                  "Dar preferência de passagem e aguardar a conclusão da travessia com o veículo totalmente imobilizado.",
+                  "Acelerar o motor em ponto morto para apressar o pedestre a correr.",
+                  "Passar lentamente bem próximo ao pedestre para não interromper o tráfego de trás.",
+                  "A preferência é sempre do motorista caso o semáforo de veículos não tenha temporizador."
+              ],
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "Pelo CTB, os pedestres têm prioridade na faixa sem semáforo ou quando iniciaram a travessia antes da mudança de sinal."
+          },
+          {
+              numero: 10,
+              modulo: 9,
+              texto: "Motocicletas são veículos ágeis, porém com menor visibilidade e maior vulnerabilidade. A atitude defensiva para com motociclistas é:",
+              opcoes: [
+                  "Conferir atentamente os retrovisores e pontos cegos antes de qualquer manobra, mantendo distância prudente de seguimento.",
+                  "Frear bruscamente sempre que uma moto se aproximar do retrovisor.",
+                  "Fechar o corredor para impedir o avanço de motos entre as faixas.",
+                  "Usar a buzina constantemente para afastar motociclistas de perto do veículo."
+              ],
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "Motos ocupam facilmente os pontos cegos dos automóveis; checagens visuais atentas e sinalização antecipada evitam abalroamentos laterais."
+          }
+      ],
+      4: [
+          {
+              numero: 1,
+              modulo: 10,
+              texto: "Como o condutor defensivo pode evitar ser colidido na traseira por outro veículo que o segue de perto?",
+              opcoes: [
+                  "Frear bruscamente a qualquer momento sem sinalizar para intimidar quem vem atrás.",
+                  "Dirigir com a tampa do porta-malas aberta.",
+                  "Monitorar os retrovisores, sinalizar manobras com antecedência, frear de forma progressiva e ampliar a distância em relação ao carro da frente.",
+                  "Andar permanentemente com o pisca-alerta ligado em velocidade normal."
+              ],
+              correta: 2,
+              corretaLetra: "C",
+              explicacao: "Ampliar o espaço frontal permite desacelerações suaves e graduais, oferecendo tempo e espaço para o veículo de trás parar sem bater."
+          },
+          {
+              numero: 2,
+              modulo: 10,
+              texto: "O que são os chamados 'pontos cegos' de um veículo e como o condutor deve lidar com eles?",
+              opcoes: [
+                  "Regiões ao redor do automóvel não cobertas pelos espelhos; minimizam-se com ajuste correto dos espelhos e rápida checagem lateral antes de manobrar.",
+                  "Fissuras e trincas existentes no vidro laminado do para-brisa.",
+                  "Locais onde os radares de fiscalização da polícia não operam.",
+                  "Regiões de faróis queimados ou lanternas inoperantes."
+              ],
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "Pontos cegos escondem pedestres, motos e outros carros; ajustar os retrovisores para fora e mover ligeiramente o tronco e a cabeça elimina essas áreas."
+          },
+          {
+              numero: 3,
+              modulo: 10,
+              texto: "Por que a colisão frontal é considerada uma das ocorrências mais destrutivas e letais no trânsito rodoviário?",
+              opcoes: [
+                  "Porque as velocidades dos dois veículos se somam na desaceleração do impacto, gerando forças cinéticas devastadoras.",
+                  "Apenas porque os veículos envolvidos sempre tombam para o canteiro central.",
+                  "Porque ocorre exclusivamente em retas planas durante o dia.",
+                  "Porque os sistemas de airbag nunca disparam em impactos frontais."
+              ],
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "Na colisão frontal mútua, a desaceleração brusca combina as energias cinéticas de ambos os veículos, multiplicando os traumas corporais."
+          },
+          {
+              numero: 4,
+              modulo: 10,
+              texto: "Ao percorrer longos declives acentuados ou descidas de serra, qual a técnica defensiva recomendada para preservar a eficácia dos freios?",
+              opcoes: [
+                  "Descer em ponto morto (na banguela) e segurar o peso do carro exclusivamente no pedal de freio.",
+                  "Descer com marcha engrenada compatível para utilizar o freio motor, prevenindo o superaquecimento do sistema de freios.",
+                  "Desligar o motor para que o arrefecimento esfrie os tambores e discos.",
+                  "Puxar o freio de mão intermitentemente a cada cinquenta metros."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "O freio motor auxilia a segurar o veículo; o uso ininterrupto dos freios aquece as pastilhas e provoca o efeito 'fading' (perda total de frenagem)."
+          },
+          {
+              numero: 5,
+              modulo: 10,
+              texto: "Caso um pneu dianteiro estoure repentinamente em uma rodovia em velocidade, qual o procedimento defensivo mais seguro?",
+              opcoes: [
+                  "Segurar o volante com firmeza em linha reta, tirar suavemente o pé do acelerador e frear com moderação apenas quando tiver o controle do carro.",
+                  "Pisar bruscamente com força total no pedal do freio e puxar o freio de mão imediatamente.",
+                  "Puxar bruscamente o volante em direção à valeta do acostamento.",
+                  "Acelerar para tentar compensar o desvio do pneu furado."
+              ],
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "Frenagem brusca com pneu estourado desestabiliza o carro e pode provocar capotamento imediato; deve-se firmar a direção e desacelerar gradualmente."
+          },
+          {
+              numero: 6,
+              modulo: 10,
+              texto: "Se as rodas do lado direito do carro caírem no desnível (degrau) do acostamento em velocidade, a atitude correta é:",
+              opcoes: [
+                  "Puxar bruscamente o volante para a esquerda de imediato para retornar à pista com velocidade.",
+                  "Manter a trajetória reta, tirar o pé do acelerador, desacelerar no acostamento e só retornar à pista em baixa velocidade quando seguro.",
+                  "Frear travando as rodas e ligar o limpador de para-brisa.",
+                  "Acelerar a fundo para subir o desnível com salto sobre o asfalto."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "Puxar bruscamente para voltar com velocidade faz os pneus morderem o degrau, arremessando o veículo desgovernado contra a contramão."
+          },
+          {
+              numero: 7,
+              modulo: 10,
+              texto: "Ao perceber uma parada repentina do trânsito à frente em rodovia e risco iminente de engavetamento, o motorista defensivo deve:",
+              opcoes: [
+                  "Acionar imediatamente o pisca-alerta para avisar quem vem atrás e manter rota de fuga apontada para o acostamento ou espaço lateral.",
+                  "Descer do veículo imediatamente no meio da pista de rolamento.",
+                  "Ficar colado no para-choque do carro à frente com faróis apagados.",
+                  "Puxar o freio de mão e fechar as portas com trava automática sem sinalizar."
+              ],
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "Sinalizar o perigo com pisca-alerta avisa os motoristas que se aproximam por trás, e manter distância e ângulo de escape previne prensagem."
+          },
+          {
+              numero: 8,
+              modulo: 10,
+              texto: "Diante de comportamentos agressivos, fechadas ou provocações de outros condutores no trânsito, a direção defensiva preconiza:",
+              opcoes: [
+                  "Buzinar, gesticular e perseguir o outro condutor para tirar satisfações.",
+                  "Não revidar, manter a calma, respirar fundo e priorizar sempre a segurança própria e de todos os passageiros.",
+                  "Ultrapassar e fechar o agressor na primeira oportunidade para “dar uma lição”.",
+                  "Bloquear o fluxo da via e chamar os outros ocupantes para discutir."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "Direção defensiva é buscar margem de segurança e preservação da vida, nunca disputa de ego ou agressividade no trânsito."
+          },
+          {
+              numero: 9,
+              modulo: 10,
+              texto: "Qual é a orientação defensiva para a realização de manobras de marcha a ré?",
+              opcoes: [
+                  "Deve ser executada apenas em pequenas distâncias, em velocidade reduzida e sempre com visibilidade desimpedida de pedestres e obstáculos.",
+                  "Pode ser realizada em cruzamentos movimentados caso o motorista tenha perdido a entrada.",
+                  "Deve ser realizada em alta velocidade para desocupar a via o mais rápido possível.",
+                  "Dispensa o uso de espelhos caso o vidro traseiro tenha limpador."
+              ],
+              correta: 0,
+              corretaLetra: "A",
+              explicacao: "O art. 194 do CTB e a direção defensiva determinam que a marcha a ré só deve ser usada em pequenas manobras sem comprometer a segurança."
+          },
+          {
+              numero: 10,
+              modulo: 10,
+              texto: "Concluir o curso de Direção Defensiva significa adotar qual filosofia contínua no dia a dia nas vias públicas?",
+              opcoes: [
+                  "Acreditar que todos os outros motoristas e pedestres conhecem e cumprirão perfeitamente as leis de trânsito.",
+                  "Ter a consciência de que o condutor defensivo cuida de si, protege os passageiros e previne acidentes mesmo diante dos erros alheios.",
+                  "Buscar chegar sempre primeiro ao destino, não importando as condições climáticas ou da pista.",
+                  "Focar apenas em não ser multado pelos radares móveis e fixos."
+              ],
+              correta: 1,
+              corretaLetra: "B",
+              explicacao: "A direção defensiva é a prática contínua de antecipação e zelo pela vida humana coletiva nas vias públicas."
           }
       ]
   }
