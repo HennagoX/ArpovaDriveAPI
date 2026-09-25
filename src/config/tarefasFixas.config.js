@@ -42,7 +42,8 @@ export const TAREFAS_FIXAS_CONFIG = {
         modulosNecessarios: 3,
         titulo: 'Desafio de Questões: 70%+ na Bateria 1',
         descricao: 'Acerte no mínimo 70% das questões da Bateria 1 cobrindo os fundamentos e legislação inicial.',
-        xp_reward: 350
+        xp_reward: 350,
+        isQuestion: true,
       },
       {
         id: 'fixa_ctb_mod_4',
@@ -396,7 +397,8 @@ export const TAREFAS_FIXAS_CONFIG = {
         modulosNecessarios: 6,
         titulo: 'Desafio de Questões: 70%+ na Bateria 2 (Socorros)',
         descricao: 'Acerte no mínimo 70% nas questões de acionamento de resgate e avaliação inicial.',
-        xp_reward: 350
+        xp_reward: 350,
+        isQuestion: true,
       },
       {
         id: 'fixa_soc_mod_7',

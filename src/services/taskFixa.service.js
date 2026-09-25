@@ -38,6 +38,7 @@ export const taskFixaService = {
       let contentConcluidas = 0;
       let contentXpDisponivel = 0;
       let contentXpGanho = 0;
+      const isQuestion = conteudo.isQuestion;
 
       const tasksProcessadas = conteudo.tasks.map(t => {
         contentTotalTasks++;
@@ -49,10 +50,6 @@ export const taskFixaService = {
         const completedRecord = isConcluida ? completedMap.get(t.id) : null;
 
         if (isConcluida) {
-          contentConcluidas++;
-          totalConcluidasGlobal++;
-          contentXpGanho += t.xp_reward;
-          totalXpGanhoGlobal += t.xp_reward;
 
           return {
             ...t,
@@ -76,6 +73,21 @@ export const taskFixaService = {
           const moduloAtual = currentModule === moduloNum;
 
           if (jaEstudou) {
+
+            if (isQuestion) {
+              return {  ...t,
+              conteudoId: conteudo.id,
+              conteudoTitulo: conteudo.titulo,
+              conteudoCor: conteudo.cor,
+              conteudoIcone: conteudo.icone,
+              concluida: false,
+              status: 'in_progress',
+              bloqueada: false,
+              podeReivindicar: true,
+              concluida_em: null,
+              motivo: 'Você está neste módulo! Estude o conteúdo e conclua para ganhar seu XP.'};  
+            }
+
             return {
               ...t,
               conteudoId: conteudo.id,
