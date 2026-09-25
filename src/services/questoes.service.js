@@ -35,8 +35,8 @@ export function normalizarMateria(materia) {
   if (lower.includes('meio') || lower.includes('ambiente') || lower.includes('cidadania')) return 'MeioAmbiente';
   if (lower.includes('codigo') || lower.includes('legislacao')) return 'CodigoTransito';
   if (lower.includes('placa') || lower.includes('sinalizacao')) return 'PlacasTransito';
-  if (lower.includes('direcao') || lower.includes('defensiva') || lower.includes('ofensiva')) return 'DirecaoDefensiva';
-  if (lower.includes('socorro') || lower.includes('saude')) return 'PrimeirosSocorros';
+  if (lower.includes('direcao') || lower.includes('defensiva') || lower.includes('ofensiva') || lower.includes('seguranca')) return 'DirecaoDefensiva';
+  if (lower.includes('socorro') || lower.includes('saude') || lower.includes('primeiro')) return 'PrimeirosSocorros';
   return clean;
 }
 
@@ -160,14 +160,12 @@ export async function checarAcerto(respostas, userId) {
   const questaoEncontrada = perguntas.find(q => Number(q.numero) === numQuestao);
 
   if (!questaoEncontrada || !respostaLetra) {
-    const gabaritoFallback = 'A';
-    const isCorreto = respostaLetra === gabaritoFallback;
     return {
-      sucesso: true,
-      success: true,
-      correto: isCorreto,
-      acertou: isCorreto,
-      mensagem: isCorreto ? 'Resposta correta!' : 'Resposta incorreta'
+      sucesso: false,
+      success: false,
+      correto: false,
+      acertou: false,
+      mensagem: 'Questão ou resposta não encontrada.'
     };
   }
 
