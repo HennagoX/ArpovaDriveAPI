@@ -123,7 +123,6 @@ export const taskFixaService = {
           };
         }
 
-        // Tarefa do tipo 'questao' (a cada 3 módulos)
         const necessarios = Number(t.modulosNecessarios || (t.bateriaNumero * 3));
         const moduloSuficiente = currentModule >= necessarios;
 

@@ -1,72 +1,269 @@
 import { getQuestoes, incrementarAcerto } from '../Repositories/questoes.repository.js';
 import { incrementXp } from './exp.service.js';
+import { getCurrent } from './modulo.service.js';
+import { QUESTOES_BANCO } from './questoes.data.js';
 
 const ACERTOS_COLUNAS = {
   CodigoTransito: 'acertos_codigotransito',
+  codigotransito: 'acertos_codigotransito',
+  legislacao: 'acertos_codigotransito',
   PlacasTransito: 'acertos_placatransito',
+  PlacaTransito: 'acertos_placatransito',
+  placas: 'acertos_placatransito',
+  placatransito: 'acertos_placatransito',
   DirecaoDefensiva: 'acertos_direcaodefensiva',
+  DirecaoOfensiva: 'acertos_direcaodefensiva',
+  seguranca: 'acertos_direcaodefensiva',
+  direcaodefensiva: 'acertos_direcaodefensiva',
   PrimeirosSocorros: 'acertos_primeirossocorros',
-  Cidadania: 'acertos_meioambiente'
+  primeirossocorros: 'acertos_primeirossocorros',
+  saude: 'acertos_primeirossocorros',
+  Cidadania: 'acertos_meioambiente',
+  cidadania: 'acertos_meioambiente',
+  MeioAmbiente: 'acertos_meioambiente',
+  meioambiente: 'acertos_meioambiente',
+  'meio-ambiente': 'acertos_meioambiente',
+  ambiente: 'acertos_meioambiente'
 };
 
-const questoes = {
-  CodigoTransito: { '1': 'A' },
-  PlacasTransito: { '1': 'A' },
-  DirecaoDefensiva: { '1': 'A' },
-  PrimeirosSocorros: { '1': 'A' },
-  Cidadania: { '1': 'A' }
+const LETRAS = ['A', 'B', 'C', 'D'];
+
+export function normalizarMateria(materia) {
+  if (!materia) return 'MeioAmbiente';
+  const clean = String(materia).trim();
+  const lower = clean.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (lower.includes('meio') || lower.includes('ambiente') || lower.includes('cidadania')) return 'MeioAmbiente';
+  if (lower.includes('codigo') || lower.includes('legislacao')) return 'CodigoTransito';
+  if (lower.includes('placa') || lower.includes('sinalizacao')) return 'PlacasTransito';
+  if (lower.includes('direcao') || lower.includes('defensiva') || lower.includes('ofensiva')) return 'DirecaoDefensiva';
+  if (lower.includes('socorro') || lower.includes('saude')) return 'PrimeirosSocorros';
+  return clean;
+}
+
+export function normalizarBateriaNumero(bateria) {
+  if (!bateria) return 1;
+  if (typeof bateria === 'number') return Math.max(1, Math.min(4, Math.floor(bateria)));
+  const str = String(bateria).trim().toLowerCase();
+  const match = str.match(/\d+/);
+  if (match) return Math.max(1, Math.min(4, Number(match[0])));
+  return 1;
+}
+
+export function normalizarRespostaLetra(resp) {
+  if (resp === null || resp === undefined) return '';
+  if (typeof resp === 'number') return LETRAS[resp] || '';
+  const str = String(resp).trim().toUpperCase();
+  if (LETRAS.includes(str)) return str;
+  const num = Number(str);
+  if (!isNaN(num) && num >= 0 && num < LETRAS.length) return LETRAS[num];
+  return str;
+}
+
+export function obterPerguntas(materia, bateriaNumero) {
+  const materiaNorm = normalizarMateria(materia);
+  const batNum = normalizarBateriaNumero(bateriaNumero);
+  const questoesMateria = QUESTOES_BANCO[materiaNorm];
+  if (!questoesMateria || !questoesMateria[batNum]) {
+    return [];
+  }
+  return questoesMateria[batNum];
+}
+
+export function obterBaterias(materia) {
+  const materiaNorm = normalizarMateria(materia);
+  const questoesMateria = QUESTOES_BANCO[materiaNorm];
+  if (!questoesMateria) return [];
+  return Object.keys(questoesMateria).map(num => ({
+    numero: Number(num),
+    totalQuestoes: questoesMateria[num].length
+  }));
+}
+
+const BATERIAS_MODULOS_MINIMOS = {
+  1: 1,
+  2: 6,
+  3: 9,
+  4: 10
 };
 
-export async function checarAcerto(respostas, userId) {
-  const questaoKey = respostas?.questao;
-  const materia = typeof questaoKey === 'string'
-    ? questaoKey
-    : (respostas?.materia || respostas?.conteudo || questaoKey?.materia || 'CodigoTransito');
-
-  const numQuestao = String(
-    respostas?.num ||
-    respostas?.numQuestao ||
-    respostas?.numero ||
-    (typeof questaoKey === 'object' ? questaoKey?.num : null) ||
-    '1'
-  );
-
-  const respostaUsuario = String(respostas?.resposta || respostas?.respostaUsuario || '').toUpperCase().trim();
-
-  const gabaritoMateria = questoes[materia];
-  if (!gabaritoMateria || !respostaUsuario) {
-    return null;
+export function obterModuloMinimoBateria(materia, bateriaNumero) {
+  const materiaNorm = normalizarMateria(materia);
+  const batNum = normalizarBateriaNumero(bateriaNumero);
+  if (batNum === 1) return 1;
+  if (materiaNorm === 'PlacasTransito' || materiaNorm === 'DirecaoDefensiva') {
+    return batNum >= 2 ? 4 : 1;
   }
+  return BATERIAS_MODULOS_MINIMOS[batNum] || (batNum * 3);
+}
 
-  const gabarito = gabaritoMateria[numQuestao];
-  if (!gabarito) {
-    return null;
-  }
+export async function verificarAcessoBateria(materia, bateriaNumero, userId) {
+  const materiaNorm = normalizarMateria(materia);
+  const batNum = normalizarBateriaNumero(bateriaNumero);
+  const moduloMinimo = obterModuloMinimoBateria(materiaNorm, batNum);
 
-  if (gabarito === respostaUsuario) {
-    const coluna = ACERTOS_COLUNAS[materia] || 'acertos_codigotransito';
-    let totalAcertos = null;
-    if (userId) {
-      totalAcertos = await incrementarAcerto(coluna, userId);
-      await incrementXp(userId, 10);
-    }
+  if (batNum === 1 || !userId) {
     return {
-      correto: true,
-      acertou: true,
-      acertos: totalAcertos,
-      expGanha: 10,
-      mensagem: 'Resposta correta!'
+      sucesso: true,
+      permitido: true,
+      bloqueado: false,
+      materia: materiaNorm,
+      bateria: batNum,
+      moduloAtual: 1,
+      moduloMinimo,
+      mensagem: 'Acesso liberado.'
     };
   }
 
+  let moduloAtual = 1;
+  try {
+    const moduloInfo = await getCurrent(materiaNorm, userId);
+    moduloAtual = Number(moduloInfo?.modulo_atual || 1);
+  } catch {
+    moduloAtual = 1;
+  }
+
+  const permitido = moduloAtual >= moduloMinimo;
+
   return {
-    correto: false,
-    acertou: false,
-    mensagem: 'Resposta incorreta'
+    sucesso: true,
+    permitido,
+    bloqueado: !permitido,
+    materia: materiaNorm,
+    bateria: batNum,
+    moduloAtual,
+    moduloMinimo,
+    mensagem: permitido
+      ? 'Acesso liberado para esta bateria.'
+      : `Requer no mínimo o Módulo ${moduloMinimo} concluído.`
+  };
+}
+
+export async function checarAcerto(respostas, userId) {
+  const materiaRaw = respostas?.materia || respostas?.conteudo || respostas?.disciplina || respostas?.questao?.materia || 'MeioAmbiente';
+  const materiaNorm = normalizarMateria(materiaRaw);
+  const bateriaRaw = respostas?.bateria || respostas?.bateriaNumero || respostas?.bateriaId || respostas?.bateria_id || 1;
+  const bateriaNum = normalizarBateriaNumero(bateriaRaw);
+
+  const numQuestao = Number(
+    respostas?.num ||
+    respostas?.numQuestao ||
+    respostas?.numero ||
+    respostas?.questao?.num ||
+    1
+  );
+
+  const respostaLetra = normalizarRespostaLetra(
+    respostas?.resposta ?? respostas?.respostaUsuario ?? respostas?.alternativa
+  );
+
+  const perguntas = obterPerguntas(materiaNorm, bateriaNum);
+  const questaoEncontrada = perguntas.find(q => Number(q.numero) === numQuestao);
+
+  if (!questaoEncontrada || !respostaLetra) {
+    const gabaritoFallback = 'A';
+    const isCorreto = respostaLetra === gabaritoFallback;
+    return {
+      sucesso: true,
+      success: true,
+      correto: isCorreto,
+      acertou: isCorreto,
+      mensagem: isCorreto ? 'Resposta correta!' : 'Resposta incorreta'
+    };
+  }
+
+  const isCorreto = questaoEncontrada.corretaLetra === respostaLetra;
+  const coluna = ACERTOS_COLUNAS[materiaNorm] || 'acertos_meioambiente';
+
+  let totalAcertos = null;
+  let expData = null;
+
+  if (isCorreto && userId) {
+    totalAcertos = await incrementarAcerto(coluna, userId, 1);
+    expData = await incrementXp(userId, 10);
+  }
+
+  return {
+    sucesso: true,
+    success: true,
+    correto: isCorreto,
+    acertou: isCorreto,
+    materia: materiaNorm,
+    bateria: bateriaNum,
+    numero: numQuestao,
+    respostaEnviada: respostaLetra,
+    correta: questaoEncontrada.corretaLetra,
+    corretaIndex: questaoEncontrada.correta,
+    explicacao: questaoEncontrada.explicacao,
+    acertos: totalAcertos,
+    expGanha: isCorreto ? 10 : 0,
+    totalExp: expData?.exp ?? null,
+    lv: expData?.lv ?? null,
+    mensagem: isCorreto ? 'Resposta correta!' : 'Resposta incorreta'
+  };
+}
+
+export async function concluirBateria(dados, userId) {
+  const materiaNorm = normalizarMateria(dados?.materia);
+  const bateriaNum = normalizarBateriaNumero(dados?.bateria);
+  const perguntas = obterPerguntas(materiaNorm, bateriaNum);
+  const total = perguntas.length || 10;
+
+  const respostasEnviadas = dados?.respostas || {};
+  let acertos = 0;
+
+  perguntas.forEach((q) => {
+    const resp = normalizarRespostaLetra(respostasEnviadas[q.numero]);
+    if (resp && resp === q.corretaLetra) {
+      acertos++;
+    }
+  });
+
+  if (typeof dados?.acertos === 'number' && dados.acertos >= 0) {
+    acertos = Math.min(total, dados.acertos);
+  }
+
+  const porcentagem = Math.round((acertos / total) * 100);
+  const aprovado = porcentagem >= 70;
+  const expBonus = aprovado ? 50 : 20;
+
+  let expData = null;
+  if (userId) {
+    expData = await incrementXp(userId, expBonus);
+  }
+
+  const proximaBateriaNum = bateriaNum + 1;
+  let proximaBateriaLiberada = false;
+  let proximaModuloMinimo = null;
+  let moduloAtualUsuario = 1;
+
+  if (proximaBateriaNum <= 4) {
+    const acessoProxima = await verificarAcessoBateria(materiaNorm, proximaBateriaNum, userId);
+    proximaBateriaLiberada = Boolean(acessoProxima.permitido);
+    proximaModuloMinimo = acessoProxima.moduloMinimo;
+    moduloAtualUsuario = acessoProxima.moduloAtual;
+  }
+
+  return {
+    sucesso: true,
+    success: true,
+    materia: materiaNorm,
+    bateria: bateriaNum,
+    totalQuestoes: total,
+    acertos,
+    porcentagem,
+    aprovado,
+    expBonus,
+    totalExp: expData?.exp ?? null,
+    lv: expData?.lv ?? null,
+    proximaBateria: proximaBateriaNum <= 4 ? proximaBateriaNum : null,
+    proximaBateriaLiberada,
+    proximaModuloMinimo,
+    moduloAtual: moduloAtualUsuario
   };
 }
 
 export async function obterQuestoes(materia, userId) {
-  const coluna = materia ? ACERTOS_COLUNAS[materia] : null;
+  const materiaNorm = materia ? normalizarMateria(materia) : null;
+  const coluna = materiaNorm ? ACERTOS_COLUNAS[materiaNorm] : null;
   return await getQuestoes(coluna, userId);
 }
