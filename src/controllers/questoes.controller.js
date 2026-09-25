@@ -83,7 +83,7 @@ export async function getPerguntas(req, res) {
     const materia = req.query.materia || req.params?.materia || 'MeioAmbiente';
     const bateria = Number(req.query.bateria || req.query.bateriaId || req.params?.bateria || 1);
 
-    if (userId && bateria > 1) {
+    if (userId && bateria >= 1) {
       const acesso = await verificarAcessoBateria(materia, bateria, userId);
       if (!acesso.permitido) {
         return res.status(403).json({

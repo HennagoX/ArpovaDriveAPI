@@ -80,20 +80,15 @@ export function obterBaterias(materia) {
 }
 
 const BATERIAS_MODULOS_MINIMOS = {
-  1: 1,
-  2: 6,
-  3: 9,
+  1: 4,
+  2: 7,
+  3: 10,
   4: 10
 };
 
 export function obterModuloMinimoBateria(materia, bateriaNumero) {
-  const materiaNorm = normalizarMateria(materia);
   const batNum = normalizarBateriaNumero(bateriaNumero);
-  if (batNum === 1) return 1;
-  if (materiaNorm === 'PlacasTransito' || materiaNorm === 'DirecaoDefensiva') {
-    return batNum >= 2 ? 4 : 1;
-  }
-  return BATERIAS_MODULOS_MINIMOS[batNum] || (batNum * 3);
+  return BATERIAS_MODULOS_MINIMOS[batNum] || 4;
 }
 
 export async function verificarAcessoBateria(materia, bateriaNumero, userId) {
@@ -101,25 +96,14 @@ export async function verificarAcessoBateria(materia, bateriaNumero, userId) {
   const batNum = normalizarBateriaNumero(bateriaNumero);
   const moduloMinimo = obterModuloMinimoBateria(materiaNorm, batNum);
 
-  if (batNum === 1 || !userId) {
-    return {
-      sucesso: true,
-      permitido: true,
-      bloqueado: false,
-      materia: materiaNorm,
-      bateria: batNum,
-      moduloAtual: 1,
-      moduloMinimo,
-      mensagem: 'Acesso liberado.'
-    };
-  }
-
   let moduloAtual = 1;
-  try {
-    const moduloInfo = await getCurrent(materiaNorm, userId);
-    moduloAtual = Number(moduloInfo?.modulo_atual || 1);
-  } catch {
-    moduloAtual = 1;
+  if (userId) {
+    try {
+      const moduloInfo = await getCurrent(materiaNorm, userId);
+      moduloAtual = Number(moduloInfo?.modulo_atual || 1);
+    } catch {
+      moduloAtual = 1;
+    }
   }
 
   const permitido = moduloAtual >= moduloMinimo;
@@ -134,7 +118,7 @@ export async function verificarAcessoBateria(materia, bateriaNumero, userId) {
     moduloMinimo,
     mensagem: permitido
       ? 'Acesso liberado para esta bateria.'
-      : `Requer no mínimo o Módulo ${moduloMinimo} concluído.`
+      : `Requer no mínimo a conclusão do Módulo ${batNum === 1 ? 3 : (batNum === 2 ? 6 : (batNum === 3 ? 9 : 10))}.`
   };
 }
 
