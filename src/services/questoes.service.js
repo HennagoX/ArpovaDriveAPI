@@ -159,7 +159,9 @@ export async function checarAcerto(respostas, userId) {
   const perguntas = obterPerguntas(materiaNorm, bateriaNum);
   const questaoEncontrada = perguntas.find(q => Number(q.numero) === numQuestao);
 
-  if (!questaoEncontrada || !respostaLetra) {
+  const textoResposta = String(respostas?.textoResposta || respostas?.texto || '').trim();
+
+  if (!questaoEncontrada || (!respostaLetra && !textoResposta)) {
     return {
       sucesso: false,
       success: false,
@@ -169,7 +171,9 @@ export async function checarAcerto(respostas, userId) {
     };
   }
 
-  const isCorreto = questaoEncontrada.corretaLetra === respostaLetra;
+  const isCorretoPorTexto = textoResposta && questaoEncontrada.opcoes[questaoEncontrada.correta] === textoResposta;
+  const isCorretoPorLetra = respostaLetra && questaoEncontrada.corretaLetra === respostaLetra;
+  const isCorreto = Boolean(isCorretoPorTexto || isCorretoPorLetra);
   const coluna = ACERTOS_COLUNAS[materiaNorm] || 'acertos_meioambiente';
 
   let totalAcertos = null;

@@ -1140,7 +1140,7 @@ export const QUESTOES_BANCO = {
     ]
   },
 
-  PlacasTransito: {
+PlacasTransito: {
       1: [
           {
               numero: 1,
@@ -1148,12 +1148,12 @@ export const QUESTOES_BANCO = {
               texto: 'O que é a sinalização de trânsito e qual documento normatiza seus padrões técnicos no Brasil?',
               opcoes: [
                   'Conjunto de sinais definido exclusivamente pelas prefeituras municipais sem regras federais.',
-                  'Conjunto de sinais, marcas e dispositivos definidos pelo CTB e detalhados pelo Manual Brasileiro do CONTRAN.',
                   'Apenas placas de regulamentação criadas pelo órgão rodoviário estadual.',
-                  'Regras internacionais aplicadas sem adaptação à legislação nacional de trânsito.'
+                  'Regras internacionais aplicadas sem adaptação à legislação nacional de trânsito.',
+                  'Conjunto de sinais, marcas e dispositivos definidos pelo CTB e detalhados pelo Manual Brasileiro do CONTRAN.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A sinalização é regida pelo Código de Trânsito Brasileiro e normatizada tecnicamente pelas resoluções do CONTRAN.'
           },
           {
@@ -1161,13 +1161,13 @@ export const QUESTOES_BANCO = {
               modulo: 1,
               texto: 'Quais são as quatro funções fundamentais cumpridas pela sinalização de trânsito?',
               opcoes: [
-                  'Proibir, multar, arrecadar e punir.',
                   'Interditar, bloquear, desviar e fiscalizar.',
-                  'Regular, advertir, indicar e educar.',
-                  'Orientar veículos pesados, fiscalizar pedestres, reservar vagas e limitar ciclovias.'
+                  'Orientar veículos pesados, fiscalizar pedestres, reservar vagas e limitar ciclovias.',
+                  'Proibir, multar, arrecadar e punir.',
+                  'Regular, advertir, indicar e educar.'
               ],
-              correta: 2,
-              corretaLetra: 'C',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'As quatro funções essenciais da sinalização viária são regular, advertir, indicar e educar os usuários da via.'
           },
           {
@@ -1175,13 +1175,13 @@ export const QUESTOES_BANCO = {
               modulo: 1,
               texto: 'Na interpretação imediata de uma placa de trânsito, qual elemento visual o condutor deve identificar em primeiro lugar?',
               opcoes: [
-                  'O formato, pois indica de imediato a que grupo funcional a placa pertence.',
-                  'A altura do poste em que a placa está instalada.',
                   'O código numérico de registro impresso na borda inferior da placa.',
-                  'O tipo de metal e a película refletiva utilizados na confecção.'
+                  'O tipo de metal e a película refletiva utilizados na confecção.',
+                  'O formato, pois indica de imediato a que grupo funcional a placa pertence.',
+                  'A altura do poste em que a placa está instalada.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O formato da placa revela instantaneamente se a mensagem é uma ordem, um alerta ou uma indicação informativa.'
           },
           {
@@ -1189,10 +1189,10 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'Como se define a sinalização vertical no sistema de trânsito brasileiro?',
               opcoes: [
-                  'Sinais luminosos instalados sobre torres elevadas nas rodovias.',
                   'Marcações e faixas pintadas diretamente sobre a superfície do pavimento.',
+                  'Apenas os gestos e sinais com apitos emitidos pelas autoridades de trânsito.',
                   'Conjunto de placas e sinais fixados em suportes verticais ao lado da via ou suspensos sobre ela.',
-                  'Apenas os gestos e sinais com apitos emitidos pelas autoridades de trânsito.'
+                  'Sinais luminosos instalados sobre torres elevadas nas rodovias.'
               ],
               correta: 2,
               corretaLetra: 'C',
@@ -1203,9 +1203,9 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'Quais são os três grandes grupos que compõem a sinalização vertical de trânsito?',
               opcoes: [
-                  'Velocidade, estacionamento e cruzamentos.',
-                  'Regulamentação, advertência e indicação.',
                   'Obrigatórias, facultativas e temporárias.',
+                  'Regulamentação, advertência e indicação.',
+                  'Velocidade, estacionamento e cruzamentos.',
                   'Urbanas, rodoviárias e de pedestres.'
               ],
               correta: 1,
@@ -1231,13 +1231,13 @@ export const QUESTOES_BANCO = {
               modulo: 3,
               texto: 'O desrespeito a uma mensagem transmitida por placa de regulamentação constitui:',
               opcoes: [
-                  'Apenas recomendação educativa sem previsão de sanções.',
-                  'Infração de trânsito sujeita às penalidades e medidas administrativas do CTB.',
+                  'Crime inafiançável com perda automática definitiva da CNH em todos os casos.',
                   'Advertência verbal sem registro no prontuário do condutor.',
-                  'Crime inafiançável com perda automática definitiva da CNH em todos os casos.'
+                  'Apenas recomendação educativa sem previsão de sanções.',
+                  'Infração de trânsito sujeita às penalidades e medidas administrativas do CTB.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'As placas de regulamentação impõem obrigações e proibições de cumprimento obrigatório, gerando autuação por infração.'
           },
           {
@@ -1245,13 +1245,13 @@ export const QUESTOES_BANCO = {
               modulo: 3,
               texto: 'Por que a placa R-1 (Parada Obrigatória) possui formato octogonal (oito lados) exclusivo?',
               opcoes: [
-                  'Para baratear os custos de corte da chapa metálica pelos órgãos de trânsito.',
                   'Para ser identificada imediatamente pelos condutores de todas as direções, inclusive de costas.',
+                  'Para baratear os custos de corte da chapa metálica pelos órgãos de trânsito.',
                   'Para sinalizar que a via tem limite de velocidade de 80 km/h.',
                   'Por mera exigência estética sem propósito de segurança viária.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'O formato octogonal único permite reconhecer a ordem de parada mesmo vista pelo verso ou sob condições de baixa visibilidade.'
           },
           {
@@ -1260,9 +1260,9 @@ export const QUESTOES_BANCO = {
               texto: 'Qual a diferença de conduta exigida entre as placas R-1 (Parada Obrigatória) e R-2 (Dê a Preferência)?',
               opcoes: [
                   'A R-1 exige parada total em qualquer hipótese; a R-2 exige desaceleração e parada apenas se houver fluxo preferencial.',
-                  'A R-1 só é válida no período noturno, enquanto a R-2 vigora durante o dia.',
                   'Ambas exigem parada total e imediata dos veículos em qualquer situação viária.',
-                  'A R-1 aplica-se exclusivamente a veículos pesados, e a R-2 apenas a automóveis de passeio.'
+                  'A R-1 aplica-se exclusivamente a veículos pesados, e a R-2 apenas a automóveis de passeio.',
+                  'A R-1 só é válida no período noturno, enquanto a R-2 vigora durante o dia.'
               ],
               correta: 0,
               corretaLetra: 'A',
@@ -1274,12 +1274,12 @@ export const QUESTOES_BANCO = {
               texto: 'Uma placa de regulamentação circular que apresenta uma tarja transversal diagonal vermelha indica:',
               opcoes: [
                   'Obrigação imperativa de realizar a manobra ilustrada.',
-                  'A existência de atrativo turístico à direita da via.',
                   'Uma proibição categórica da ação, manobra ou trânsito representado.',
+                  'A existência de atrativo turístico à direita da via.',
                   'Redução obrigatória para a metade da velocidade regulamentada na via.'
               ],
-              correta: 2,
-              corretaLetra: 'C',
+              correta: 1,
+              corretaLetra: 'B',
               explicacao: 'A tarja diagonal vermelha sobreposta ao pictograma nas placas de regulamentação estabelece proibição.'
           }
       ],
@@ -1290,12 +1290,12 @@ export const QUESTOES_BANCO = {
               texto: 'Qual é a função primordial e o padrão visual das placas de advertência?',
               opcoes: [
                   'Impor limites de peso com formato circular e orla vermelha.',
-                  'Alertar sobre perigos potenciais na via, com formato de losango e fundo amarelo.',
+                  'Orientar limites de municípios em placas marrons quadradas.',
                   'Indicar hospitais e postos de combustível com fundo azul retangular.',
-                  'Orientar limites de municípios em placas marrons quadradas.'
+                  'Alertar sobre perigos potenciais na via, com formato de losango e fundo amarelo.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'As placas de advertência avisam sobre perigos à frente na via, com fundo amarelo e formato de quadrado apoiado em um dos vértices.'
           },
           {
@@ -1304,12 +1304,12 @@ export const QUESTOES_BANCO = {
               texto: 'As placas de advertência impõem ordens de trânsito passíveis de multa imediata por desobediência direta?',
               opcoes: [
                   'Sim, todas as placas de advertência geram multa gravíssima se desobedecidas.',
-                  'Não, pois alertam sobre situações da via; contudo, a falta de atenção ao perigo pode causar infração por imprudência.',
                   'Sim, desde que instaladas em rodovias federais policiadas pela PRF.',
-                  'Não, e seus alertas podem ser ignorados livremente sem qualquer risco legal ou perigo de acidente.'
+                  'Não, e seus alertas podem ser ignorados livremente sem qualquer risco legal ou perigo de acidente.',
+                  'Não, pois alertam sobre situações da via; contudo, a falta de atenção ao perigo pode causar infração por imprudência.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A advertência não gera autuação direta por desobediência como as placas R, mas avisa sobre riscos reais que demandam prudência.'
           },
           {
@@ -1317,10 +1317,10 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Ao avistar uma placa de advertência A-1a (Curva Acentuada à Esquerda), qual atitude defensiva deve ser tomada?',
               opcoes: [
-                  'Acelerar o veículo para aproveitar a força centrífuga na curva.',
+                  'Mudar imediatamente de faixa invadindo a contramão de direção.',
                   'Frear bruscamente apenas quando já estiver no meio do traçado da curva.',
                   'Reduzir a velocidade preventivamente antes de entrar na curva e manter a trajetória na faixa.',
-                  'Mudar imediatamente de faixa invadindo a contramão de direção.'
+                  'Acelerar o veículo para aproveitar a força centrífuga na curva.'
               ],
               correta: 2,
               corretaLetra: 'C',
@@ -1331,13 +1331,13 @@ export const QUESTOES_BANCO = {
               modulo: 5,
               texto: 'Qual é o objetivo principal das placas de indicação no trânsito?',
               opcoes: [
+                  'Proibir conversões e estabelecer sentidos de circulação obrigatórios.',
                   'Fiscalizar o peso dos caminhões e autuar condutores sem cinto de segurança.',
                   'Identificar vias e destinos, indicar distâncias, serviços auxiliares e atrativos turísticos.',
-                  'Proibir conversões e estabelecer sentidos de circulação obrigatórios.',
                   'Limitar a circulação de pedestres em áreas centrais das cidades.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Placas de indicação possuem caráter informativo e orientador, guiando o condutor quanto a trajetos e serviços.'
           },
           {
@@ -1345,13 +1345,13 @@ export const QUESTOES_BANCO = {
               modulo: 5,
               texto: 'Placas de sinalização turística são facilmente reconhecidas pela seguinte combinação de cores padrão:',
               opcoes: [
-                  'Fundo amarelo e inscrições pretas.',
                   'Fundo marrom e inscrições/símbolos brancos.',
-                  'Fundo azul e orla externa vermelha.',
-                  'Fundo vermelho e pictogramas dourados.'
+                  'Fundo vermelho e pictogramas dourados.',
+                  'Fundo amarelo e inscrições pretas.',
+                  'Fundo azul e orla externa vermelha.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'A sinalização de atrativos turísticos utiliza padronizadamente fundo marrom com elementos em branco.'
           },
           {
@@ -1360,12 +1360,12 @@ export const QUESTOES_BANCO = {
               texto: 'Em rodovias brasileiras, as placas verdes de orientação têm por finalidade comunicar:',
               opcoes: [
                   'Restrições de tráfego de cargas pesadas nos feriados.',
-                  'Acesso a destinos, saídas regulamentadas e distâncias quilométricas.',
                   'Áreas de preservação ambiental com trânsito proibido.',
-                  'Locais exclusivos para estacionamento de veículos híbridos.'
+                  'Locais exclusivos para estacionamento de veículos híbridos.',
+                  'Acesso a destinos, saídas regulamentadas e distâncias quilométricas.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Placas verdes com inscrições brancas indicam saídas, entroncamentos e quilometragens para cidades e regiões.'
           },
           {
@@ -1387,13 +1387,13 @@ export const QUESTOES_BANCO = {
               modulo: 6,
               texto: 'Na sinalização horizontal, qual significado tem a aplicação da cor amarela nas linhas longitudinais?',
               opcoes: [
+                  'Indicar que a via possui cobrança de pedágio eletrônico obrigatório.',
                   'Delimitar faixas de tráfego que seguem no mesmo sentido de circulação.',
                   'Separar fluxos de veículos que transitam em sentidos opostos (pista de mão dupla).',
-                  'Indicar que a via possui cobrança de pedágio eletrônico obrigatório.',
                   'Sinalizar ciclovias de uso compartilhado exclusivo com motos.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Linhas amarelas no solo separam fluxos opostos de circulação e demarcam trechos de mão dupla.'
           },
           {
@@ -1401,13 +1401,13 @@ export const QUESTOES_BANCO = {
               modulo: 6,
               texto: 'Uma linha amarela contínua (simples ou dupla) pintada ao centro de uma pista de mão dupla determina:',
               opcoes: [
-                  'Permissão de ultrapassagem livre em qualquer circunstância para ambos os sentidos.',
                   'Proibição estrita de ultrapassagem para os fluxos de ambos os sentidos naquele trecho.',
                   'Faixa reversível para veículos oficiais de salvamento de emergência.',
+                  'Permissão de ultrapassagem livre em qualquer circunstância para ambos os sentidos.',
                   'Autorização para transitar sobre ela em dias de chuva para evitar poças.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'A linha contínua proíbe a manobra de ultrapassagem e a transposição de faixa pelos veículos.'
           },
           {
@@ -1415,10 +1415,10 @@ export const QUESTOES_BANCO = {
               modulo: 6,
               texto: 'Linhas longitudinais seccionadas ou tracejadas de cor branca no pavimento indicam:',
               opcoes: [
-                  'Pista de mão dupla em que a ultrapassagem é proibida para todos.',
-                  'Fluxos de tráfego no mesmo sentido com permissão de transposição de faixa de forma segura.',
                   'Área de acostamento sem autorização para trânsito de pedestres.',
-                  'Proibição absoluta de realizar conversões à direita.'
+                  'Fluxos de tráfego no mesmo sentido com permissão de transposição de faixa de forma segura.',
+                  'Proibição absoluta de realizar conversões à direita.',
+                  'Pista de mão dupla em que a ultrapassagem é proibida para todos.'
               ],
               correta: 1,
               corretaLetra: 'B',
@@ -1431,10 +1431,10 @@ export const QUESTOES_BANCO = {
               modulo: 7,
               texto: 'Em um semáforo veicular padrão, o acendimento da luz amarela fixa significa:',
               opcoes: [
-                  'Acelere o veículo rapidamente para passar antes que o sinal feche.',
+                  'O semáforo está estragado e todos os veículos devem trafegar pelo acostamento.',
                   'Atenção de término de ciclo: o condutor deve parar, salvo se não for mais possível frear com segurança.',
                   'Direito irrestrito de avanço com velocidade dobrada no cruzamento.',
-                  'O semáforo está estragado e todos os veículos devem trafegar pelo acostamento.'
+                  'Acelere o veículo rapidamente para passar antes que o sinal feche.'
               ],
               correta: 1,
               corretaLetra: 'B',
@@ -1445,13 +1445,13 @@ export const QUESTOES_BANCO = {
               modulo: 7,
               texto: 'Qual é a regra quando um semáforo opera com sinalização amarela intermitente (piscante)?',
               opcoes: [
+                  'A via transversal perde totalmente o direito de passagem para sempre.',
                   'Passar em alta velocidade sem olhar para os lados.',
-                  'O cruzamento passa a exigir redução de velocidade, atenção redobrada e respeito às normas gerais de preferência.',
                   'Todos os veículos de todas as vias devem desligar o motor e aguardar o agente.',
-                  'A via transversal perde totalmente o direito de passagem para sempre.'
+                  'O cruzamento passa a exigir redução de velocidade, atenção redobrada e respeito às normas gerais de preferência.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'O amarelo piscante adverte sobre o perigo e impõe redução de velocidade e observância às preferências de passagem.'
           },
           {
@@ -1460,12 +1460,12 @@ export const QUESTOES_BANCO = {
               texto: 'Quando o sinal verde abre para o condutor mas ainda há pedestres concluindo a travessia na faixa, o condutor deve:',
               opcoes: [
                   'Buzinar continuamente para apressar os pedestres e avançar o carro.',
-                  'Aguardar pacientemente que os pedestres concluam a travessia com total segurança.',
                   'Passar bem próximo aos pedestres para demonstrar que o sinal está verde.',
+                  'Aguardar pacientemente que os pedestres concluam a travessia com total segurança.',
                   'Desviar dos pedestres subindo com as rodas na calçada.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O condutor é obrigado a dar preferência de passagem ao pedestre que não concluiu a travessia, mesmo com semáforo aberto para veículos.'
           },
           {
@@ -1473,13 +1473,13 @@ export const QUESTOES_BANCO = {
               modulo: 8,
               texto: 'Sobre a hierarquia de sinalização no CTB, as ordens e gestos emanados pelo agente de trânsito:',
               opcoes: [
+                  'Só têm validade se confirmadas por aviso escrito impresso em placa regulamentar.',
                   'Têm valor secundário caso haja semáforo funcionando no local.',
                   'Prevalecem sobre todas as regras de circulação e sobre qualquer outra sinalização viária existente.',
-                  'Só têm validade se confirmadas por aviso escrito impresso em placa regulamentar.',
                   'Equivalem estritamente a uma placa de advertência de caráter instrutivo.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O artigo 89 do CTB estabelece que as ordens do agente prevalecem sobre os semáforos, placas e demais normas de trânsito.'
           },
           {
@@ -1487,13 +1487,13 @@ export const QUESTOES_BANCO = {
               modulo: 8,
               texto: 'Qual comando é transmitido pelo agente de trânsito ao posicionar ambos os braços estendidos na horizontal?',
               opcoes: [
-                  'Ordem de aceleração para todos os fluxos de veículos.',
-                  'Ordem de parada obrigatória para o tráfego que se aproxima de frente e pelas costas do agente.',
                   'Permissão para realizar manobra de retorno em U na via.',
-                  'Aviso de via interditada para obras emergenciais.'
+                  'Ordem de aceleração para todos os fluxos de veículos.',
+                  'Aviso de via interditada para obras emergenciais.',
+                  'Ordem de parada obrigatória para o tráfego que se aproxima de frente e pelas costas do agente.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Os braços na horizontal barram os fluxos que cortam a direção dos braços (aproximação pela frente e pelas costas).'
           },
           {
@@ -1501,13 +1501,13 @@ export const QUESTOES_BANCO = {
               modulo: 8,
               texto: 'O que indica o gesto do agente de trânsito que levanta verticalmente o braço com a palma da mão voltada para a frente?',
               opcoes: [
-                  'Ordem de ultrapassagem pela direita.',
                   'Ordem de parada obrigatória para todos os veículos em todos os sentidos de aproximação.',
                   'Ordem para os veículos darem ré no cruzamento.',
+                  'Ordem de ultrapassagem pela direita.',
                   'Aviso de liberação de velocidade máxima.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'Braço levantado verticalmente com palma para frente ordena parada geral para todos os veículos que se aproximam.'
           },
           {
@@ -1515,13 +1515,13 @@ export const QUESTOES_BANCO = {
               modulo: 8,
               texto: 'Quando o agente de trânsito movimenta o braço estendido com a palma para baixo repetidamente de cima para baixo, ele ordena:',
               opcoes: [
-                  'Diminuição obrigatória da velocidade dos veículos.',
-                  'Aceleração imediata do fluxo veicular.',
+                  'Acendimento dos faróis de neblina.',
                   'Parada do veículo sobre a calçada.',
-                  'Acendimento dos faróis de neblina.'
+                  'Diminuição obrigatória da velocidade dos veículos.',
+                  'Aceleração imediata do fluxo veicular.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O movimento suave de braço de cima para baixo sinaliza para os motoristas reduzirem a velocidade.'
           },
           {
@@ -1530,12 +1530,12 @@ export const QUESTOES_BANCO = {
               texto: 'Segundo o Código de Trânsito Brasileiro, em quais circunstâncias o condutor pode acionar a buzina?',
               opcoes: [
                   'Em toques prolongados para comemorar ou demonstrar irritação com outros motoristas.',
-                  'Apenas em toques breves, como advertência necessária a fim de evitar sinistros de trânsito.',
+                  'Para pressionar pedestres a saírem da faixa de segurança.',
                   'Em qualquer horário e sem limite de duração em frente a hospitais e escolas.',
-                  'Para pressionar pedestres a saírem da faixa de segurança.'
+                  'Apenas em toques breves, como advertência necessária a fim de evitar sinistros de trânsito.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A buzina só pode ser usada em toques breves para prevenir acidentes ou fora de áreas urbanas para alertar ultrapassagem.'
           },
           {
@@ -1543,9 +1543,9 @@ export const QUESTOES_BANCO = {
               modulo: 9,
               texto: 'O sinal sonoro de apito emitido pelo agente de trânsito com um silvo breve significa:',
               opcoes: [
-                  'Pare / parada obrigatória.',
-                  'Siga / tráfego liberado.',
                   'Diminua a marcha.',
+                  'Siga / tráfego liberado.',
+                  'Pare / parada obrigatória.',
                   'Acenda a lanterna do veículo.'
               ],
               correta: 1,
@@ -1557,13 +1557,13 @@ export const QUESTOES_BANCO = {
               modulo: 9,
               texto: 'O sinal sonoro de apito emitido pelo agente de trânsito com dois silvos breves significa:',
               opcoes: [
-                  'Siga em frente.',
                   'Pare / parada obrigatória de todos os veículos.',
+                  'Siga em frente.',
                   'Estacione no acostamento.',
                   'Faça a conversão à esquerda.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'Dois silvos breves do agente de trânsito representam a ordem imperativa de parada.'
           }
       ],
@@ -1573,13 +1573,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'O que diferencia essencialmente a placa R-4a (Proibido Virar à Esquerda) da placa R-5a (Proibido Retornar à Esquerda)?',
               opcoes: [
-                  'A R-4a proíbe virar para outra via, enquanto a R-5a proíbe a manobra de inversão de sentido de marcha na mesma via.',
                   'Ambas têm exatamente o mesmo significado jurídico e aplicam-se apenas a caminhões.',
+                  'A R-4a proíbe virar para outra via, enquanto a R-5a proíbe a manobra de inversão de sentido de marcha na mesma via.',
                   'A R-4a só proíbe ônibus e a R-5a só proíbe motocicletas.',
                   'A R-5a permite o retorno caso o condutor acione as luzes de emergência.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 1,
+              corretaLetra: 'B',
               explicacao: 'Virar à esquerda é entrar em nova rua transversal; retornar é fazer meia-volta para seguir em sentido contrário na mesma via.'
           },
           {
@@ -1588,9 +1588,9 @@ export const QUESTOES_BANCO = {
               texto: 'Na comparação entre as placas de advertência A-1a (Curva Acentuada à Esquerda) e A-2a (Curva à Esquerda):',
               opcoes: [
                   'A placa A-1a apresenta um traçado em ângulo mais fechado ou agudo, exigindo desaceleração mais pronunciada.',
-                  'A placa A-2a proíbe o tráfego de pedestres na curva.',
+                  'Nenhuma diferença existe, tratando-se apenas de variações regionais do DETRAN.',
                   'A placa A-1a é facultativa e a A-2a é obrigatória de cumprimento legal.',
-                  'Nenhuma diferença existe, tratando-se apenas de variações regionais do DETRAN.'
+                  'A placa A-2a proíbe o tráfego de pedestres na curva.'
               ],
               correta: 0,
               corretaLetra: 'A',
@@ -1602,12 +1602,12 @@ export const QUESTOES_BANCO = {
               texto: 'Qual placa de regulamentação proíbe o condutor de realizar a manobra de ultrapassagem em determinado trecho?',
               opcoes: [
                   'R-19 (Velocidade Máxima Permitida).',
-                  'R-7 (Proibido Ultrapassar).',
+                  'R-10 (Proibido Trânsito de Veículos Automotores).',
                   'R-24a (Sentido de Circulação da Via).',
-                  'R-10 (Proibido Trânsito de Veículos Automotores).'
+                  'R-7 (Proibido Ultrapassar).'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A placa R-7 exibe dois automóveis lado a lado com a tarja diagonal vermelha proibindo ultrapassagem.'
           },
           {
@@ -1615,10 +1615,10 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Qual mensagem é transmitida pela placa de advertência A-14 que contém o símbolo de um semáforo dentro do losango?',
               opcoes: [
-                  'Proibido cruzamento semaforizado.',
+                  'Posto de iluminação pública com lâmpadas LED.',
                   'Semáforo à frente na via.',
                   'Fiscalização eletrônica por radar de velocidade.',
-                  'Posto de iluminação pública com lâmpadas LED.'
+                  'Proibido cruzamento semaforizado.'
               ],
               correta: 1,
               corretaLetra: 'B',
@@ -1629,13 +1629,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Qual é a forma geométrica da placa de regulamentação R-2 (Dê a Preferência)?',
               opcoes: [
-                  'Circular com fundo vermelho.',
-                  'Triangular com vértice voltado para baixo.',
                   'Retangular com fundo amarelo.',
-                  'Octogonal com letras pretas.'
+                  'Octogonal com letras pretas.',
+                  'Triangular com vértice voltado para baixo.',
+                  'Circular com fundo vermelho.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'A placa R-2 possui formato único de triângulo invertido (vértice para baixo) com fundo branco e orla vermelha.'
           },
           {
@@ -1644,12 +1644,12 @@ export const QUESTOES_BANCO = {
               texto: 'Se em um trecho de rodovia houver uma linha amarela contínua no asfalto e ausência de placas, o condutor pode ultrapassar?',
               opcoes: [
                   'Sim, porque a sinalização vertical tem sempre prioridade sobre a horizontal.',
-                  'Não, pois a sinalização horizontal contínua é suficiente para proibir legalmente a ultrapassagem.',
                   'Sim, desde que acenda o farol alto e ultrapasse a mais de 100 km/h.',
+                  'Não, pois a sinalização horizontal contínua é suficiente para proibir legalmente a ultrapassagem.',
                   'Apenas se o veículo à frente for um trator agrícola ou veículo lento.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'A marcação horizontal de linha contínua tem plena força regulamentar proibitiva de ultrapassagem.'
           },
           {
@@ -1658,12 +1658,12 @@ export const QUESTOES_BANCO = {
               texto: 'O sinal sonoro de apito emitido pelo agente de trânsito através de um silvo longo significa:',
               opcoes: [
                   'Parada imediata de todos os veículos.',
-                  'Diminua a marcha.',
                   'Acelere o veículo.',
+                  'Diminua a marcha.',
                   'Estacione obrigatoriamente à direita.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'No código sonoro oficial do CTB: 1 silvo breve = siga; 2 silvos breves = pare; 1 silvo longo = diminua a marcha.'
           },
           {
@@ -1671,13 +1671,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'As linhas transversais pintadas no pavimento que delimitam onde o condutor deve imobilizar o carro antes da faixa de pedestres chamam-se:',
               opcoes: [
-                  'Linhas de retenção.',
                   'Linhas de bordo.',
                   'Marcas de canalização.',
-                  'Linhas de estímulo à redução de velocidade.'
+                  'Linhas de estímulo à redução de velocidade.',
+                  'Linhas de retenção.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A linha de retenção indica o local limite no pavimento em que os veículos devem parar perante o semáforo ou cruzamento.'
           },
           {
@@ -1685,13 +1685,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'A placa A-42b ilustra uma pista que passa de mão única para mão dupla com divisória. Ela adverte sobre:',
               opcoes: [
+                  'Cruzamento rodoferroviário.',
                   'Início de pista dupla.',
-                  'Fim de pista dupla.',
                   'Pista escorregadia.',
-                  'Cruzamento rodoferroviário.'
+                  'Fim de pista dupla.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A placa A-42b adverte o condutor de que a pista dupla com canteiro central terminará adiante.'
           },
           {
@@ -1699,13 +1699,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'A placa de regulamentação R-20 proíbe expressamente:',
               opcoes: [
-                  'O uso de fones de ouvido pelo motorista.',
                   'O acionamento de buzina ou sinal sonoro no trecho.',
+                  'O transporte de animais no interior do veículo.',
                   'A circulação de carros com escapamento aberto.',
-                  'O transporte de animais no interior do veículo.'
+                  'O uso de fones de ouvido pelo motorista.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'A placa R-20 proíbe buzina ou emissão de sinais sonoros, comumente colocada próxima a hospitais e escolas.'
           }
       ]
@@ -1718,13 +1718,13 @@ export const QUESTOES_BANCO = {
               modulo: 1,
               texto: 'Segundo o CTB e a legislação brasileira, qual é o dever do cidadão que presencia um acidente com vítimas?',
               opcoes: [
-                  'Fotografar e filmar o ocorrido para divulgar imediatamente nas redes sociais.',
                   'Prestar ou providenciar socorro imediato às vítimas, desde que sem risco pessoal.',
-                  'Acelerar o veículo para liberar a via sem se envolver.',
-                  'Iniciar imediatamente cirurgias e procedimentos hospitalares no asfalto.'
+                  'Fotografar e filmar o ocorrido para divulgar imediatamente nas redes sociais.',
+                  'Iniciar imediatamente cirurgias e procedimentos hospitalares no asfalto.',
+                  'Acelerar o veículo para liberar a via sem se envolver.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'O artigo 176 do CTB e o Código Penal tipificam a omissão de socorro; deve-se prestar auxílio ou acionar socorro especializado.'
           },
           {
@@ -1733,12 +1733,12 @@ export const QUESTOES_BANCO = {
               texto: 'Qual é a finalidade precípua dos primeiros socorros prestados por um socorrista leigo?',
               opcoes: [
                   'Substituir integralmente a equipe médica do pronto-socorro.',
-                  'Manter a vida e impedir o agravamento do estado da vítima até a chegada do resgate.',
                   'Determinar a culpa jurídica dos motoristas envolvidos no sinistro.',
+                  'Manter a vida e impedir o agravamento do estado da vítima até a chegada do resgate.',
                   'Transportar a vítima rapidamente em qualquer veículo particular.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Os primeiros socorros visam preservar a vida e estabilizar o quadro sem realizar procedimentos invasivos.'
           },
           {
@@ -1747,12 +1747,12 @@ export const QUESTOES_BANCO = {
               texto: 'O que NUNCA deve ser feito pelo socorrista leigo com uma vítima no local do acidente?',
               opcoes: [
                   'Conversar com a vítima consciente e tentar tranquilizá-la.',
-                  'Oferecer líquidos, alimentos, remédios ou tentar recolocar ossos fraturados no lugar.',
                   'Sinalizar a rodovia antes do local do acidente com triângulo.',
+                  'Oferecer líquidos, alimentos, remédios ou tentar recolocar ossos fraturados no lugar.',
                   'Ligar para o número de emergência 192 ou 193.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Nunca ofereça água, comida ou medicamentos a vítimas de acidente, pois isso pode agravar hemorragias e inviabilizar cirurgias.'
           },
           {
@@ -1760,13 +1760,13 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'Ao deparar-se com um acidente de trânsito recente, qual é a primeira conduta correta do motorista?',
               opcoes: [
-                  'Parar o carro no meio da faixa e correr desordenadamente em direção aos veículos batidos.',
-                  'Manter a calma, estacionar em local seguro, sinalizar a área e avaliar os perigos.',
                   'Remover os feridos à força de dentro dos automóveis de forma imediata.',
-                  'Discutir com os motoristas para saber quem avançou o sinal vermelho.'
+                  'Parar o carro no meio da faixa e correr desordenadamente em direção aos veículos batidos.',
+                  'Discutir com os motoristas para saber quem avançou o sinal vermelho.',
+                  'Manter a calma, estacionar em local seguro, sinalizar a área e avaliar os perigos.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A primeira regra é manter a calma e garantir que o socorrista não se torne uma nova vítima.'
           },
           {
@@ -1774,13 +1774,13 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'Por que a observação e identificação prévia de perigos na cena do acidente é imprescindível?',
               opcoes: [
-                  'Para evitar acidentes secundários e proteger a vida das vítimas e das pessoas que auxiliam.',
-                  'Para calcular o valor dos prejuízos materiais dos carros envolvidos.',
                   'Apenas para verificar se o combustível derramado pode ser reaproveitado.',
+                  'Para calcular o valor dos prejuízos materiais dos carros envolvidos.',
+                  'Para evitar acidentes secundários e proteger a vida das vítimas e das pessoas que auxiliam.',
                   'Para selecionar testemunhas que presenciaram a colisão.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'A análise visual previne incêndios, atropelamentos secundários e choques elétricos no local do atendimento.'
           },
           {
@@ -1788,13 +1788,13 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'Qual cuidado essencial o motorista deve ter ao parar seu veículo para prestar auxílio?',
               opcoes: [
-                  'Parar em local visível e protegido, fora da pista de rolamento, e ligar o pisca-alerta.',
                   'Imobilizar o automóvel transversalmente na faixa rápida da rodovia.',
+                  'Parar em local visível e protegido, fora da pista de rolamento, e ligar o pisca-alerta.',
                   'Desligar todas as luzes para não descarregar a bateria do carro.',
                   'Deixar portas abertas voltadas para o fluxo de tráfego intenso.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 1,
+              corretaLetra: 'B',
               explicacao: 'O veículo deve ficar abrigado no acostamento ou área segura com pisca-alerta ligado para alertar o fluxo.'
           },
           {
@@ -1803,12 +1803,12 @@ export const QUESTOES_BANCO = {
               texto: 'Como deve ser feita a sinalização do local do acidente com o triângulo de segurança?',
               opcoes: [
                   'Colocar o triângulo a 2 metros do parachoque traseiro do carro acidentado.',
-                  'Posicionar o triângulo e galhos a uma distância proporcional à velocidade da via antes do acidente.',
                   'Segurar o triângulo na mão enquanto caminha no meio da pista contrária.',
-                  'Guardar o triângulo no porta-malas para não ser danificado pela chuva.'
+                  'Guardar o triângulo no porta-malas para não ser danificado pela chuva.',
+                  'Posicionar o triângulo e galhos a uma distância proporcional à velocidade da via antes do acidente.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A sinalização deve iniciar bem antes do acidente, aumentando a distância em curvas e vias de maior velocidade.'
           },
           {
@@ -1816,13 +1816,13 @@ export const QUESTOES_BANCO = {
               modulo: 3,
               texto: 'Em condições de pista molhada, chuva, neblina ou à noite, a distância de sinalização deve ser:',
               opcoes: [
-                  'Reduzida pela metade para facilitar a visão dos motoristas.',
-                  'Dobrada em relação à distância recomendada para pista seca e com boa visibilidade.',
+                  'Desconsiderada, pois sob chuva ninguém deve descer do veículo.',
                   'Mantida em exatos cinco passos para qualquer tipo de via.',
-                  'Desconsiderada, pois sob chuva ninguém deve descer do veículo.'
+                  'Reduzida pela metade para facilitar a visão dos motoristas.',
+                  'Dobrada em relação à distância recomendada para pista seca e com boa visibilidade.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Sob chuva, neblina ou escuridão, o tempo de percepção e a distância de frenagem aumentam, devendo-se dobrar a sinalização.'
           },
           {
@@ -1830,13 +1830,13 @@ export const QUESTOES_BANCO = {
               modulo: 3,
               texto: 'Por que é terminantemente proibido fumar ou acender fósforos no local de um acidente?',
               opcoes: [
-                  'Para evitar poluição do ar nas proximidades da vegetação.',
                   'Pelo alto risco de explosão e incêndio decorrente de vazamento invisível de combustível ou gases.',
-                  'Apenas por respeito ao silêncio das vítimas feridas.',
-                  'Porque a fumaça de cigarro atrai insetos para o ferimento.'
+                  'Porque a fumaça de cigarro atrai insetos para o ferimento.',
+                  'Para evitar poluição do ar nas proximidades da vegetação.',
+                  'Apenas por respeito ao silêncio das vítimas feridas.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'Combustíveis voláteis e vapores invisíveis inflamam com facilidade diante de faíscas ou chamas abertas.'
           },
           {
@@ -1844,10 +1844,10 @@ export const QUESTOES_BANCO = {
               modulo: 3,
               texto: 'Qual providência imediata deve ser adotada com relação aos veículos acidentados se for seguro se aproximar?',
               opcoes: [
-                  'Acelerar o motor em ponto morto para consumir o combustível restante.',
+                  'Abrir o tanque de combustível para verificar a quantidade de gasolina.',
                   'Desligar a ignição dos veículos para cortar a corrente elétrica e reduzir o risco de fogo.',
-                  'Esvaziar os pneus para evitar que os veículos rolem pela pista.',
-                  'Abrir o tanque de combustível para verificar a quantidade de gasolina.'
+                  'Acelerar o motor em ponto morto para consumir o combustível restante.',
+                  'Esvaziar os pneus para evitar que os veículos rolem pela pista.'
               ],
               correta: 1,
               corretaLetra: 'B',
@@ -1860,13 +1860,13 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Qual é o número de telefone de utilidade pública do SAMU (Serviço de Atendimento Móvel de Urgência)?',
               opcoes: [
-                  '190.',
-                  '192.',
                   '193.',
-                  '191.'
+                  '191.',
+                  '192.',
+                  '190.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O SAMU atende pelo número 192 para urgências clínicas e traumáticas.'
           },
           {
@@ -1875,12 +1875,12 @@ export const QUESTOES_BANCO = {
               texto: 'Em qual situação o acionamento prioritário do Corpo de Bombeiros (193) é indispensável?',
               opcoes: [
                   'Quando houver apenas danos materiais na lataria sem feridos.',
-                  'Em sinistros com vítimas presas às ferragens, vazamento de combustível ou risco de incêndio.',
                   'Apenas para registrar o boletim de ocorrência de trânsito.',
-                  'Para guinchar veículos estacionados em locais proibidos.'
+                  'Para guinchar veículos estacionados em locais proibidos.',
+                  'Em sinistros com vítimas presas às ferragens, vazamento de combustível ou risco de incêndio.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'O Corpo de Bombeiros (193) possui equipamentos especializados para desencarceramento de ferragens e combate a fogo.'
           },
           {
@@ -1888,10 +1888,10 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Quais dados vitais devem ser transmitidos ao atendente do serviço de emergência durante a ligação?',
               opcoes: [
-                  'Apenas o nome do solicitante, desligando o telefone em seguida.',
+                  'Cotação dos consertos mecânicos dos automóveis batidos.',
                   'Localização exata com referências, número de vítimas, estado aparente de consciência/respiração e perigos na via.',
-                  'Opinião pessoal sobre qual motorista causou o acidente.',
-                  'Cotação dos consertos mecânicos dos automóveis batidos.'
+                  'Apenas o nome do solicitante, desligando o telefone em seguida.',
+                  'Opinião pessoal sobre qual motorista causou o acidente.'
               ],
               correta: 1,
               corretaLetra: 'B',
@@ -1902,10 +1902,10 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Por que o condutor não deve desligar a chamada de emergência antes da autorização do atendente?',
               opcoes: [
-                  'Para evitar pagar taxa telefônica extra cobrada pelas operadoras.',
+                  'Apenas para aguardar a chegada física da ambulância na linha.',
                   'Porque o profissional de regulação pode dar orientações cruciais de segurança e confirmar dados vitais.',
                   'Porque o sistema bloqueia o número caso a ligação caia.',
-                  'Apenas para aguardar a chegada física da ambulância na linha.'
+                  'Para evitar pagar taxa telefônica extra cobrada pelas operadoras.'
               ],
               correta: 1,
               corretaLetra: 'B',
@@ -1916,13 +1916,13 @@ export const QUESTOES_BANCO = {
               modulo: 5,
               texto: 'Ao abordar uma vítima consciente em um acidente, qual é a primeira conduta adequada?',
               opcoes: [
+                  'Sacudir seus ombros com força para verificar se sente dor.',
                   'Girar o pescoço da vítima para testar os reflexos da coluna.',
-                  'Apresentar-se com serenidade, tranquilizá-la e orientá-la a não realizar movimentos bruscos.',
                   'Levantá-la imediatamente para que ela caminhe e respire ar puro.',
-                  'Sacudir seus ombros com força para verificar se sente dor.'
+                  'Apresentar-se com serenidade, tranquilizá-la e orientá-la a não realizar movimentos bruscos.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A comunicação serena acalma a vítima e evita que ela se movimente bruscamente, o que poderia agravar lesões na coluna.'
           },
           {
@@ -1930,13 +1930,13 @@ export const QUESTOES_BANCO = {
               modulo: 5,
               texto: 'Se uma pessoa envolvida em colisão automobilística diz que está bem e não sente nada, o socorrista deve:',
               opcoes: [
-                  'Liberá-la para ir para casa a pé imediatamente sem registrar o fato.',
                   'Manter vigilância, pois traumas internos e hemorragias podem não apresentar sintomas imediatos visíveis.',
                   'Obrigá-la a tomar analgésicos fortes trazidos de casa.',
-                  'Ignorar o ocorrido e ir embora do local.'
+                  'Ignorar o ocorrido e ir embora do local.',
+                  'Liberá-la para ir para casa a pé imediatamente sem registrar o fato.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'O choque emocional e a adrenalina podem mascarar fraturas e hemorragias internas; a avaliação médica é indispensável.'
           },
           {
@@ -1944,13 +1944,13 @@ export const QUESTOES_BANCO = {
               modulo: 5,
               texto: 'Por que o socorrista não treinado não deve tentar reposicionar membros ou puxar a vítima?',
               opcoes: [
-                  'Porque pode provocar dor e lesões medulares irreversíveis, como paraplegia ou tetraplegia.',
-                  'Porque isso pode sujar as roupas da vítima com poeira da estrada.',
                   'Porque a lei só autoriza médicos a encostarem em veículos.',
-                  'Apenas porque atrasa a liberação do trânsito na via.'
+                  'Porque isso pode sujar as roupas da vítima com poeira da estrada.',
+                  'Apenas porque atrasa a liberação do trânsito na via.',
+                  'Porque pode provocar dor e lesões medulares irreversíveis, como paraplegia ou tetraplegia.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Movimentações inadequadas em vítimas de impacto podem romper vasos sanguíneos e lesionar gravemente a medula espinhal.'
           },
           {
@@ -1958,13 +1958,13 @@ export const QUESTOES_BANCO = {
               modulo: 6,
               texto: 'O que caracteriza clinicamente uma vítima em estado inconsciente?',
               opcoes: [
-                  'A vítima responde coerentemente e consegue ficar em pé sem ajuda.',
-                  'A vítima não reage a chamados verbais, não responde e apresenta perda de contato com o ambiente.',
+                  'A vítima apresenta apenas escoriações superficiais nos dedos.',
                   'A vítima reclama de dor de cabeça mas caminha normalmente.',
-                  'A vítima apresenta apenas escoriações superficiais nos dedos.'
+                  'A vítima não reage a chamados verbais, não responde e apresenta perda de contato com o ambiente.',
+                  'A vítima responde coerentemente e consegue ficar em pé sem ajuda.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'A inconsciência é a ausência de resposta consciente a estímulos verbais e físicos, configurando emergência grave.'
           },
           {
@@ -1972,13 +1972,13 @@ export const QUESTOES_BANCO = {
               modulo: 6,
               texto: 'Ao deparar-se com vítima inconsciente dentro do carro sem risco de explosão ou fogo, a conduta correta é:',
               opcoes: [
-                  'Puxá-la pelo pescoço para colocá-la deitada no asfalto quente.',
-                  'Mantê-la na posição em que se encontra, apoiar a cabeça para não tombar, monitorar a respiração e aguardar o socorro.',
                   'Jogar água fria em seu rosto para forçá-la a acordar.',
-                  'Dar tapas no rosto da vítima e fazê-la ingerir água com açúcar.'
+                  'Dar tapas no rosto da vítima e fazê-la ingerir água com açúcar.',
+                  'Mantê-la na posição em que se encontra, apoiar a cabeça para não tombar, monitorar a respiração e aguardar o socorro.',
+                  'Puxá-la pelo pescoço para colocá-la deitada no asfalto quente.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Sem perigo iminente de incêndio, a vítima deve permanecer imóvel e estabilizada para não sofrer lesão cervical.'
           },
           {
@@ -1986,13 +1986,13 @@ export const QUESTOES_BANCO = {
               modulo: 6,
               texto: 'Em uma vítima inconsciente, qual risco biológico imediato deve ser monitorado continuamente pelo socorrista?',
               opcoes: [
-                  'O surgimento de febre alta provocada pelo sol.',
                   'A obstrução das vias aéreas pela queda da língua ou aspiração de secreções, impedindo a passagem de ar.',
+                  'A desidratação instantânea dos membros inferiores.',
                   'O crescimento acelerado de bactérias na pele.',
-                  'A desidratação instantânea dos membros inferiores.'
+                  'O surgimento de febre alta provocada pelo sol.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'Com o relaxamento muscular da inconsciência, a língua pode cair para trás e bloquear a garganta, impedindo a respiração.'
           }
       ],
@@ -2016,13 +2016,13 @@ export const QUESTOES_BANCO = {
               modulo: 7,
               texto: 'Por que o socorrista deve utilizar luvas ou barreiras impermeáveis (como sacolas plásticas limpas) ao estancar sangue?',
               opcoes: [
-                  'Apenas para não manchar as mãos com o sangue da vítima.',
                   'Para proteger a si mesmo e a vítima contra a transmissão de doenças infectocontagiosas transmitidas pelo sangue.',
-                  'Porque o contato humano sem luvas congela o sangue da vítima.',
-                  'Por exigência estética do Código de Trânsito Brasileiro.'
+                  'Apenas para não manchar as mãos com o sangue da vítima.',
+                  'Por exigência estética do Código de Trânsito Brasileiro.',
+                  'Porque o contato humano sem luvas congela o sangue da vítima.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'A biossegurança com uso de barreiras protege socorrista e vítima contra hepatites, HIV e outras infecções sanguíneas.'
           },
           {
@@ -2031,12 +2031,12 @@ export const QUESTOES_BANCO = {
               texto: 'Se um pedaço de ferro, vidro ou estilhaço estiver cravado profundamente no corpo da vítima, o procedimento é:',
               opcoes: [
                   'Puxar o objeto rapidamente com alicate para fechar o corte.',
-                  'Não retirar o objeto encravado, imobilizá-lo com panos limpos ao redor e aguardar os médicos.',
+                  'Empurrar o objeto para que saia do outro lado do corpo.',
                   'Girar o objeto para verificar a profundidade da perfuração.',
-                  'Empurrar o objeto para que saia do outro lado do corpo.'
+                  'Não retirar o objeto encravado, imobilizá-lo com panos limpos ao redor e aguardar os médicos.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Remover o objeto encravado rompe vasos contidos por ele e desencadeia hemorragia interna maciça fatal.'
           },
           {
@@ -2044,13 +2044,13 @@ export const QUESTOES_BANCO = {
               modulo: 7,
               texto: 'O uso de torniquetes improvisados (com arames, cordas ou cintos finos) por leigos é desaconselhado porque:',
               opcoes: [
-                  'Pode causar garroteamento excessivo, esmagamento de nervos e necrose que leva à amputação do membro.',
-                  'Não estanca nenhum tipo de hemorragia em nenhuma situação.',
                   'Custa muito caro para os serviços municipais de saúde.',
-                  'Faz a pressão arterial subir instantaneamente para valores fatais.'
+                  'Pode causar garroteamento excessivo, esmagamento de nervos e necrose que leva à amputação do membro.',
+                  'Faz a pressão arterial subir instantaneamente para valores fatais.',
+                  'Não estanca nenhum tipo de hemorragia em nenhuma situação.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 1,
+              corretaLetra: 'B',
               explicacao: 'Torniquetes mal aplicados com materiais finos destroem tecidos e nervos, sendo a compressão direta a conduta padrão segura.'
           },
           {
@@ -2058,13 +2058,13 @@ export const QUESTOES_BANCO = {
               modulo: 8,
               texto: 'Diante de suspeita de fratura fechada em uma perna ou braço, qual é a atitude correta?',
               opcoes: [
-                  'Puxar o osso com força para recolocá-lo na posição anatômica correta.',
-                  'Apoiar o membro na posição encontrada sem tentar alinhá-lo, evitando qualquer movimentação.',
                   'Pedir para a vítima apoiar o peso do corpo sobre o membro fraturado para testar.',
-                  'Massagear vigorosamente o local fraturado com compressas quentes.'
+                  'Massagear vigorosamente o local fraturado com compressas quentes.',
+                  'Puxar o osso com força para recolocá-lo na posição anatômica correta.',
+                  'Apoiar o membro na posição encontrada sem tentar alinhá-lo, evitando qualquer movimentação.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Tentar recolocar ossos fraturados no lugar lesiona artérias e nervos próximos; a regra é imobilizar na posição que está.'
           },
           {
@@ -2072,13 +2072,13 @@ export const QUESTOES_BANCO = {
               modulo: 8,
               texto: 'Em caso de motociclista acidentado no asfalto, quando se deve retirar o capacete da vítima?',
               opcoes: [
+                  'Apenas se o capacete estiver arranhado na viseira.',
                   'Imediatamente, para que a cabeça fique mais confortável no chão.',
                   'Nunca retirar o capacete, salvo se houver asfixia iminente e por socorrista treinado com estabilização cervical.',
-                  'Sempre que o motociclista pedir água para beber.',
-                  'Apenas se o capacete estiver arranhado na viseira.'
+                  'Sempre que o motociclista pedir água para beber.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'A retirada do capacete movimenta bruscamente o pescoço e pode seccionar a medula espinhal, causando morte ou tetraplegia.'
           },
           {
@@ -2086,13 +2086,13 @@ export const QUESTOES_BANCO = {
               modulo: 8,
               texto: 'Como se define uma fratura exposta e qual é o cuidado principal com o ferimento?',
               opcoes: [
-                  'Quando o osso racha sem sair do lugar; deve-se aplicar gelo direto.',
-                  'Quando o osso quebrado rompe a pele e fica visível; deve-se cobrir com pano limpo sem empurrar o osso para dentro.',
                   'Quando não há rompimento de pele; deve-se enfaixar com gesso caseiro.',
-                  'Quando o músculo cicatriza instantaneamente após a queda.'
+                  'Quando o osso racha sem sair do lugar; deve-se aplicar gelo direto.',
+                  'Quando o músculo cicatriza instantaneamente após a queda.',
+                  'Quando o osso quebrado rompe a pele e fica visível; deve-se cobrir com pano limpo sem empurrar o osso para dentro.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Na fratura exposta há risco de infecção óssea grave; deve-se apenas proteger a área com cobertura estéril sem tocar no osso.'
           },
           {
@@ -2100,13 +2100,13 @@ export const QUESTOES_BANCO = {
               modulo: 9,
               texto: 'Ao prestar socorro a uma vítima com queimadura térmica na pele causada por escapamento ou água quente, deve-se aplicar:',
               opcoes: [
-                  'Manteiga, pasta de dente, café ou óleo de cozinha.',
                   'Apenas água limpa e corrente em temperatura ambiente para resfriar suavemente a região.',
                   'Gelo picado diretamente sobre a ferida viva por várias horas.',
+                  'Manteiga, pasta de dente, café ou óleo de cozinha.',
                   'Álcool etílico ou vinagre para desinfetar o tecido queimado.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'Resfriar com água corrente limpa reduz a temperatura e alivia a dor sem contaminar ou destruir os tecidos como fazem substâncias caseiras.'
           },
           {
@@ -2114,13 +2114,13 @@ export const QUESTOES_BANCO = {
               modulo: 9,
               texto: 'Se as roupas da vítima de queimadura estiverem grudadas na pele queimada, o socorrista deve:',
               opcoes: [
-                  'Puxar e arrancar os tecidos colados de uma só vez com rapidez.',
-                  'Não arrancar as partes coladas; cortar o tecido ao redor e proteger com pano limpo e úmido.',
                   'Esfregar sabão em pó para dissolver o tecido queimado.',
-                  'Raspar a área com faca ou lâmina esterilizada no local.'
+                  'Raspar a área com faca ou lâmina esterilizada no local.',
+                  'Não arrancar as partes coladas; cortar o tecido ao redor e proteger com pano limpo e úmido.',
+                  'Puxar e arrancar os tecidos colados de uma só vez com rapidez.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Arrancar roupas coladas remove a epiderme viva junto, provocando hemorragia intensa e dor extrema.'
           },
           {
@@ -2128,13 +2128,13 @@ export const QUESTOES_BANCO = {
               modulo: 9,
               texto: 'Por que o uso de pastas, pós e unguentos caseiros em queimaduras de acidentes é considerado um perigo grave?',
               opcoes: [
+                  'Apenas porque altera o cheiro da pele durante os exames de imagem.',
                   'Porque atrai insetos para o interior da ambulância durante o trajeto.',
                   'Porque infecta profundamente a ferida e obriga os médicos a rasparem o tecido vivo no hospital.',
-                  'Apenas porque altera o cheiro da pele durante os exames de imagem.',
                   'Porque apaga as marcas das impressões digitais da vítima.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Substâncias caseiras contaminam a lesão e ressecam os tecidos, exigindo debridamento doloroso no ambiente cirúrgico.'
           }
       ],
@@ -2144,13 +2144,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Se fios elétricos caírem sobre a lataria do carro após colisão com poste, qual a orientação segura para os ocupantes?',
               opcoes: [
-                  'Sair do carro imediatamente e caminhar descalço pelo asfalto molhado.',
                   'Permanecer no interior do veículo sem tocar nas partes metálicas e no chão ao mesmo tempo, aguardando socorro.',
                   'Descer do carro segurando no poste para descarregar a eletricidade estática.',
-                  'Tentar cortar os cabos com ferramentas comuns encontradas no porta-malas.'
+                  'Tentar cortar os cabos com ferramentas comuns encontradas no porta-malas.',
+                  'Sair do carro imediatamente e caminhar descalço pelo asfalto molhado.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'Os pneus de borracha isolam o veículo; ao descer tocando no carro e no solo, a pessoa fecha circuito e sofre choque fatal.'
           },
           {
@@ -2172,13 +2172,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Em colisão envolvendo caminhão de transporte de cargas perigosas com vazamento de líquidos ou gases tóxicos, deve-se:',
               opcoes: [
-                  'Aproximar-se para cheirar a substância e tentar identificar o produto químico.',
-                  'Afastar-se do local no sentido contrário ao vento, isolar a área e acionar imediatamente o 193 informando o painel de segurança.',
+                  'Permitir que motoristas curiosos circulem ao lado da carga para filmar.',
                   'Jogar baldes de água sobre os tambores e tanques furados para tentar diluir o produto.',
-                  'Permitir que motoristas curiosos circulem ao lado da carga para filmar.'
+                  'Aproximar-se para cheirar a substância e tentar identificar o produto químico.',
+                  'Afastar-se do local no sentido contrário ao vento, isolar a área e acionar imediatamente o 193 informando o painel de segurança.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Produtos químicos podem ser letais por inalação ou altamente explosivos; deve-se ficar contra o vento e informar o número ONU aos Bombeiros.'
           },
           {
@@ -2186,13 +2186,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Qual é o procedimento prioritário para socorrer uma vítima de acidente que está em crise convulsiva?',
               opcoes: [
+                  'Dar água gelada com sal enquanto a vítima se debate no asfalto.',
                   'Puxar a língua da vítima com uma colher ou com os dedos para não engolir.',
                   'Amparar e proteger a cabeça da vítima contra pancadas, afastar objetos cortantes e deixá-la debater-se livremente.',
-                  'Segurar com força os braços e pernas da vítima para forçá-la a ficar imóvel.',
-                  'Dar água gelada com sal enquanto a vítima se debate no asfalto.'
+                  'Segurar com força os braços e pernas da vítima para forçá-la a ficar imóvel.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Na convulsão, nunca coloque nada na boca da vítima; apenas proteja a cabeça contra traumatismo até a crise cessar.'
           },
           {
@@ -2200,13 +2200,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Ao notar que a vítima de forte batida na cabeça apresenta saída de líquido claro ou sangue pelo nariz e ouvidos, deve-se:',
               opcoes: [
-                  'Tapar as narinas e ouvidos com algodão apertado para estancar a saída de líquido.',
-                  'Não obstruir a saída de líquidos, manter a vítima imóvel e relatar a suspeita de traumatismo cranioencefálico à equipe médica.',
                   'Colocar a vítima de cabeça para baixo para desentupir as vias aéreas.',
-                  'Fazer massagem cardíaca com a vítima sentada em uma cadeira.'
+                  'Fazer massagem cardíaca com a vítima sentada em uma cadeira.',
+                  'Tapar as narinas e ouvidos com algodão apertado para estancar a saída de líquido.',
+                  'Não obstruir a saída de líquidos, manter a vítima imóvel e relatar a suspeita de traumatismo cranioencefálico à equipe médica.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'O sangramento ou líquor pelo ouvido e nariz indica fratura de base de crânio; tapar aumentaria perigosamente a pressão intracraniana.'
           },
           {
@@ -2215,12 +2215,12 @@ export const QUESTOES_BANCO = {
               texto: 'Por que não se deve oferecer água para uma vítima de colisão grave que reclama de muita sede?',
               opcoes: [
                   'Porque a água gelada pode baixar a temperatura do asfalto ao redor.',
-                  'Porque ela pode necessitar de cirurgia sob anestesia geral e a ingestão de líquidos causa vômito e broncoaspiração fatal.',
                   'Porque a água anula o efeito dos aparelhos eletrônicos da ambulância.',
+                  'Porque ela pode necessitar de cirurgia sob anestesia geral e a ingestão de líquidos causa vômito e broncoaspiração fatal.',
                   'Apenas se o acidente tiver ocorrido em dias nublados e frios.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Vítimas de trauma podem ir para cirurgia de emergência e estômago cheio causa regurgitação e sufocamento por vômito nas vias aéreas.'
           },
           {
@@ -2229,12 +2229,12 @@ export const QUESTOES_BANCO = {
               texto: 'O que caracteriza o estado de choque circulatório após uma colisão de grande impacto?',
               opcoes: [
                   'Sensação de alegria e força física aumentada decorrente do susto.',
+                  'Febre altíssima com vermelhidão e inchaço nas pontas dos dedos das mãos.',
                   'Queda grave da pressão arterial e oxigenação tecidual, com pele fria, palidez, pulso rápido e fraqueza intensa.',
-                  'Aumento extraordinário da fome e da sede sem qualquer outro sintoma físico.',
-                  'Febre altíssima com vermelhidão e inchaço nas pontas dos dedos das mãos.'
+                  'Aumento extraordinário da fome e da sede sem qualquer outro sintoma físico.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O choque circulatório (hipovolêmico ou traumático) priva órgãos nobres de oxigênio e requer encaminhamento urgente ao hospital.'
           },
           {
@@ -2242,13 +2242,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Em um acidente com múltiplas vítimas, a prioridade máxima no socorro e triagem de atendimento deve ser dada a:',
               opcoes: [
-                  'Vítimas que gritam mais alto por socorro pedindo para avisar os parentes.',
                   'Vítimas inconscientes, com parada respiratória ou hemorragias abundantes descontroladas.',
-                  'Pessoas com escoriações leves que conseguem caminhar sozinhas.',
-                  'Motoristas que exigem agilidade para preencher a documentação do seguro.'
+                  'Vítimas que gritam mais alto por socorro pedindo para avisar os parentes.',
+                  'Motoristas que exigem agilidade para preencher a documentação do seguro.',
+                  'Pessoas com escoriações leves que conseguem caminhar sozinhas.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'A prioridade segue o suporte de vida: parada respiratória e grandes hemorragias levam à morte em poucos minutos se não contidas.'
           },
           {
@@ -2256,9 +2256,9 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Qual número telefônico gratuito de emergência deve ser discado para acionar a Polícia Rodoviária Federal em rodovias federais?',
               opcoes: [
-                  '190.',
-                  '191.',
                   '192.',
+                  '191.',
+                  '190.',
                   '193.'
               ],
               correta: 1,
@@ -2270,13 +2270,13 @@ export const QUESTOES_BANCO = {
               modulo: 10,
               texto: 'Qual conduta do socorrista leigo sintetiza a postura correta e prudente no atendimento de emergência no trânsito?',
               opcoes: [
-                  'Agir com heroísmo desmedido, arriscando a própria vida para salvar os pertences materiais dos veículos.',
-                  'Proteger a cena, acionar o socorro especializado e apoiar as vítimas dentro dos limites do conhecimento sem agravar lesões.',
                   'Tentar fazer tudo sozinho sem incomodar os órgãos públicos e serviços de emergência.',
-                  'Transportar feridos graves no porta-malas de qualquer automóvel para ganhar tempo.'
+                  'Agir com heroísmo desmedido, arriscando a própria vida para salvar os pertences materiais dos veículos.',
+                  'Transportar feridos graves no porta-malas de qualquer automóvel para ganhar tempo.',
+                  'Proteger a cena, acionar o socorro especializado e apoiar as vítimas dentro dos limites do conhecimento sem agravar lesões.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Primeiros socorros é proteger a cena, chamar ajuda médica e prestar suporte básico sem colocar vidas em risco.'
           }
       ]
@@ -2289,13 +2289,13 @@ export const QUESTOES_BANCO = {
               modulo: 1,
               texto: 'Quais são os cinco pilares fundamentais que compõem o conceito oficial de Direção Defensiva?',
               opcoes: [
-                  'Velocidade, Potência, Audácia, Ousadia e Freio.',
-                  'Conhecimento, Atenção, Previsão, Decisão e Habilidade.',
+                  'Multa, Fiscalização, Radar, Guarda e Boletim.',
                   'Agilidade, Impulsividade, Firmeza, Força e Destreza.',
-                  'Multa, Fiscalização, Radar, Guarda e Boletim.'
+                  'Conhecimento, Atenção, Previsão, Decisão e Habilidade.',
+                  'Velocidade, Potência, Audácia, Ousadia e Freio.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'A direção defensiva fundamenta-se nos 5 pilares: Conhecimento, Atenção, Previsão, Decisão e Habilidade.'
           },
           {
@@ -2303,13 +2303,13 @@ export const QUESTOES_BANCO = {
               modulo: 1,
               texto: 'O que define a direção defensiva preventiva no trânsito diário?',
               opcoes: [
-                  'Dirigir em velocidade máxima para chegar rápido antes que comece a chover.',
-                  'Antecipar situações de risco e agir preventivamente para evitar colisões, independente das falhas de outros condutores.',
+                  'Dirigir focado apenas no veículo que vem imediatamente atrás pelo retrovisor.',
                   'Reagir agressivamente contra pedestres que atravessam fora da faixa.',
-                  'Dirigir focado apenas no veículo que vem imediatamente atrás pelo retrovisor.'
+                  'Dirigir em velocidade máxima para chegar rápido antes que comece a chover.',
+                  'Antecipar situações de risco e agir preventivamente para evitar colisões, independente das falhas de outros condutores.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A direção preventiva consiste em prever o perigo com antecedência e adotar medidas que garantam a segurança coletiva.'
           },
           {
@@ -2317,13 +2317,13 @@ export const QUESTOES_BANCO = {
               modulo: 1,
               texto: 'Qual tipo de atenção é exigido do motorista para exercer a verdadeira condução defensiva?',
               opcoes: [
+                  'Atenção passiva, confiando que os outros veículos farão as manobras corretas.',
                   'Atenção dispersa, ouvindo música alta e interagindo com o celular.',
-                  'Atenção difusa ou distribuída, mantendo vigilância contínua na pista, espelhos retrovisores e painel de instrumentos.',
                   'Atenção fixa em um único ponto à frente do capô sem olhar os lados.',
-                  'Atenção passiva, confiando que os outros veículos farão as manobras corretas.'
+                  'Atenção difusa ou distribuída, mantendo vigilância contínua na pista, espelhos retrovisores e painel de instrumentos.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'A atenção difusa permite monitorar tudo o que acontece ao redor do veículo em um ângulo de 360 graus.'
           },
           {
@@ -2331,13 +2331,13 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'O que é o fenômeno da aquaplanagem ou hidroplanagem e quando ele ocorre?',
               opcoes: [
-                  'A derrapagem de pneus em asfalto quente com poeira seca.',
                   'A perda de contato e aderência dos pneus com o solo devido a uma camada de água acumulada sobre a pista.',
+                  'O travamento automático dos freios em descidas íngremes de serra.',
                   'A quebra do radiador provocada pelo superaquecimento da água do motor.',
-                  'O travamento automático dos freios em descidas íngremes de serra.'
+                  'A derrapagem de pneus em asfalto quente com poeira seca.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'A aquaplanagem acontece quando os sulcos dos pneus não conseguem drenar a lâmina de água, fazendo o carro flutuar.'
           },
           {
@@ -2345,9 +2345,9 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'Qual deve ser a reação do condutor ao perceber que o veículo está aquaplanando na pista molhada?',
               opcoes: [
-                  'Pisar bruscamente no freio com toda a força e puxar o freio de mão.',
-                  'Tirar o pé do acelerador, segurar o volante com firmeza em linha reta e não frear bruscamente até recuperar o contato.',
                   'Girar o volante bruscamente de um lado para o outro para limpar os pneus.',
+                  'Tirar o pé do acelerador, segurar o volante com firmeza em linha reta e não frear bruscamente até recuperar o contato.',
+                  'Pisar bruscamente no freio com toda a força e puxar o freio de mão.',
                   'Acelerar ao máximo para que o motor vença a resistência da água.'
               ],
               correta: 1,
@@ -2359,13 +2359,13 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'Ao transitar sob neblina densa ou cerração durante o dia, qual luz o condutor deve utilizar?',
               opcoes: [
-                  'Farol alto para enxergar mais longe na fumaça.',
-                  'Luz baixa do farol ou faróis de neblina, nunca utilizando o farol alto.',
                   'Apenas o pisca-alerta com o veículo em movimento rápido.',
-                  'Todas as luzes apagadas para não ofuscar quem vem atrás.'
+                  'Todas as luzes apagadas para não ofuscar quem vem atrás.',
+                  'Farol alto para enxergar mais longe na fumaça.',
+                  'Luz baixa do farol ou faróis de neblina, nunca utilizando o farol alto.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'O farol alto reflete nas gotículas da neblina criando uma parede branca ofuscante; a luz baixa ilumina o solo.'
           },
           {
@@ -2373,13 +2373,13 @@ export const QUESTOES_BANCO = {
               modulo: 2,
               texto: 'Como o motorista deve agir defensivamente quando for ofuscado pelos faróis altos de um carro em sentido oposto?',
               opcoes: [
-                  'Acender o farol alto também para revidar e forçar o outro a baixar a luz.',
-                  'Desviar suavemente a visão para a linha delimitadora da borda direita da pista e reduzir a velocidade.',
                   'Fechar os olhos e manter a velocidade máxima até o cruzamento dos veículos.',
-                  'Frear repentinamente e parar o veículo no meio da pista de rolamento.'
+                  'Frear repentinamente e parar o veículo no meio da pista de rolamento.',
+                  'Desviar suavemente a visão para a linha delimitadora da borda direita da pista e reduzir a velocidade.',
+                  'Acender o farol alto também para revidar e forçar o outro a baixar a luz.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Olhar para a linha de margem direita da pista guia a trajetória do carro sem cegar a visão do condutor pelo farol contrário.'
           },
           {
@@ -2387,10 +2387,10 @@ export const QUESTOES_BANCO = {
               modulo: 3,
               texto: 'O que compreende o tempo de reação de um motorista no trânsito?',
               opcoes: [
-                  'O tempo total que o carro leva para parar completamente após parar de rodar.',
+                  'A velocidade com que o velocímetro registra a desaceleração.',
                   'O intervalo de tempo que transcorre entre o condutor avistar o perigo e pisar no pedal do freio.',
                   'O tempo de troca das pastilhas de freio na oficina mecânica.',
-                  'A velocidade com que o velocímetro registra a desaceleração.'
+                  'O tempo total que o carro leva para parar completamente após parar de rodar.'
               ],
               correta: 1,
               corretaLetra: 'B',
@@ -2402,12 +2402,12 @@ export const QUESTOES_BANCO = {
               texto: 'A distância total de parada é calculada pela seguinte fórmula física de trânsito:',
               opcoes: [
                   'Distância de frenagem multiplicada pela velocidade do veículo.',
+                  'Distância percorrida em marcha a ré em linha reta.',
                   'Soma da distância de reação com a distância de frenagem do veículo.',
-                  'Distância de seguimento subtraída da largura dos pneus.',
-                  'Distância percorrida em marcha a ré em linha reta.'
+                  'Distância de seguimento subtraída da largura dos pneus.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'Distância de parada = Distância de reação (enquanto o pé vai ao freio) + Distância de frenagem (até o carro imobilizar).'
           },
           {
@@ -2415,13 +2415,13 @@ export const QUESTOES_BANCO = {
               modulo: 3,
               texto: 'Para que serve a regra dos dois segundos de distância de seguimento entre veículos em pista seca?',
               opcoes: [
-                  'Para ultrapassar veículos lentos pela direita sem usar seta.',
                   'Para garantir espaço de segurança suficiente para reagir e frear caso o carro à frente pare repentinamente.',
+                  'Para sincronizar as marchas com o veículo líder do comboio.',
                   'Para economizar combustível andando colado no vácuo do caminhão da frente.',
-                  'Para sincronizar as marchas com o veículo líder do comboio.'
+                  'Para ultrapassar veículos lentos pela direita sem usar seta.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'A regra dos 2 segundos fornece margem de segurança temporal para frear a tempo sem colidir na traseira do veículo adiante.'
           }
       ],
@@ -2432,12 +2432,12 @@ export const QUESTOES_BANCO = {
               texto: 'Como o condutor defensivo pode evitar ser colidido na traseira por outro veículo?',
               opcoes: [
                   'Frear bruscamente a qualquer momento sem sinalizar.',
-                  'Verificar os espelhos antes de frear, sinalizar intenções com antecedência e manter distância do carro da frente.',
                   'Dirigir com o porta-malas aberto para chamar a atenção dos outros.',
-                  'Andar sempre pelo acostamento com farol desligado.'
+                  'Andar sempre pelo acostamento com farol desligado.',
+                  'Verificar os espelhos antes de frear, sinalizar intenções com antecedência e manter distância do carro da frente.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Sinalizar com antecedência e frear suavemente alerta o veículo de trás, dando tempo para ele desacelerar.'
           },
           {
@@ -2445,13 +2445,13 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'O que são os pontos cegos de um veículo automotor e como minimizá-los?',
               opcoes: [
-                  'Lâmpadas queimadas nos faróis dianteiros do veículo.',
                   'Áreas ao redor do veículo que não são cobertas pelos espelhos retrovisores; minimizam-se com ajuste correto e rápida olhada lateral.',
                   'Arranhões superficiais no vidro do para-brisa.',
-                  'Pontos da estrada onde os radares da polícia não conseguem fiscalizar.'
+                  'Pontos da estrada onde os radares da polícia não conseguem fiscalizar.',
+                  'Lâmpadas queimadas nos faróis dianteiros do veículo.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'Pontos cegos são regiões não refletidas nos espelhos; regular os espelhos para fora e girar de leve a cabeça evita acidentes.'
           },
           {
@@ -2459,10 +2459,10 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Ao aproximar-se de um cruzamento sem sinalização alguma, qual é a atitude defensiva e legal a tomar?',
               opcoes: [
-                  'Acelerar para passar primeiro antes de qualquer outro carro.',
+                  'Dar sempre a preferência ao carro maior ou mais pesado.',
                   'Reduzir a velocidade, redobrar a atenção e dar preferência de passagem ao veículo que se aproxima pela direita.',
-                  'Buzinar continuamente e fechar os olhos ao atravessar.',
-                  'Dar sempre a preferência ao carro maior ou mais pesado.'
+                  'Acelerar para passar primeiro antes de qualquer outro carro.',
+                  'Buzinar continuamente e fechar os olhos ao atravessar.'
               ],
               correta: 1,
               corretaLetra: 'B',
@@ -2473,13 +2473,13 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Por que a colisão frontal é considerada uma das ocorrências mais trágicas e violentas no trânsito?',
               opcoes: [
-                  'Porque as velocidades dos dois veículos se somam na desaceleração do impacto, multiplicando a energia destrutiva.',
-                  'Porque os seguros particulares não cobrem sinistros frontais.',
                   'Apenas porque os dois automóveis ficam engavetados na pista.',
-                  'Porque ocorre exclusivamente durante o dia em retas perfeitas.'
+                  'Porque as velocidades dos dois veículos se somam na desaceleração do impacto, multiplicando a energia destrutiva.',
+                  'Porque ocorre exclusivamente durante o dia em retas perfeitas.',
+                  'Porque os seguros particulares não cobrem sinistros frontais.'
               ],
-              correta: 0,
-              corretaLetra: 'A',
+              correta: 1,
+              corretaLetra: 'B',
               explicacao: 'A colisão frontal soma as energias cinéticas dos dois veículos que colidem em sentidos contrários, gerando desaceleração brutal.'
           },
           {
@@ -2488,12 +2488,12 @@ export const QUESTOES_BANCO = {
               texto: 'Ao descer trechos longos de serra ou declives acentuados, qual a técnica correta para preservar os freios?',
               opcoes: [
                   'Descer em ponto morto (na banguela) e segurar o carro apenas no pedal de freio.',
-                  'Descer com marcha engrenada compatível para utilizar o freio motor e evitar o superaquecimento do sistema de freios.',
                   'Desligar a chave do motor durante toda a descida para economizar combustível.',
+                  'Descer com marcha engrenada compatível para utilizar o freio motor e evitar o superaquecimento do sistema de freios.',
                   'Acionar o freio de mão continuamente até o final da descida.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O freio motor poupa as pastilhas e discos; o superaquecimento por uso contínuo pode causar perda total do freio (fading).'
           },
           {
@@ -2501,13 +2501,13 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Se um pneu dianteiro estourar repentinamente enquanto o veículo transita em alta velocidade em rodovia, o condutor deve:',
               opcoes: [
-                  'Pisar com força no pedal de freio e puxar o freio de mão de imediato.',
-                  'Segurar a direção com firmeza, tirar o pé do acelerador e desacelerar gradativamente, freando suavemente quando tiver controle.',
                   'Girar o volante para o acostamento imediatamente em manobra brusca.',
-                  'Saltar do veículo em movimento antes que ele saia da pista.'
+                  'Saltar do veículo em movimento antes que ele saia da pista.',
+                  'Pisar com força no pedal de freio e puxar o freio de mão de imediato.',
+                  'Segurar a direção com firmeza, tirar o pé do acelerador e desacelerar gradativamente, freando suavemente quando tiver controle.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'Frear no susto com pneu estourado faz o carro capotar; deve-se firmar o volante, aliviar o acelerador e frear com muita suavidade.'
           },
           {
@@ -2516,12 +2516,12 @@ export const QUESTOES_BANCO = {
               texto: 'Qual deve ser a conduta do condutor defensivo ao perceber que outro veículo iniciou uma ultrapassagem sobre ele?',
               opcoes: [
                   'Acelerar para impedir a ultrapassagem e não perder sua posição na fila.',
-                  'Facilitar a manobra, mantendo sua faixa de direção sem aumentar a velocidade e até reduzindo se necessário.',
                   'Mudar de faixa para a esquerda bloqueando a ultrapassagem.',
-                  'Acionar os faróis altos e buzinar para intimidar o outro motorista.'
+                  'Acionar os faróis altos e buzinar para intimidar o outro motorista.',
+                  'Facilitar a manobra, mantendo sua faixa de direção sem aumentar a velocidade e até reduzindo se necessário.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 3,
+              corretaLetra: 'D',
               explicacao: 'O condutor que é ultrapassado deve colaborar com a segurança da via, mantendo-se em sua faixa sem acelerar.'
           },
           {
@@ -2529,13 +2529,13 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Ao passar ao lado de um ciclista na pista, qual distância lateral mínima de segurança deve ser mantida obrigatoriamente?',
               opcoes: [
+                  '3,0 metros.',
                   '0,5 metro.',
                   '1,5 metro.',
-                  '3,0 metros.',
                   'Qualquer distância, desde que o condutor dê um toque breve na buzina.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O artigo 201 do CTB determina expressamente a distância lateral mínima de 1,50 metro ao ultrapassar ciclistas.'
           },
           {
@@ -2543,13 +2543,13 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Como o consumo de álcool interfere nas faculdades de direção defensiva do motorista?',
               opcoes: [
-                  'Aumenta a acuidade visual e melhora a agilidade motora nos reflexos.',
-                  'Reduz reflexos, compromete a coordenação motora, diminui a visão periférica e gera falsa sensação de autoconfiança.',
                   'Não gera impacto algum caso a pessoa esteja acostumada a beber.',
-                  'Apenas causa sono profundo após 24 horas da ingestão.'
+                  'Apenas causa sono profundo após 24 horas da ingestão.',
+                  'Reduz reflexos, compromete a coordenação motora, diminui a visão periférica e gera falsa sensação de autoconfiança.',
+                  'Aumenta a acuidade visual e melhora a agilidade motora nos reflexos.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 2,
+              corretaLetra: 'C',
               explicacao: 'O álcool atua como depressor do sistema nervoso central, retardando respostas e distorcendo a percepção de riscos.'
           },
           {
@@ -2557,13 +2557,13 @@ export const QUESTOES_BANCO = {
               modulo: 4,
               texto: 'Se as rodas direitas do veículo caírem acidentalmente no degrau do acostamento em velocidade, a atitude mais segura é:',
               opcoes: [
-                  'Puxar violentamente o volante para a esquerda para subir de volta na pista na mesma hora.',
                   'Segurar a direção firme, tirar o pé do acelerador, desacelerar no acostamento e só retornar à pista quando estiver em baixa velocidade e seguro.',
                   'Frear bruscamente travando as quatro rodas imediatamente no acostamento.',
-                  'Acelerar ao máximo para que o carro suba o desnível com impulso rápido.'
+                  'Acelerar ao máximo para que o carro suba o desnível com impulso rápido.',
+                  'Puxar violentamente o volante para a esquerda para subir de volta na pista na mesma hora.'
               ],
-              correta: 1,
-              corretaLetra: 'B',
+              correta: 0,
+              corretaLetra: 'A',
               explicacao: 'Girar o volante bruscamente para voltar com velocidade faz o pneu traseiro morder o degrau e lança o carro desgovernado na contramão.'
           }
       ]
