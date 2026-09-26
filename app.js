@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import session from 'express-session'
 import cors from 'cors';
 
 import authRoutes from './src/routes/auth.routes.js';
@@ -23,12 +22,6 @@ const PORT = process.env.PORT || 3001;
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use(session({
-  secret: '',
-  resave : false,
-  saveUninitialized: true,
-  cookie: {secure: false, maxAge: 1000 * 60 * 30}
-}))
 
 app.use('/auth', authRoutes);
 app.use('/task', taskRoutes);
