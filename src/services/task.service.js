@@ -145,7 +145,7 @@ export const DEFAULT_WEEK_TEMPLATES = [
   {
     dia_semana: 1,
     sort: 3,
-    titulo: 'Leitura Guiada & Flashcards de Placas',
+    titulo: 'Leitura Guiada & Fixação de Placas',
     descricao: 'Revisão rápida das placas de Regulamentação e Advertência.',
     xp_reward: 75,
     horario: '19:00',
@@ -226,8 +226,8 @@ export const DEFAULT_WEEK_TEMPLATES = [
   {
     dia_semana: 4,
     sort: 3,
-    titulo: 'Revisão com Flashcards de Primeiros Socorros',
-    descricao: 'Exercícios mnemônicos sobre sinais vitais, contenção e cuidados pós-acidente.',
+    titulo: 'Revisão Prática de Primeiros Socorros',
+    descricao: 'Revisão dos conceitos essenciais sobre sinais vitais, contenção e cuidados pós-acidente.',
     xp_reward: 60,
     horario: '19:00',
     duracao: '40 min'
