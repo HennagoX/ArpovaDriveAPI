@@ -1,6 +1,7 @@
 import taskFixaRepository from '../Repositories/taskFixa.repository.js';
 import { TAREFAS_FIXAS_CONFIG, getTaskById } from '../config/tarefasFixas.config.js';
 import { getLevelInfo } from './exp.service.js';
+import { normalizarMateria } from './questoes.service.js';
 
 export const taskFixaService = {
   async getUsuario(identifier) {
@@ -18,10 +19,17 @@ export const taskFixaService = {
     const userId = user.id_usuario;
     const progresso = await taskFixaRepository.getUserProgresso(userId);
     const completedList = await taskFixaRepository.getCompletedFixedTasks(userId);
+    const bateriasList = await taskFixaRepository.getUserBaterias(userId);
 
     const completedMap = new Map();
     completedList.forEach(item => {
       completedMap.set(item.task_id, item);
+    });
+
+    const bateriasMap = new Map();
+    bateriasList.forEach(item => {
+      const mat = normalizarMateria(item.materia);
+      bateriasMap.set(`${mat}_${item.bateria}`, item);
     });
 
     const conteudosResult = {};
@@ -50,6 +58,10 @@ export const taskFixaService = {
         const completedRecord = isConcluida ? completedMap.get(t.id) : null;
 
         if (isConcluida) {
+          contentConcluidas++;
+          totalConcluidasGlobal++;
+          contentXpGanho += t.xp_reward;
+          totalXpGanhoGlobal += t.xp_reward;
 
           return {
             ...t,
@@ -73,21 +85,6 @@ export const taskFixaService = {
           const moduloAtual = currentModule === moduloNum;
 
           if (jaEstudou) {
-
-            if (isQuestion) {
-              return {  ...t,
-              conteudoId: conteudo.id,
-              conteudoTitulo: conteudo.titulo,
-              conteudoCor: conteudo.cor,
-              conteudoIcone: conteudo.icone,
-              concluida: false,
-              status: 'in_progress',
-              bloqueada: false,
-              podeReivindicar: true,
-              concluida_em: null,
-              motivo: 'Você está neste módulo! Estude o conteúdo e conclua para ganhar seu XP.'};  
-            }
-
             return {
               ...t,
               conteudoId: conteudo.id,
@@ -135,10 +132,36 @@ export const taskFixaService = {
           };
         }
 
+        // Tarefa de Questões:
         const necessarios = Number(t.modulosNecessarios || (t.bateriaNumero * 3));
         const moduloSuficiente = currentModule >= necessarios;
 
-        if (moduloSuficiente) {
+        if (!moduloSuficiente) {
+          return {
+            ...t,
+            conteudoId: conteudo.id,
+            conteudoTitulo: conteudo.titulo,
+            conteudoCor: conteudo.cor,
+            conteudoIcone: conteudo.icone,
+            concluida: false,
+            status: 'locked',
+            bloqueada: true,
+            podeReivindicar: false,
+            concluida_em: null,
+            motivo: `Conclua até o Módulo ${necessarios} de ${conteudo.titulo} para desbloquear este desafio.`
+          };
+        }
+
+        // Módulo suficiente: bateria está liberada para resolução!
+        // Verifica se o usuário realizou a bateria e alcançou a meta de acertos (70%+):
+        const materiaNorm = normalizarMateria(conteudo.id || conteudo.slug);
+        const batNum = Number(t.bateriaNumero || 1);
+        const metaAlvo = Number(t.percentualAlvo || 70);
+        const batResult = bateriasMap.get(`${materiaNorm}_${batNum}`);
+        const aprovadoBateria = Boolean(batResult && (batResult.aprovado || Number(batResult.porcentagem) >= metaAlvo));
+
+        if (aprovadoBateria) {
+          // Fez a bateria e alcançou >= 70%: LIBERADO PARA REIVINDICAR!
           return {
             ...t,
             conteudoId: conteudo.id,
@@ -149,11 +172,16 @@ export const taskFixaService = {
             status: 'available',
             bloqueada: false,
             podeReivindicar: true,
+            porcentagemAcertos: Number(batResult.porcentagem),
+            acertosObtidos: Number(batResult.acertos),
             concluida_em: null,
-            motivo: `Bateria ${t.bateriaNumero} liberada! Acerte no mínimo ${t.percentualAlvo}% para conquistar +${t.xp_reward} XP.`
+            motivo: `Desafio superado com ${batResult.porcentagem}% de acertos! Clique para reivindicar sua recompensa de +${t.xp_reward} XP.`
           };
         }
 
+        // Ainda NÃO alcançou a meta de 70% (não fez ou tirou < 70%): NÃO LIBERA PARA REIVINDICAR
+        const jaFez = Boolean(batResult);
+        const pctAtual = jaFez ? Number(batResult.porcentagem) : null;
         return {
           ...t,
           conteudoId: conteudo.id,
@@ -161,11 +189,15 @@ export const taskFixaService = {
           conteudoCor: conteudo.cor,
           conteudoIcone: conteudo.icone,
           concluida: false,
-          status: 'locked',
-          bloqueada: true,
+          status: 'in_progress',
+          bloqueada: false,
           podeReivindicar: false,
+          porcentagemAcertos: pctAtual,
+          acertosObtidos: jaFez ? Number(batResult.acertos) : null,
           concluida_em: null,
-          motivo: `Conclua até o Módulo ${necessarios} de ${conteudo.titulo} para desbloquear este desafio.`
+          motivo: jaFez
+            ? `Você obteve ${pctAtual}% de acertos na Bateria ${batNum}. É necessário atingir no mínimo ${metaAlvo}% para liberar a recompensa. Tente novamente!`
+            : `Bateria ${batNum} liberada! Faça as questões e alcance no mínimo ${metaAlvo}% de acertos para liberar a recompensa.`
         };
       });
 
@@ -256,6 +288,17 @@ export const taskFixaService = {
       const nec = Number(task.modulosNecessarios || (task.bateriaNumero * 3));
       if (currentModule < nec) {
         const err = new Error(`Você precisa concluir até o Módulo ${nec} de ${task.conteudoTitulo} para realizar este desafio de questões.`);
+        err.statusCode = 400;
+        throw err;
+      }
+
+      const materiaNorm = normalizarMateria(task.conteudoId || task.slug || task.conteudoTitulo);
+      const batNum = Number(task.bateriaNumero || 1);
+      const metaAlvo = Number(task.percentualAlvo || 70);
+      const aprovado = await taskFixaRepository.isBateriaAprovada(userId, materiaNorm, batNum, metaAlvo);
+
+      if (!aprovado) {
+        const err = new Error(`Você precisa realizar a Bateria ${batNum} de ${task.conteudoTitulo} e acertar no mínimo ${metaAlvo}% das questões para poder reivindicar esta recompensa.`);
         err.statusCode = 400;
         throw err;
       }

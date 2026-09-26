@@ -89,6 +89,29 @@ export const taskFixaRepository = {
 
   async incrementUserXp(userId, xpReward) {
     return await incrementXp(userId, xpReward);
+  },
+
+  async getUserBaterias(userId) {
+    const res = await pool.query(
+      `SELECT materia, bateria, acertos, total_questoes, porcentagem, aprovado, atualizado_em
+       FROM bateria_resultado 
+       WHERE id_usuario = $1`,
+      [userId]
+    );
+    return res.rows;
+  },
+
+  async isBateriaAprovada(userId, materia, bateria, percentualAlvo = 70) {
+    const res = await pool.query(
+      `SELECT 1 FROM bateria_resultado 
+       WHERE id_usuario = $1 
+         AND LOWER(materia) = LOWER($2) 
+         AND bateria = $3 
+         AND (aprovado = TRUE OR porcentagem >= $4) 
+       LIMIT 1`,
+      [userId, materia, Number(bateria), Number(percentualAlvo)]
+    );
+    return res.rows.length > 0;
   }
 };
 

@@ -1,4 +1,4 @@
-import { getQuestoes, incrementarAcerto } from '../Repositories/questoes.repository.js';
+import { getQuestoes, incrementarAcerto, salvarResultadoBateria } from '../Repositories/questoes.repository.js';
 import { incrementXp } from './exp.service.js';
 import { getCurrent } from './modulo.service.js';
 import { QUESTOES_BANCO } from './questoes.data.js';
@@ -215,6 +215,19 @@ export async function concluirBateria(dados, userId) {
   let expData = null;
   if (userId) {
     expData = await incrementXp(userId, expBonus);
+    try {
+      await salvarResultadoBateria(
+        userId,
+        materiaNorm,
+        bateriaNum,
+        acertos,
+        total,
+        porcentagem,
+        aprovado
+      );
+    } catch (err) {
+      console.warn('[QuestoesService] Falha ao registrar resultado da bateria no banco:', err.message);
+    }
   }
 
   const proximaBateriaNum = bateriaNum + 1;
