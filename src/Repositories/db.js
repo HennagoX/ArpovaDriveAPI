@@ -14,9 +14,12 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false
   },
+  max:20,
+  min:2,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 6000,
-  keepAlive: true
+  keepAliveInitialDelayMillis: 10000,
+  keepAlive: true,
 });
 
 pool.on('error', (err) => {

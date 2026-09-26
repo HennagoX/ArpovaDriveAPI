@@ -259,7 +259,7 @@ export async function getAiResponse(userMessage, conversationHistory = [], userC
   }
 
   const client = new Groq({ apiKey });
-  const model = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+  const model = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 
   const messages = [...SYSTEM_PROMPTS];
 

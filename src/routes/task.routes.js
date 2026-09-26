@@ -21,7 +21,6 @@ const router = Router();
 router.get('/admin-check', verificarAdmin);
 router.get('/usuarios', listarUsuarios);
 
-// Rotas de Tarefas Fixas / Permanentes por Conteúdo
 router.get('/fixas', listarFixas);
 router.get('/fixas/:id', buscarFixaPorId);
 router.post('/fixas/:id/concluir', concluirFixa);
