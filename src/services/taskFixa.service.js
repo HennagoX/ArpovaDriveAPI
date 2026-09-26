@@ -78,7 +78,6 @@ export const taskFixaService = {
           };
         }
 
-        // Tarefa não concluída ainda
         if (t.tipo === 'modulo') {
           const moduloNum = Number(t.moduloNumero);
           const jaEstudou = currentModule > moduloNum;
@@ -116,7 +115,6 @@ export const taskFixaService = {
             };
           }
 
-          // Bloqueado
           return {
             ...t,
             conteudoId: conteudo.id,
@@ -132,7 +130,7 @@ export const taskFixaService = {
           };
         }
 
-        // Tarefa de Questões:
+
         const necessarios = Number(t.modulosNecessarios || (t.bateriaNumero * 3));
         const moduloSuficiente = currentModule >= necessarios;
 
@@ -152,8 +150,7 @@ export const taskFixaService = {
           };
         }
 
-        // Módulo suficiente: bateria está liberada para resolução!
-        // Verifica se o usuário realizou a bateria e alcançou a meta de acertos (70%+):
+
         const materiaNorm = normalizarMateria(conteudo.id || conteudo.slug);
         const batNum = Number(t.bateriaNumero || 1);
         const metaAlvo = Number(t.percentualAlvo || 70);
@@ -161,7 +158,6 @@ export const taskFixaService = {
         const aprovadoBateria = Boolean(batResult && (batResult.aprovado || Number(batResult.porcentagem) >= metaAlvo));
 
         if (aprovadoBateria) {
-          // Fez a bateria e alcançou >= 70%: LIBERADO PARA REIVINDICAR!
           return {
             ...t,
             conteudoId: conteudo.id,
@@ -179,7 +175,6 @@ export const taskFixaService = {
           };
         }
 
-        // Ainda NÃO alcançou a meta de 70% (não fez ou tirou < 70%): NÃO LIBERA PARA REIVINDICAR
         const jaFez = Boolean(batResult);
         const pctAtual = jaFez ? Number(batResult.porcentagem) : null;
         return {
