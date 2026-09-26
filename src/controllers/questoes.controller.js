@@ -4,7 +4,10 @@ import {
   obterPerguntas,
   obterBaterias,
   concluirBateria,
-  verificarAcessoBateria
+  verificarAcessoBateria,
+  gerarQuestoesSimulado,
+  concluirSimulado,
+  obterResultadosSimulados
 } from "../services/questoes.service.js";
 
 function extrairUserId(req) {
@@ -161,6 +164,69 @@ export async function concluirBateriaController(req, res) {
       sucesso: false,
       success: false,
       message: error.message || "Erro ao concluir bateria de questões"
+    });
+  }
+}
+
+export async function getSimuladoQuestoesController(req, res) {
+  try {
+    const materia = req.query.materia || req.params?.materia || 'Geral';
+    const questoes = gerarQuestoesSimulado(materia);
+
+    return res.status(200).json({
+      sucesso: true,
+      success: true,
+      materia,
+      total: questoes.length,
+      questoes
+    });
+  } catch (error) {
+    return res.status(400).json({
+      sucesso: false,
+      success: false,
+      message: error.message || "Erro ao gerar questões para o simulado"
+    });
+  }
+}
+
+export async function concluirSimuladoController(req, res) {
+  try {
+    const userId = extrairUserId(req);
+    const resultado = await concluirSimulado(req.body, userId);
+
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(400).json({
+      sucesso: false,
+      success: false,
+      message: error.message || "Erro ao registrar conclusão do simulado"
+    });
+  }
+}
+
+export async function getSimuladoResultadosController(req, res) {
+  try {
+    const userId = extrairUserId(req);
+    if (!userId) {
+      return res.status(400).json({
+        sucesso: false,
+        success: false,
+        message: "Usuário não informado"
+      });
+    }
+
+    const resultados = await obterResultadosSimulados(userId);
+
+    return res.status(200).json({
+      sucesso: true,
+      success: true,
+      resultados
+    });
+  } catch (error) {
+    return res.status(400).json({
+      sucesso: false,
+      success: false,
+      message: error.message || "Erro ao buscar histórico de simulados"
     });
   }
 }

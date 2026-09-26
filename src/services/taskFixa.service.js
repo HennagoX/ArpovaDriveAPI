@@ -20,6 +20,7 @@ export const taskFixaService = {
     const progresso = await taskFixaRepository.getUserProgresso(userId);
     const completedList = await taskFixaRepository.getCompletedFixedTasks(userId);
     const bateriasList = await taskFixaRepository.getUserBaterias(userId);
+    const simuladosList = await taskFixaRepository.getUserSimulados(userId);
 
     const completedMap = new Map();
     completedList.forEach(item => {
@@ -130,6 +131,56 @@ export const taskFixaService = {
           };
         }
 
+        if (t.tipo === 'simulado') {
+          const alvoPct = Number(t.percentualAlvo || 67);
+          const alvoAcertos = Number(t.acertosNecessarios || 20);
+          const simuladoAprovado = simuladosList.some(s => 
+            (!t.materia || t.materia === 'Geral' || normalizarMateria(s.materia) === normalizarMateria(t.materia)) &&
+            (s.aprovado || Number(s.porcentagem) >= alvoPct || Number(s.acertos) >= alvoAcertos)
+          );
+
+          const melhorSimulado = simuladosList.reduce((melhor, curr) => {
+            if (!melhor || Number(curr.acertos) > Number(melhor.acertos)) return curr;
+            return melhor;
+          }, null);
+
+          if (simuladoAprovado) {
+            return {
+              ...t,
+              conteudoId: conteudo.id,
+              conteudoTitulo: conteudo.titulo,
+              conteudoCor: conteudo.cor,
+              conteudoIcone: conteudo.icone,
+              concluida: false,
+              status: 'available',
+              bloqueada: false,
+              podeReivindicar: true,
+              porcentagemAcertos: melhorSimulado ? Number(melhorSimulado.porcentagem) : 67,
+              acertosObtidos: melhorSimulado ? Number(melhorSimulado.acertos) : 20,
+              concluida_em: null,
+              motivo: `Simulado superado com ${melhorSimulado ? melhorSimulado.porcentagem : 67}% de acertos! Clique para reivindicar sua recompensa de +${t.xp_reward} XP.`
+            };
+          }
+
+          const jaTentou = simuladosList.length > 0;
+          return {
+            ...t,
+            conteudoId: conteudo.id,
+            conteudoTitulo: conteudo.titulo,
+            conteudoCor: conteudo.cor,
+            conteudoIcone: conteudo.icone,
+            concluida: false,
+            status: 'in_progress',
+            bloqueada: false,
+            podeReivindicar: false,
+            porcentagemAcertos: melhorSimulado ? Number(melhorSimulado.porcentagem) : null,
+            acertosObtidos: melhorSimulado ? Number(melhorSimulado.acertos) : null,
+            concluida_em: null,
+            motivo: jaTentou
+              ? `Você obteve ${melhorSimulado.porcentagem}% (${melhorSimulado.acertos}/30 acertos). É necessário atingir no mínimo ${alvoPct}% (${alvoAcertos} acertos) para liberar a recompensa. Tente novamente!`
+              : `Realize o Simulado Oficial de 30 questões e acerte no mínimo ${alvoAcertos} questões (${alvoPct}%) para liberar a recompensa.`
+          };
+        }
 
         const necessarios = Number(t.modulosNecessarios || (t.bateriaNumero * 3));
         const moduloSuficiente = currentModule >= necessarios;
@@ -294,6 +345,15 @@ export const taskFixaService = {
 
       if (!aprovado) {
         const err = new Error(`Você precisa realizar a Bateria ${batNum} de ${task.conteudoTitulo} e acertar no mínimo ${metaAlvo}% das questões para poder reivindicar esta recompensa.`);
+        err.statusCode = 400;
+        throw err;
+      }
+    } else if (task.tipo === 'simulado') {
+      const alvoPct = Number(task.percentualAlvo || 67);
+      const alvoAcertos = Number(task.acertosNecessarios || 20);
+      const aprovado = await taskFixaRepository.isSimuladoAprovado(userId, task.materia || null, alvoPct, alvoAcertos);
+      if (!aprovado) {
+        const err = new Error(`Você precisa realizar um Simulado de 30 questões e acertar no mínimo ${alvoAcertos} questões (${alvoPct}%) para poder reivindicar esta recompensa de +${task.xp_reward} XP.`);
         err.statusCode = 400;
         throw err;
       }

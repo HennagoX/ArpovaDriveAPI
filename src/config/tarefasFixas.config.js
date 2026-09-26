@@ -647,6 +647,28 @@ export const TAREFAS_FIXAS_CONFIG = {
         xp_reward: 500
       }
     ]
+  },
+
+  Simulados: {
+    id: 'Simulados',
+    slug: 'simulados',
+    titulo: 'Simulados DETRAN',
+    categoria: 'SIMULADOS',
+    cor: 'orange',
+    icone: 'fa-solid fa-graduation-cap',
+    tasks: [
+      {
+        id: 'fixa_simulado_aprovado_67',
+        tipo: 'simulado',
+        percentualAlvo: 67,
+        acertosNecessarios: 20,
+        totalQuestoes: 30,
+        titulo: 'Aprovação no Simulado (67%+ de acertos)',
+        descricao: 'Atinja no mínimo 67% de aproveitamento (20 acertos em 30 questões) em um Simulado Oficial do DETRAN.',
+        xp_reward: 600,
+        isSimulado: true
+      }
+    ]
   }
 };
 

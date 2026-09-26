@@ -112,6 +112,33 @@ export const taskFixaRepository = {
       [userId, materia, Number(bateria), Number(percentualAlvo)]
     );
     return res.rows.length > 0;
+  },
+
+  async getUserSimulados(userId) {
+    const res = await pool.query(
+      `SELECT id_simulado, materia, acertos, total_questoes, porcentagem, aprovado, tempo_gasto_segundos, criado_em
+       FROM simulado_resultado 
+       WHERE id_usuario = $1
+       ORDER BY criado_em DESC`,
+      [userId]
+    );
+    return res.rows;
+  },
+
+  async isSimuladoAprovado(userId, materia = null, percentualAlvo = 67, acertosNecessarios = 20) {
+    let query = `
+      SELECT 1 FROM simulado_resultado 
+      WHERE id_usuario = $1 
+        AND (aprovado = TRUE OR porcentagem >= $2 OR acertos >= $3)
+    `;
+    const params = [userId, Number(percentualAlvo), Number(acertosNecessarios)];
+    if (materia && materia !== 'todos' && materia !== 'Geral' && materia !== 'geral') {
+      query += ` AND LOWER(materia) = LOWER($4)`;
+      params.push(materia);
+    }
+    query += ` LIMIT 1`;
+    const res = await pool.query(query, params);
+    return res.rows.length > 0;
   }
 };
 

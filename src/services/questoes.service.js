@@ -1,4 +1,4 @@
-import { getQuestoes, incrementarAcerto, salvarResultadoBateria } from '../Repositories/questoes.repository.js';
+import { getQuestoes, incrementarAcerto, salvarResultadoBateria, salvarResultadoSimulado, obterResultadosSimuladosUsuario } from '../Repositories/questoes.repository.js';
 import { incrementXp } from './exp.service.js';
 import { getCurrent } from './modulo.service.js';
 import { QUESTOES_BANCO } from './questoes.data.js';
@@ -265,4 +265,118 @@ export async function obterQuestoes(materia, userId) {
   const materiaNorm = materia ? normalizarMateria(materia) : null;
   const coluna = materiaNorm ? ACERTOS_COLUNAS[materiaNorm] : null;
   return await getQuestoes(coluna, userId);
+}
+
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+export function gerarQuestoesSimulado(materia = 'Geral') {
+  const materiaNorm = normalizarMateria(materia);
+  const isGeral = !materia || String(materia).toLowerCase() === 'geral' || String(materia).toLowerCase() === 'todos' || String(materia).toLowerCase() === 'detran';
+
+  let bancoSelecionado = [];
+
+  if (isGeral) {
+    const materias = ['CodigoTransito', 'PlacasTransito', 'DirecaoDefensiva', 'PrimeirosSocorros', 'MeioAmbiente'];
+    materias.forEach(mat => {
+      const qMateria = QUESTOES_BANCO[mat] || {};
+      const todasMat = Object.values(qMateria).flat();
+      const shuffledMat = shuffleArray(todasMat);
+      const sample = shuffledMat.slice(0, 6).map(q => ({
+        ...q,
+        materia: mat
+      }));
+      bancoSelecionado.push(...sample);
+    });
+  } else {
+    const qMateria = QUESTOES_BANCO[materiaNorm] || {};
+    const todasMat = Object.values(qMateria).flat();
+    const shuffledMat = shuffleArray(todasMat);
+    bancoSelecionado = shuffledMat.slice(0, 30).map(q => ({
+      ...q,
+      materia: materiaNorm
+    }));
+  }
+
+  const questoesEmbaralhadas = shuffleArray(bancoSelecionado);
+
+  return questoesEmbaralhadas.map((q, idx) => ({
+    numero: idx + 1,
+    modulo: q.modulo || 1,
+    materia: q.materia || materiaNorm,
+    texto: q.texto,
+    opcoes: q.opcoes,
+    correta: q.correta,
+    corretaLetra: q.corretaLetra,
+    explicacao: q.explicacao
+  }));
+}
+
+export async function concluirSimulado(dados, userId) {
+  const materia = dados?.materia || 'Geral';
+  const total = 30;
+  const respostasEnviadas = dados?.respostas || {};
+  const questoesOriginais = dados?.questoes || [];
+
+  let acertos = 0;
+  if (Array.isArray(questoesOriginais) && questoesOriginais.length > 0) {
+    questoesOriginais.forEach(q => {
+      const resp = normalizarRespostaLetra(respostasEnviadas[q.numero]);
+      if (resp && resp === q.corretaLetra) {
+        acertos++;
+      }
+    });
+  } else if (typeof dados?.acertos === 'number' && dados.acertos >= 0) {
+    acertos = Math.min(total, dados.acertos);
+  }
+
+  const porcentagem = Math.round((acertos / total) * 100);
+  const aprovado = acertos >= 20 || porcentagem >= 67;
+  const expBonus = aprovado ? 150 : 50;
+  const tempoGasto = Number(dados?.tempoGastoSegundos || 0);
+
+  let expData = null;
+  if (userId) {
+    expData = await incrementXp(userId, expBonus);
+    try {
+      await salvarResultadoSimulado(
+        userId,
+        materia,
+        acertos,
+        total,
+        porcentagem,
+        aprovado,
+        tempoGasto
+      );
+    } catch (err) {
+      console.warn('[QuestoesService] Falha ao registrar resultado do simulado no banco:', err.message);
+    }
+  }
+
+  return {
+    sucesso: true,
+    success: true,
+    materia,
+    totalQuestoes: total,
+    acertos,
+    porcentagem,
+    aprovado,
+    metaAcertos: 20,
+    metaPorcentagem: 67,
+    expBonus,
+    tempoGastoSegundos: tempoGasto,
+    totalExp: expData?.exp ?? null,
+    lv: expData?.lv ?? null,
+    podeReivindicarTarefaFixa: aprovado
+  };
+}
+
+export async function obterResultadosSimulados(userId) {
+  return await obterResultadosSimuladosUsuario(userId);
 }

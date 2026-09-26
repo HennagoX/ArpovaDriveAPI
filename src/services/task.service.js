@@ -172,8 +172,8 @@ export const DEFAULT_WEEK_TEMPLATES = [
   {
     dia_semana: 2,
     sort: 3,
-    titulo: 'Simulado Rápido de Legislação',
-    descricao: '15 questões cronometradas sobre regras de circulação e preferência.',
+    titulo: 'Simulado de Legislação (30 Questões)',
+    descricao: 'Simulado completo com meta de 67% de aproveitamento (20 questões corretas).',
     xp_reward: 80,
     horario: '19:00',
     duracao: '40 min'
@@ -253,8 +253,8 @@ export const DEFAULT_WEEK_TEMPLATES = [
   {
     dia_semana: 5,
     sort: 3,
-    titulo: 'Simulado Geral Integrado',
-    descricao: 'Prova de 30 questões nos moldes oficiais da prova teórica do DETRAN.',
+    titulo: 'Simulado Geral DETRAN (30 Questões)',
+    descricao: 'Prova de 30 questões nos moldes oficiais. Atinja no mínimo 67% de aproveitamento (20 acertos).',
     xp_reward: 120,
     horario: '19:00',
     duracao: '40 min'

@@ -105,3 +105,69 @@ export async function isBateriaAprovada(userId, materia, bateria, percentualAlvo
   );
   return res.rows.length > 0;
 }
+
+export async function initSimuladoResultadoTable() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS simulado_resultado (
+        id_simulado SERIAL PRIMARY KEY,
+        id_usuario UUID NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+        materia VARCHAR(50) NOT NULL,
+        acertos INTEGER NOT NULL DEFAULT 0,
+        total_questoes INTEGER NOT NULL DEFAULT 30,
+        porcentagem INTEGER NOT NULL DEFAULT 0,
+        aprovado BOOLEAN NOT NULL DEFAULT FALSE,
+        tempo_gasto_segundos INTEGER DEFAULT 0,
+        criado_em TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `);
+  } catch (err) {
+    console.error('[DB] Erro ao assegurar tabela simulado_resultado:', err.message);
+  }
+}
+
+export async function salvarResultadoSimulado(userId, materia, acertos, totalQuestoes, porcentagem, aprovado, tempoGastoSegundos = 0) {
+  const resolvedId = await resolveUserId(userId);
+  if (!resolvedId) return null;
+  await initSimuladoResultadoTable();
+  const res = await pool.query(
+    `INSERT INTO simulado_resultado (id_usuario, materia, acertos, total_questoes, porcentagem, aprovado, tempo_gasto_segundos, criado_em)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+     RETURNING *;`,
+    [resolvedId, String(materia || 'Geral'), Number(acertos), Number(totalQuestoes || 30), Number(porcentagem), Boolean(aprovado), Number(tempoGastoSegundos || 0)]
+  );
+  return res.rows[0] || null;
+}
+
+export async function obterResultadosSimuladosUsuario(userId) {
+  const resolvedId = await resolveUserId(userId);
+  if (!resolvedId) return [];
+  await initSimuladoResultadoTable();
+  const res = await pool.query(
+    `SELECT id_simulado, materia, acertos, total_questoes, porcentagem, aprovado, tempo_gasto_segundos, criado_em 
+     FROM simulado_resultado 
+     WHERE id_usuario = $1 
+     ORDER BY criado_em DESC`,
+    [resolvedId]
+  );
+  return res.rows;
+}
+
+export async function isSimuladoAprovado(userId, materia = null, percentualAlvo = 67, acertosNecessarios = 20) {
+  const resolvedId = await resolveUserId(userId);
+  if (!resolvedId) return false;
+  await initSimuladoResultadoTable();
+  let query = `
+    SELECT 1 FROM simulado_resultado 
+    WHERE id_usuario = $1 
+      AND (aprovado = TRUE OR porcentagem >= $2 OR acertos >= $3)
+  `;
+  const params = [resolvedId, Number(percentualAlvo), Number(acertosNecessarios)];
+  if (materia && materia !== 'todos' && materia !== 'Geral' && materia !== 'geral') {
+    query += ` AND LOWER(materia) = LOWER($4)`;
+    params.push(materia);
+  }
+  query += ` LIMIT 1`;
+  const res = await pool.query(query, params);
+  return res.rows.length > 0;
+}
