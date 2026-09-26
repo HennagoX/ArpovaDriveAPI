@@ -111,24 +111,155 @@ const SYSTEM_PROMPTS = [
   }
 ];
 
-export async function getAiResponse(userMessage, conversationHistory = [], userContext = {}) {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+function normalizeText(text) {
+  return String(text || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}
+
+export function getSmartFallbackResponse(userMessage, userContext = {}) {
+  const norm = normalizeText(userMessage);
+  const nome = userContext?.nome || 'Aluno';
+
+  if (!norm || norm.length < 2) {
     return {
       intent: "conversation",
-      message: "Olá! O Tutor IA está ativo, mas a chave GROQ_API_KEY não foi configurada no arquivo .env da API. Adicione a chave para conversar com a inteligência artificial em tempo real.",
-      action: {
-        type: "none",
-        status: "none",
-        parameters: {}
-      },
+      message: `Olá, ${nome}! Sou o Tutor IA do AprovaDrive. Estou aqui para te ajudar a se preparar com segurança para a prova teórica do DETRAN. Como posso te orientar hoje?`,
+      action: { type: "none", status: "none", parameters: {} },
       requires_confirmation: false,
       confidence: 1.0
     };
   }
 
+  if (norm.match(/^(oi|ola|bom dia|boa tarde|boa noite|e ai|opa|fala|alo)\b/)) {
+    return {
+      intent: "conversation",
+      message: `Olá, ${nome}! Que bom ter você aqui no Tutor IA do AprovaDrive. Posso tirar suas dúvidas sobre conteúdos do DETRAN, regras do CTB, placas, primeiros socorros ou te dar dicas para acelerar seu aprendizado. Qual assunto gostaria de explorar agora?`,
+      action: { type: "none", status: "none", parameters: {} },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('dica') || norm.includes('passar') || norm.includes('primeira') || norm.includes('estudar') || norm.includes('cronograma') || norm.includes('como passar')) {
+    return {
+      intent: "explain_content",
+      message: `Aqui vão as melhores orientações para você passar de primeira na prova do DETRAN:\n\n1. **Foque nas matérias principais:** Legislação de Trânsito e Direção Defensiva somam mais de 60% das questões oficiais.\n2. **Estudo ativo:** Leia os módulos em PDF com calma e preste atenção aos conceitos fundamentais.\n3. **Prática com questões:** Resolva as baterias de questões no AprovaDrive até atingir 70%+ de acertos em cada conteúdo.\n4. **Constância:** Mantenha sua rotina diária para acumular XP e fixar os detalhes das regras do CTB.`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "dicas_estudo" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('materia') || norm.includes('conteudo') || norm.includes('cobradas') || norm.includes('mais cai') || norm.includes('prova')) {
+    return {
+      intent: "explain_content",
+      message: `As matérias cobradas na prova teórica do DETRAN são organizadas por ordem de relevância:\n\n1. **Legislação de Trânsito:** Regras de circulação, normas de preferência, infrações, penalidades e sinalização.\n2. **Direção Defensiva:** Prevenção de acidentes, condições adversas e conduta segura.\n3. **Primeiros Socorros:** Atendimento primário, sinalização do local e acionamento de emergências (SAMU 192 e Bombeiros 193).\n4. **Meio Ambiente e Cidadania:** Emissões veiculares, conservação ambiental e convivência pacífica no trânsito.\n5. **Mecânica Básica:** Manutenção preventiva, componentes do motor, pneus e freios.`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "materias_detran" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('xp') || norm.includes('nivel') || norm.includes('tarefa') || norm.includes('gamific') || norm.includes('recompensa') || norm.includes('ofensiva')) {
+    return {
+      intent: "get_gamification",
+      message: `O sistema de XP e progressão do AprovaDrive funciona assim:\n\n- **Questões:** +10 XP por acerto na primeira tentativa de cada questão.\n- **Leitura de Módulos:** +50 XP ao concluir a leitura de um módulo em PDF.\n- **Tarefas de Módulos:** +150 XP ao cumprir as metas fixas de leitura.\n- **Tarefas de Baterias:** +350 XP permanente ao completar a bateria com 70% ou mais de acertos.\n\nSeu XP acumulado aumenta o seu nível de condutor e ajuda a medir seu progresso rumo à aprovação!`,
+      action: { type: "get_gamification", status: "none", parameters: { informacao: "xp" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('parada') || norm.includes('estacionamento') || norm.includes('estacionar') || norm.includes('parar')) {
+    return {
+      intent: "explain_content",
+      message: `De acordo com o Código de Trânsito Brasileiro (CTB), a diferença é fundamental para a prova:\n\n- **Parada:** É a imobilização do veículo estritamente pelo tempo necessário para efetuar o embarque ou desembarque de passageiros. O condutor deve permanecer atento e o veículo deve sair em seguida.\n- **Estacionamento:** É a imobilização do veículo por tempo superior ao necessário para embarque ou desembarque, inclusive em operações de carga e descarga, ou quando o veículo permanece desligado/sem o condutor.`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "parada_vs_estacionamento" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('70%') || norm.includes('70') || norm.includes('porcentagem') || norm.includes('acertos') || norm.includes('corte') || norm.includes('aprovacao')) {
+    return {
+      intent: "explain_content",
+      message: `A regra oficial de aprovação no DETRAN exige um rendimento mínimo de **70% de acertos**:\n\n- Em provas com 30 questões, são necessários no mínimo **21 acertos**.\n- Em provas com 40 questões, são necessários no mínimo **28 acertos**.\n\nNo AprovaDrive, adotamos essa mesma exigência: as tarefas de baterias de questões só podem ser reivindicadas após você demonstrar 70% ou mais de aproveitamento!`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "regra_70_porcento" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('primeiros socorros') || norm.includes('socorro') || norm.includes('acidente') || norm.includes('vitima') || norm.includes('samu') || norm.includes('bombeiro')) {
+    return {
+      intent: "explain_content",
+      message: `Em Primeiros Socorros no trânsito, lembre-se destes princípios indispensáveis para o DETRAN:\n\n1. **Garantir a segurança:** Sinalize o local com o triângulo em distância segura antes de qualquer contato.\n2. **Chamar socorro especializado:** Ligue imediatamente para o **SAMU (192)** ou **Corpo de Bombeiros (193)**.\n3. **Não mover a vítima:** Se houver suspeita de fratura ou trauma na coluna cervical, mantenha a pessoa imóvel.\n4. **Não retirar capacetes de motociclistas** e não oferecer água ou medicamentos para vítimas de acidentes.`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "primeiros_socorros" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('direcao defensiva') || norm.includes('defensiva') || norm.includes('adversa') || norm.includes('aquaplanagem')) {
+    return {
+      intent: "explain_content",
+      message: `Na Direção Defensiva, você estuda formas de dirigir de modo a evitar acidentes a despeito das ações dos outros e das condições adversas:\n\n- **Direção Preventiva:** É a atitude permanente de prever riscos e agir antecipadamente.\n- **Direção Corretiva:** É a reação rápida diante de um perigo imprevisto.\n- **Condições Adversas (6 tipos):** Luz, Tempo, Via, Trânsito, Veículo e Condutor.\n- **Aquaplanagem:** Perda de aderência dos pneus com o solo em pista molhada. Nunca freie bruscamente; retire o pé do acelerador e segure a direção firme.`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "direcao_defensiva" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('placa') || norm.includes('sinalizacao') || norm.includes('semaforo') || norm.includes('faixa')) {
+    return {
+      intent: "explain_content",
+      message: `A sinalização de trânsito é dividida em três grupos principais de placas:\n\n1. **Regulamentação (circulares, borda vermelha e fundo branco):** Indicam proibições, restrições e obrigações. O desrespeito constitui infração de trânsito (ex: R-1 Pare, R-2 Dê a preferência).\n2. **Advertência (quadradas amarelas em losango):** Alertam sobre perigos ou características da via adiante (ex: A-1a Curva acentuada).\n3. **Indicação (azuis, verdes ou marrons):** Identificam vias, distâncias, serviços auxiliares e atrativos turísticos.`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "placas_sinalizacao" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('mecanica') || norm.includes('motor') || norm.includes('freio') || norm.includes('pneu') || norm.includes('oleo') || norm.includes('radiador')) {
+    return {
+      intent: "explain_content",
+      message: `Os pontos essenciais de Mecânica Básica para a prova teórica incluem:\n\n- **Manutenção Preventiva:** Evita quebras inesperadas e reduz acidentes de trânsito.\n- **Pneus:** A profundidade mínima dos sulcos deve ser de **1,6 mm** (indicador TWI). Sulcos abaixo disso tornam o pneu "careca" e geram infração grave.\n- **Arrefecimento e Lubrificação:** Verificar sempre o nível do óleo do motor e o nível da água/aditivo no radiador com o motor frio e em terreno plano.\n- **Painel de Instrumentos:** Luzes vermelhas indicam emergência que exige parada imediata (ex: pressão do óleo ou freios).`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "mecanica_basica" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  if (norm.includes('meio ambiente') || norm.includes('cidadania') || norm.includes('poluicao') || norm.includes('catalisador') || norm.includes('ciclista') || norm.includes('pedestre')) {
+    return {
+      intent: "explain_content",
+      message: `Sobre Meio Ambiente e Cidadania no trânsito:\n\n- **Poluição do Ar e Sonora:** Veículos mal regulados aumentam a emissão de gases nocivos como monóxido de carbono (CO). O catalisador no escapamento converte gases tóxicos em substâncias menos agressivas.\n- **Cidadania e Convivência:** O pedestre tem prioridade na faixa sem semáforo. Ao ultrapassar ciclistas, o condutor deve manter a distância lateral mínima de **1,5 metro** e reduzir a velocidade.`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "meio_ambiente_cidadania" } },
+      requires_confirmation: false,
+      confidence: 1.0
+    };
+  }
+
+  return {
+    intent: "explain_content",
+    message: `Estou aqui para te orientar em todos os conteúdos da sua habilitação! Para a prova oficial do DETRAN, o melhor caminho é dominar **Legislação de Trânsito** e **Direção Defensiva**, ler os módulos em PDF com calma e resolver as baterias de questões até alcançar mais de 70% de acertos.\n\nVocê pode me perguntar sobre placas, regras de preferência, primeiros socorros ou dicas sobre o AprovaDrive. Qual assunto você gostaria de revisar agora?`,
+    action: { type: "none", status: "none", parameters: {} },
+    requires_confirmation: false,
+    confidence: 1.0
+  };
+}
+
+export async function getAiResponse(userMessage, conversationHistory = [], userContext = {}) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return getSmartFallbackResponse(userMessage, userContext);
+  }
+
   const client = new Groq({ apiKey });
-  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  const model = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 
   const messages = [...SYSTEM_PROMPTS];
 
@@ -178,17 +309,6 @@ export async function getAiResponse(userMessage, conversationHistory = [], userC
       confidence: parsed.confidence !== undefined ? Number(parsed.confidence) : 1.0
     };
   } catch (error) {
-    console.error("[AiService Error]:", error.message);
-    return {
-      intent: "conversation",
-      message: "Tive um problema ao processar sua solicitação no momento. Por favor, tente enviar sua pergunta novamente.",
-      action: {
-        type: "none",
-        status: "failed",
-        parameters: {}
-      },
-      requires_confirmation: false,
-      confidence: 0.0
-    };
+    return getSmartFallbackResponse(userMessage, userContext);
   }
 }
