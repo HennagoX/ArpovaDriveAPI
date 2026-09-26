@@ -1,5 +1,6 @@
 import Groq from "groq-sdk";
 import dotenv from 'dotenv';
+import { formatarDesempenhoParaPrompt } from "./desempenho.service.js";
 
 dotenv.config();
 
@@ -108,6 +109,10 @@ const SYSTEM_PROMPTS = [
 4. Gamificação e Tarefas:
    - Ganho de XP: +10 XP por acerto em questão na primeira tentativa, +50 XP ao ler módulo, +150 XP em tarefas de módulos, +350 XP em tarefas de questões após atingir 70%+ de acertos na bateria.
 5. RESTRICÃO DE ESCOPO: Você é exclusivamente o Tutor do AprovaDrive. Responda apenas perguntas sobre as matérias do DETRAN, regras de trânsito e o funcionamento da plataforma AprovaDrive. Se o usuário perguntar sobre assuntos não relacionados, recuse com cortesia e redirecione para os estudos de trânsito.`
+  },
+  {
+    role: "system",
+    content: "CONHECIMENTO DO DESEMPENHO DO ALUNO: Sempre que fornecido no contexto, consulte o bloco 'DESEMPENHO REAL E DETALHADO DO ALUNO NO APROVADRIVE'. Você sabe exatamente a porcentagem de acertos geral do aluno, o total de questões, acertos, erros, simulados realizados e aprovados, bem como o aproveitamento específico em cada matéria (Legislação, Placas, Direção Defensiva, Primeiros Socorros, Meio Ambiente e Mecânica). Quando o aluno perguntar como está seu desempenho, onde tem mais dificuldade ou pedir orientações, use esses dados exatos e ofereça um plano de ação personalizado e encorajador."
   }
 ];
 
@@ -141,6 +146,62 @@ export function getSmartFallbackResponse(userMessage, userContext = {}) {
       requires_confirmation: false,
       confidence: 1.0
     };
+  }
+
+  const d = userContext?.desempenho;
+  if (
+    norm.includes('desempenho') ||
+    norm.includes('aproveitamento') ||
+    norm.includes('ponto fraco') ||
+    norm.includes('pontos fracos') ||
+    norm.includes('fraqueza') ||
+    norm.includes('onde melhorar') ||
+    norm.includes('preciso melhorar') ||
+    norm.includes('estou pronto') ||
+    norm.includes('vou passar') ||
+    norm.includes('simulado') ||
+    norm.includes('minhas notas') ||
+    norm.includes('meus acertos') ||
+    norm.includes('estatistica') ||
+    norm.includes('diagnostico') ||
+    norm.includes('minha evolucao')
+  ) {
+    if (d && d.resumo) {
+      const { taxaAproveitamento, totalQuestoes, totalAcertos, totalErros, totalSimulados, simuladosAprovados, statusGeral } = d.resumo;
+      const materiasTexto = (d.materias || [])
+        .map(m => `• **${m.nome}:** ${m.porcentagem}% (${m.status}) — ${m.acertos}/${m.totalQuestoes} acertos`)
+        .join('\n');
+
+      const simuladoTexto = (d.ultimosSimulados && d.ultimosSimulados.length > 0)
+        ? `Você realizou **${totalSimulados} simulados** (${simuladosAprovados} com aprovação). Seu último simulado foi o **${d.ultimosSimulados[0].titulo}** com nota **${d.ultimosSimulados[0].notaTexto} (${d.ultimosSimulados[0].porcentagem}%)**.`
+        : `Você ainda não realizou nenhum simulado oficial de 30 questões. Fazer simulados é crucial para testar seu tempo e resistência para o DETRAN!`;
+
+      const reforcoTexto = (d.pontosFracos && d.pontosFracos.length > 0)
+        ? `⚠️ **Foco de Reforço:** Priorize urgentemente **${d.pontosFracos.slice(0, 2).join(' e ')}**, pois estão abaixo do índice ideal de segurança (70%).`
+        : `✅ **Excelente:** Você está mantendo ótimo rendimento em todas as matérias praticadas!`;
+
+      return {
+        intent: "analyze_performance",
+        message: `Aqui está o raio-x completo do seu desempenho no AprovaDrive, ${nome}:\n\n` +
+          `📊 **Aproveitamento Geral:** **${taxaAproveitamento}%** (${statusGeral})\n` +
+          `🎯 **Questões Feitas:** ${totalQuestoes} resolvidas (${totalAcertos} acertos e ${totalErros} erros)\n\n` +
+          `📚 **Rendimento por Matéria:**\n${materiasTexto}\n\n` +
+          `📝 **Simulados:** ${simuladoTexto}\n\n` +
+          `${reforcoTexto}\n\n` +
+          `💡 **Diagnóstico do Tutor:** ${d.diagnosticoIa || 'Continue firme no seu cronograma diário!'}`,
+        action: { type: "analyze_performance", status: "none", parameters: { aproveitamento: taxaAproveitamento } },
+        requires_confirmation: false,
+        confidence: 1.0
+      };
+    } else {
+      return {
+        intent: "analyze_performance",
+        message: `Olá, ${nome}! No momento não localizei registros suficientes de questões concluídas no seu perfil. Comece resolvendo as baterias de questões e fazendo um simulado geral de 30 questões para eu mapear seus pontos fortes e fracos!`,
+        action: { type: "analyze_performance", status: "none", parameters: {} },
+        requires_confirmation: false,
+        confidence: 1.0
+      };
+    }
   }
 
   if (norm.includes('dica') || norm.includes('passar') || norm.includes('primeira') || norm.includes('estudar') || norm.includes('cronograma') || norm.includes('como passar')) {
@@ -263,7 +324,15 @@ export async function getAiResponse(userMessage, conversationHistory = [], userC
 
   const messages = [...SYSTEM_PROMPTS];
 
-  if (userContext && Object.keys(userContext).length > 0) {
+  if (userContext?.desempenho) {
+    const promptDesempenho = formatarDesempenhoParaPrompt(userContext.desempenho);
+    if (promptDesempenho) {
+      messages.push({
+        role: "system",
+        content: promptDesempenho
+      });
+    }
+  } else if (userContext && Object.keys(userContext).length > 0) {
     messages.push({
       role: "system",
       content: `DADOS DO USUÁRIO ATUAL: Nome: ${userContext.nome || 'Aluno'}, Nível: ${userContext.nivel || 1}, Taxa de acertos atual: ${userContext.taxaAproveitamento !== undefined ? userContext.taxaAproveitamento + '%' : 'não informada'}.`

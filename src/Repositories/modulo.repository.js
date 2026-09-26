@@ -16,13 +16,16 @@ export async function resolveUserId(identifier) {
   }
 
   const res = await pool.query(
-    'SELECT id_usuario FROM usuario WHERE LOWER(nome) = LOWER($1) OR LOWER(email) = LOWER($1) LIMIT 1',
+    'SELECT id_usuario FROM usuario WHERE LOWER(nome) = LOWER($1) OR LOWER(email) = LOWER($1) OR LOWER(nome) LIKE LOWER($1) || \'%\' OR LOWER(nome) LIKE \'%\' || LOWER($1) || \'%\' LIMIT 1',
     [clean]
   );
   if (res.rows.length > 0) return res.rows[0].id_usuario;
 
-  const defaultUser = await pool.query("SELECT id_usuario FROM usuario WHERE LOWER(nome) = 'henrique' LIMIT 1");
-  return defaultUser.rows[0]?.id_usuario || clean;
+  const defaultUser = await pool.query("SELECT id_usuario FROM usuario WHERE LOWER(nome) LIKE '%henrique%' LIMIT 1");
+  if (defaultUser.rows.length > 0) return defaultUser.rows[0].id_usuario;
+
+  const firstUser = await pool.query('SELECT id_usuario FROM usuario LIMIT 1');
+  return firstUser.rows[0]?.id_usuario || null;
 }
 
 export async function getCurrentModuloDB(content, userId) {

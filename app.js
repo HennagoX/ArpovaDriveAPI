@@ -10,6 +10,7 @@ import taskRoutes from './src/routes/task.routes.js';
 import questoesRoutes from './src/routes/questoes.routes.js';
 import moduloRoutes from './src/routes/modulo.router.js';
 import aiRoutes from './src/routes/ai.routes.js';
+import desempenhoRoutes from './src/routes/desempenho.routes.js';
 
 import { corsOptions } from './src/config/cors.js';
 import { rateLimiters } from './src/config/rateLimit.js';
@@ -28,6 +29,7 @@ app.use('/task', taskRoutes);
 app.use('/questoes', questoesRoutes);
 app.use('/modulo', moduloRoutes);
 app.use('/ai', aiRoutes);
+app.use('/desempenho', desempenhoRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ ok: true, service: 'AprovaDrive API' });
