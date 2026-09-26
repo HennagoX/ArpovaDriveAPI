@@ -23,10 +23,7 @@ function extrairUserId(req) {
 export async function checkAcerto(req, res) {
   try {
     const userId = extrairUserId(req);
-    console.log(req.body.resposta);
     const resultado = await checarAcerto(req.body, userId);
-
-    console.log(resultado);
     
     if (!resultado) {
       return res.status(400).json({
