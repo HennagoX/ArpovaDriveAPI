@@ -2,6 +2,35 @@ import taskFixaRepository from '../Repositories/taskFixa.repository.js';
 import { TAREFAS_FIXAS_CONFIG, getTaskById } from '../config/tarefasFixas.config.js';
 import { getLevelInfo } from './exp.service.js';
 import { normalizarMateria } from './questoes.service.js';
+import { checkIsAdmin } from '../middlewares/admin.middleware.js';
+
+export function resolveConteudoConfig(conteudoId) {
+  if (!conteudoId) return null;
+  const clean = String(conteudoId).toLowerCase().replace(/[^a-z0-9]/g, '');
+  for (const [key, cfg] of Object.entries(TAREFAS_FIXAS_CONFIG)) {
+    const keyClean = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const slugClean = (cfg.slug || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (keyClean === clean || slugClean === clean) {
+      return { key, cfg };
+    }
+  }
+  if (clean.includes('transito') || clean.includes('codigo') || clean.includes('ctb') || clean.includes('legislacao')) {
+    return { key: 'CodigoTransito', cfg: TAREFAS_FIXAS_CONFIG.CodigoTransito };
+  }
+  if (clean.includes('placa') || clean.includes('sinalizacao')) {
+    return { key: 'PlacasTransito', cfg: TAREFAS_FIXAS_CONFIG.PlacasTransito };
+  }
+  if (clean.includes('direcao') || clean.includes('defensiva')) {
+    return { key: 'DirecaoDefensiva', cfg: TAREFAS_FIXAS_CONFIG.DirecaoDefensiva };
+  }
+  if (clean.includes('socorro') || clean.includes('primeiro')) {
+    return { key: 'PrimeirosSocorros', cfg: TAREFAS_FIXAS_CONFIG.PrimeirosSocorros };
+  }
+  if (clean.includes('meio') || clean.includes('ambiente') || clean.includes('cidadania')) {
+    return { key: 'Cidadania', cfg: TAREFAS_FIXAS_CONFIG.Cidadania };
+  }
+  return null;
+}
 
 export const taskFixaService = {
   async getUsuario(identifier) {
@@ -21,6 +50,7 @@ export const taskFixaService = {
     const completedList = await taskFixaRepository.getCompletedFixedTasks(userId);
     const bateriasList = await taskFixaRepository.getUserBaterias(userId);
     const simuladosList = await taskFixaRepository.getUserSimulados(userId);
+    const customList = await taskFixaRepository.getCustomFixedTasks();
 
     const completedMap = new Map();
     completedList.forEach(item => {
@@ -49,7 +79,27 @@ export const taskFixaService = {
       let contentXpGanho = 0;
       const isQuestion = conteudo.isQuestion;
 
-      const tasksProcessadas = conteudo.tasks.map(t => {
+      const customParaConteudo = customList.filter(c => {
+        const resolved = resolveConteudoConfig(c.conteudo_id);
+        return resolved && resolved.key === key;
+      }).map(c => ({
+        id: c.id,
+        tipo: c.tipo || 'modulo',
+        moduloNumero: Number(c.modulo_numero || 1),
+        titulo: c.titulo,
+        descricao: c.descricao || `Estude e conclua o Módulo ${c.modulo_numero} para coletar a recompensa.`,
+        xp_reward: Number(c.xp_reward || 150),
+        is_custom: true
+      }));
+
+      const todasTasks = [...conteudo.tasks, ...customParaConteudo];
+      todasTasks.sort((a, b) => {
+        const modA = a.moduloNumero || (a.modulosNecessarios || 999);
+        const modB = b.moduloNumero || (b.modulosNecessarios || 999);
+        return modA - modB;
+      });
+
+      const tasksProcessadas = todasTasks.map(t => {
         contentTotalTasks++;
         totalTasksGlobal++;
         contentXpDisponivel += t.xp_reward;
@@ -306,7 +356,28 @@ export const taskFixaService = {
     const user = await this.getUsuario(userIdentifier);
     const userId = user.id_usuario;
 
-    const task = getTaskById(taskId);
+    let task = getTaskById(taskId);
+    if (!task) {
+      const customRow = await taskFixaRepository.getCustomTaskById(taskId);
+      if (customRow) {
+        const resolved = resolveConteudoConfig(customRow.conteudo_id);
+        const cfg = resolved ? resolved.cfg : TAREFAS_FIXAS_CONFIG.CodigoTransito;
+        task = {
+          id: customRow.id,
+          tipo: customRow.tipo || 'modulo',
+          moduloNumero: Number(customRow.modulo_numero || 1),
+          titulo: customRow.titulo,
+          descricao: customRow.descricao,
+          xp_reward: Number(customRow.xp_reward || 150),
+          is_custom: true,
+          conteudoId: cfg ? cfg.id : customRow.conteudo_id,
+          conteudoTitulo: cfg ? cfg.titulo : customRow.conteudo_id,
+          colunaModulo: cfg ? cfg.colunaModulo : 'modulo_codigotransito',
+          colunaAcertos: cfg ? cfg.colunaAcertos : 'acertos_codigotransito'
+        };
+      }
+    }
+
     if (!task) {
       const err = new Error(`Tarefa "${taskId}" não encontrada no sistema de tarefas fixas.`);
       err.statusCode = 404;
@@ -393,6 +464,73 @@ export const taskFixaService = {
         status: 'done',
         concluida_em: recorded.concluida_em
       }
+    };
+  },
+
+  async criarTarefaFixaAdmin(dados, requesterId = null) {
+    const isAdmin = await checkIsAdmin(requesterId);
+    if (!isAdmin) {
+      const err = new Error('Acesso negado. Apenas o administrador tem permissão para criar tarefas fixas.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    const { conteudo_id, modulo_numero, tipo = 'modulo', xp_reward = 150 } = dados;
+    if (!conteudo_id) {
+      const err = new Error('O conteúdo de estudo (conteudo_id) é obrigatório.');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const modNum = Math.max(1, Number(modulo_numero || 1));
+    const defaultTitulo = `Concluir Módulo ${modNum}`;
+    const titulo = (dados.titulo && dados.titulo.trim()) ? dados.titulo.trim() : defaultTitulo;
+    const defaultDescricao = `Estude e conclua o Módulo ${modNum} para desbloquear novas lições e coletar sua recompensa.`;
+    const descricao = (dados.descricao && dados.descricao.trim()) ? dados.descricao.trim() : defaultDescricao;
+
+    const id = `fixa_${String(conteudo_id).toLowerCase().replace(/[^a-z0-9]/g, '')}_mod_${modNum}_${Date.now()}`;
+
+    const novaTarefa = await taskFixaRepository.createCustomFixedTask({
+      id,
+      conteudo_id,
+      tipo,
+      modulo_numero: modNum,
+      titulo,
+      descricao,
+      xp_reward: Number(xp_reward || 150)
+    });
+
+    return {
+      success: true,
+      message: `Tarefa fixa "${novaTarefa.titulo}" criada com sucesso!`,
+      task: novaTarefa
+    };
+  },
+
+  async removerTarefaFixaAdmin(taskId, requesterId = null) {
+    const isAdmin = await checkIsAdmin(requesterId);
+    if (!isAdmin) {
+      const err = new Error('Acesso negado. Apenas o administrador tem permissão para remover tarefas fixas.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    if (!taskId) {
+      const err = new Error('ID da tarefa é obrigatório para remoção.');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const removida = await taskFixaRepository.deleteCustomFixedTask(taskId);
+    if (!removida) {
+      const err = new Error('Tarefa customizada não encontrada para remoção.');
+      err.statusCode = 404;
+      throw err;
+    }
+
+    return {
+      success: true,
+      message: `Tarefa fixa "${removida.titulo}" removida com sucesso!`
     };
   }
 };

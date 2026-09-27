@@ -60,8 +60,38 @@ export async function concluirFixa(req, res, next) {
   }
 }
 
+export async function criarTarefaFixaAdminController(req, res, next) {
+  try {
+    console.log("B");
+    const requesterId = req.headers?.['x-admin-id'] || req.headers?.['x-requester-id'] || req.body?.adminId || extrairIdentificadorUsuario(req);
+    const result = await taskFixaService.criarTarefaFixaAdmin(req.body, requesterId);
+    return res.status(201).json(result);
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ success: false, error: error.message });
+    }
+    next(error);
+  }
+}
+
+export async function removerTarefaFixaAdminController(req, res, next) {
+  try {
+    const requesterId = req.headers?.['x-admin-id'] || req.headers?.['x-requester-id'] || req.query?.adminId;
+    const taskId = req.params?.id || req.body?.taskId || req.query?.taskId;
+    const result = await taskFixaService.removerTarefaFixaAdmin(taskId, requesterId);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ success: false, error: error.message });
+    }
+    next(error);
+  }
+}
+
 export default {
   listarFixas,
   buscarFixaPorId,
-  concluirFixa
+  concluirFixa,
+  criarTarefaFixaAdminController,
+  removerTarefaFixaAdminController
 };

@@ -136,9 +136,47 @@ export const taskFixaRepository = {
       query += ` AND LOWER(materia) = LOWER($4)`;
       params.push(materia);
     }
-    query += ` LIMIT 1`;
     const res = await pool.query(query, params);
     return res.rows.length > 0;
+  },
+
+  async getCustomFixedTasks(conteudoId = null) {
+    let query = 'SELECT * FROM tarefa_fixa_customizada WHERE removido = FALSE';
+    const params = [];
+    if (conteudoId) {
+      query += ' AND LOWER(conteudo_id) = LOWER($1)';
+      params.push(conteudoId);
+    }
+    query += ' ORDER BY modulo_numero ASC, criado_em ASC';
+    const res = await pool.query(query, params);
+    return res.rows;
+  },
+
+  async getCustomTaskById(id) {
+    const res = await pool.query(
+      'SELECT * FROM tarefa_fixa_customizada WHERE id = $1 AND removido = FALSE LIMIT 1',
+      [id]
+    );
+    return res.rows[0] || null;
+  },
+
+  async createCustomFixedTask(data) {
+    const { id, conteudo_id, tipo = 'modulo', modulo_numero, titulo, descricao, xp_reward = 150 } = data;
+    const res = await pool.query(
+      `INSERT INTO tarefa_fixa_customizada (id, conteudo_id, tipo, modulo_numero, titulo, descricao, xp_reward)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *;`,
+      [id, conteudo_id, tipo, modulo_numero, titulo, descricao, xp_reward]
+    );
+    return res.rows[0];
+  },
+
+  async deleteCustomFixedTask(id) {
+    const res = await pool.query(
+      'UPDATE tarefa_fixa_customizada SET removido = TRUE WHERE id = $1 RETURNING *;',
+      [id]
+    );
+    return res.rows[0] || null;
   }
 };
 

@@ -9,18 +9,28 @@ import {
   pausar,
   reiniciar,
   resetarCronograma,
-  regenerarComIA
+  regenerarComIA,
+  criarTarefaAdminController
 } from '../controllers/task.controller.js';
 import {
   listarFixas,
   buscarFixaPorId,
-  concluirFixa
+  concluirFixa,
+  criarTarefaFixaAdminController,
+  removerTarefaFixaAdminController
 } from '../controllers/taskFixa.controller.js';
 
 const router = Router();
 
 router.get('/admin-check', verificarAdmin);
 router.get('/usuarios', listarUsuarios);
+router.post('/admin/criar-tarefa', criarTarefaAdminController);
+router.post('/criar-tarefa', criarTarefaAdminController);
+
+router.post('/fixas/admin/criar', criarTarefaFixaAdminController);
+router.post('/fixas/criar', criarTarefaFixaAdminController);
+router.delete('/fixas/admin/:id', removerTarefaFixaAdminController);
+router.delete('/fixas/:id', removerTarefaFixaAdminController);
 
 router.get('/fixas', listarFixas);
 router.get('/fixas/:id', buscarFixaPorId);
