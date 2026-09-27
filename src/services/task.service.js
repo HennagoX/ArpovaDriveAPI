@@ -1,5 +1,8 @@
 import taskRepository from '../Repositories/task.repository.js';
 import { getLevelInfo } from './exp.service.js';
+import { sugerirTarefasSemanaisComIA, gerarTarefasSemanaisFallback } from './ai.service.js';
+import { obterDesempenhoUsuario } from './desempenho.service.js';
+import { normalizarMateria } from './questoes.service.js';
 
 export const MAX_PER_DAY = 3;
 export const MAX_DAYS_WEEK = 6;
@@ -30,6 +33,147 @@ export const CHAVE_PARA_NUMERO = {
   sexta: 5,
   sabado: 6
 };
+
+export const NOMES_MATERIAS_EXIBICAO = {
+  CodigoTransito: 'Legislação de Trânsito',
+  PlacasTransito: 'Placas e Sinalização',
+  DirecaoDefensiva: 'Direção Defensiva',
+  PrimeirosSocorros: 'Primeiros Socorros',
+  MeioAmbiente: 'Meio Ambiente e Cidadania',
+  MecanicaBasica: 'Mecânica Básica',
+  Geral: 'DETRAN Geral'
+};
+
+export const MODULO_COLUNAS_MAP = {
+  CodigoTransito: 'modulo_codigotransito',
+  PlacasTransito: 'modulo_placastransito',
+  DirecaoDefensiva: 'modulo_direcaodefensiva',
+  PrimeirosSocorros: 'modulo_primeirossocorros',
+  MeioAmbiente: 'modulo_cidadania'
+};
+
+export const ACERTOS_COLUNAS_MAP = {
+  CodigoTransito: 'acertos_codigotransito',
+  PlacasTransito: 'acertos_placatransito',
+  DirecaoDefensiva: 'acertos_direcaodefensiva',
+  PrimeirosSocorros: 'acertos_primeirossocorros',
+  MeioAmbiente: 'acertos_meioambiente'
+};
+
+export function inferirTipoValidacao(task) {
+  const titulo = String(task?.titulo || '').toLowerCase();
+  const desc = String(task?.descricao || '').toLowerCase();
+  const texto = `${titulo} ${desc}`;
+
+  let materia = 'CodigoTransito';
+  if (texto.includes('placa') || texto.includes('sinaliza')) materia = 'PlacasTransito';
+  else if (texto.includes('direcao') || texto.includes('defensiva')) materia = 'DirecaoDefensiva';
+  else if (texto.includes('socorro') || texto.includes('saude') || texto.includes('primeiro')) materia = 'PrimeirosSocorros';
+  else if (texto.includes('meio') || texto.includes('ambiente') || texto.includes('cidada')) materia = 'MeioAmbiente';
+  else if (texto.includes('mecanica')) materia = 'MecanicaBasica';
+
+  if (texto.includes('simulado')) {
+    const isGeral = texto.includes('geral') || texto.includes('detran') || texto.includes('oficial') || !texto.includes('especifico');
+    return {
+      tipo: 'simulado',
+      parametros: {
+        materia: isGeral ? 'Geral' : materia,
+        meta_porcentagem: 40,
+        acertos_minimos: 12
+      }
+    };
+  }
+
+  if (texto.includes('quiz') || texto.includes('bateria') || texto.includes('questõ') || texto.includes('questo')) {
+    return {
+      tipo: 'bateria',
+      parametros: {
+        materia,
+        bateria: 1,
+        meta_porcentagem: 40
+      }
+    };
+  }
+
+  if (texto.includes('estudar') || texto.includes('capitulo') || texto.includes('capítulo') || texto.includes('leitura') || texto.includes('modulo') || texto.includes('módulo')) {
+    return {
+      tipo: 'modulo',
+      parametros: {
+        materia,
+        modulo_minimo: 1
+      }
+    };
+  }
+
+  if (texto.includes('revis') || texto.includes('erros') || texto.includes('fixacao') || texto.includes('fixação') || texto.includes('desafio')) {
+    return {
+      tipo: 'bateria',
+      parametros: {
+        materia,
+        bateria: 1,
+        meta_porcentagem: 40
+      }
+    };
+  }
+
+  return {
+    tipo: 'bateria',
+    parametros: {
+      materia,
+      bateria: 1,
+      meta_porcentagem: 40
+    }
+  };
+}
+
+export function obterLinkAcao(tipo, params = {}) {
+  const materia = params.materia || 'CodigoTransito';
+  if (tipo === 'simulado') {
+    return {
+      tipo: 'simulado',
+      rota: 'simulado',
+      label: 'Fazer Simulado',
+      icone: 'fa-solid fa-graduation-cap'
+    };
+  }
+  if (tipo === 'modulo') {
+    return {
+      tipo: 'modulo',
+      rota: 'modulos',
+      label: 'Estudar Módulo',
+      icone: 'fa-solid fa-book-open-reader',
+      conteudoId: materia
+    };
+  }
+  if (tipo === 'bateria') {
+    return {
+      tipo: 'questoes',
+      rota: 'questoes-resolucao',
+      label: 'Praticar Questões',
+      icone: 'fa-solid fa-play',
+      materiaId: materia,
+      bateriaNumero: params.bateria || 1
+    };
+  }
+  if (tipo === 'acertos') {
+    return {
+      tipo: 'questoes',
+      rota: 'questoes-modulos',
+      label: 'Resolver Questões',
+      icone: 'fa-solid fa-bolt',
+      materiaId: materia
+    };
+  }
+  return {
+    tipo: 'questoes',
+    rota: 'questoes-resolucao',
+    label: 'Revisar Conteúdo',
+    icone: 'fa-solid fa-rotate-left',
+    materiaId: materia,
+    bateriaNumero: 1
+  };
+}
+
 
 export function getInicioSemana(date = new Date()) {
   const d = new Date(date);
@@ -316,8 +460,25 @@ const taskService = {
 
     let tasks = await taskRepository.getTasksByUserAndWeek(userId, inicioSemanaStr);
 
-    if (!tasks || tasks.length === 0) {
-      const tasksToInsert = DEFAULT_WEEK_TEMPLATES.map((tmpl) => {
+    const hasLegacyOnly = Array.isArray(tasks) && tasks.length > 0 && !tasks.some(t => t.tipo_validacao) && !tasks.some(t => t.concluida || t.status === 'done');
+
+    if (!tasks || tasks.length === 0 || hasLegacyOnly) {
+      if (hasLegacyOnly) {
+        await taskRepository.deleteUncompletedTasksByUserAndWeek(userId, inicioSemanaStr);
+      }
+
+      let user = null;
+      let desempenho = null;
+      try {
+        user = await this.getUsuario(userId);
+        desempenho = await obterDesempenhoUsuario(user.id_usuario);
+      } catch (err) {
+        console.warn('[TaskService] Falha ao obter dados para sugestão IA:', err.message);
+      }
+
+      const templatesSugeridos = await sugerirTarefasSemanaisComIA(user || { id_usuario: userId }, desempenho);
+
+      const tasksToInsert = templatesSugeridos.map((tmpl) => {
         const dayDate = weekDays[tmpl.dia_semana - 1];
         return {
           id_usuario: userId,
@@ -331,7 +492,11 @@ const taskService = {
           horario: tmpl.horario,
           duracao: tmpl.duracao,
           data_agendada: formatToYmd(dayDate),
-          inicio_semana: inicioSemanaStr
+          inicio_semana: inicioSemanaStr,
+          tipo_validacao: tmpl.tipo_validacao || 'bateria',
+          parametros_validacao: { ...(tmpl.parametros_validacao || {}), sugerida_por_ia: true },
+          validada: false,
+          motivo_bloqueio: null
         };
       });
 
@@ -339,6 +504,240 @@ const taskService = {
     }
 
     return tasks;
+  },
+
+  async validarCumprimentoTarefa(task, user, refDate = new Date(), preloadedData = null) {
+    if (!task) {
+      return { valido: false, motivo: 'Tarefa inválida.' };
+    }
+
+    const userId = user.id_usuario;
+    let tipo = task.tipo_validacao;
+    let params = task.parametros_validacao;
+
+    if (typeof params === 'string') {
+      try { params = JSON.parse(params); } catch { params = {}; }
+    }
+    params = params || {};
+
+    if (!tipo) {
+      const inferido = inferirTipoValidacao(task);
+      tipo = inferido.tipo;
+      params = { ...inferido.parametros, ...params };
+    }
+
+    const materiaNorm = normalizarMateria(params.materia || 'CodigoTransito');
+    const nomeMateria = NOMES_MATERIAS_EXIBICAO[materiaNorm] || params.materia || 'Matéria';
+    const linkAcao = obterLinkAcao(tipo, { ...params, materia: materiaNorm });
+
+    const progresso = preloadedData?.progresso || await taskRepository.getUserProgresso(userId);
+    const baterias = preloadedData?.baterias || await taskRepository.getUserBaterias(userId);
+    const simulados = preloadedData?.simulados || await taskRepository.getUserSimulados(userId);
+
+    if (tipo === 'modulo') {
+      const moduloMin = Number(params.modulo_minimo || 1);
+      const col = MODULO_COLUNAS_MAP[materiaNorm] || 'modulo_codigotransito';
+      const modAtual = Number(progresso?.[col] || 1);
+
+      if (modAtual >= moduloMin) {
+        return {
+          valido: true,
+          tipo,
+          progressoAtual: modAtual,
+          meta: moduloMin,
+          motivo: `Módulo ${moduloMin} de ${nomeMateria} estudado! Requisito cumprido.`,
+          linkAcao
+        };
+      } else {
+        return {
+          valido: false,
+          tipo,
+          progressoAtual: modAtual,
+          meta: moduloMin,
+          motivo: `Para concluir esta missão, estude o Módulo ${moduloMin} de ${nomeMateria} na aba Módulos (Seu progresso atual: Módulo ${modAtual}).`,
+          linkAcao
+        };
+      }
+    }
+
+    if (tipo === 'bateria') {
+      const batNum = params.bateria ? Number(params.bateria) : null;
+      const metaPct = Number(params.meta_porcentagem || 40);
+
+      const bateriasMateria = (baterias || []).filter(b => normalizarMateria(b.materia) === materiaNorm);
+
+      let batAlvo = null;
+      if (batNum) {
+        batAlvo = bateriasMateria.find(b => Number(b.bateria) === batNum);
+      }
+
+      if (batAlvo) {
+        const pct = Number(batAlvo.porcentagem || 0);
+        const aprovado = Boolean(batAlvo.aprovado) || pct >= metaPct;
+        if (aprovado) {
+          return {
+            valido: true,
+            tipo,
+            progressoAtual: pct,
+            meta: metaPct,
+            motivo: `Bateria ${batNum} de ${nomeMateria} superada com ${pct}% de acertos! Requisito cumprido.`,
+            linkAcao
+          };
+        } else {
+          return {
+            valido: false,
+            tipo,
+            progressoAtual: pct,
+            meta: metaPct,
+            motivo: `Você obteve ${pct}% na Bateria ${batNum} de ${nomeMateria}. A missão exige no mínimo ${metaPct}% de acertos para validação. Pratique novamente na aba Questões!`,
+            linkAcao
+          };
+        }
+      }
+
+      const algumaAprovada = bateriasMateria.find(b => Boolean(b.aprovado) || Number(b.porcentagem) >= metaPct);
+      if (algumaAprovada) {
+        return {
+          valido: true,
+          tipo,
+          progressoAtual: Number(algumaAprovada.porcentagem),
+          meta: metaPct,
+          motivo: `Bateria de ${nomeMateria} concluída com ${algumaAprovada.porcentagem}% de acertos! Requisito cumprido.`,
+          linkAcao
+        };
+      }
+
+      const tentouAlguma = bateriasMateria[0];
+      if (tentouAlguma) {
+        return {
+          valido: false,
+          tipo,
+          progressoAtual: Number(tentouAlguma.porcentagem),
+          meta: metaPct,
+          motivo: `Seu melhor rendimento em ${nomeMateria} foi ${tentouAlguma.porcentagem}%. É necessário atingir no mínimo ${metaPct}% de acertos para validar esta missão.`,
+          linkAcao
+        };
+      }
+
+      return {
+        valido: false,
+        tipo,
+        progressoAtual: 0,
+        meta: metaPct,
+        motivo: `Para concluir esta missão, resolva a Bateria de Questões de ${nomeMateria} e acerte no mínimo ${metaPct}% das questões.`,
+        linkAcao
+      };
+    }
+
+    if (tipo === 'simulado') {
+      const metaPct = Number(params.meta_porcentagem || 40);
+      const acertosMin = Number(params.acertos_minimos || 12);
+      const isGeral = !params.materia || String(params.materia).toLowerCase() === 'geral' || String(params.materia).toLowerCase() === 'todos';
+
+      const simsFiltrados = (simulados || []).filter(s => {
+        if (isGeral) return true;
+        return normalizarMateria(s.materia) === materiaNorm;
+      });
+
+      const simAprovado = simsFiltrados.find(s =>
+        Boolean(s.aprovado) || Number(s.porcentagem) >= metaPct || Number(s.acertos) >= acertosMin
+      );
+
+      if (simAprovado) {
+        return {
+          valido: true,
+          tipo,
+          progressoAtual: Number(simAprovado.porcentagem),
+          meta: metaPct,
+          motivo: `Simulado concluído (${simAprovado.porcentagem}% • ${simAprovado.acertos}/30 acertos)! Meta atingida.`,
+          linkAcao
+        };
+      }
+
+      const melhorSim = simsFiltrados.reduce((melhor, curr) => {
+        if (!melhor || Number(curr.acertos) > Number(melhor.acertos)) return curr;
+        return melhor;
+      }, null);
+
+      if (melhorSim) {
+        return {
+          valido: false,
+          tipo,
+          progressoAtual: Number(melhorSim.porcentagem),
+          meta: metaPct,
+          motivo: `Seu simulado anterior registrou ${melhorSim.acertos}/30 acertos (${melhorSim.porcentagem}%). A missão diária exige no mínimo ${acertosMin} acertos (${metaPct}%). Realize um novo simulado!`,
+          linkAcao
+        };
+      }
+
+      return {
+        valido: false,
+        tipo,
+        progressoAtual: 0,
+        meta: metaPct,
+        motivo: `Para concluir esta missão, realize um Simulado no AprovaDrive e atinja no mínimo ${acertosMin} acertos (${metaPct}%).`,
+        linkAcao
+      };
+    }
+
+    if (tipo === 'acertos') {
+      const acertosMin = Number(params.acertos_minimos || 4);
+      const colAcertos = ACERTOS_COLUNAS_MAP[materiaNorm] || 'acertos_codigotransito';
+      const acertosAtuais = Number(progresso?.[colAcertos] || 0);
+
+      if (acertosAtuais >= acertosMin) {
+        return {
+          valido: true,
+          tipo,
+          progressoAtual: acertosAtuais,
+          meta: acertosMin,
+          motivo: `Meta de acertos superada (${acertosAtuais}/${acertosMin} acertos em ${nomeMateria})!`,
+          linkAcao
+        };
+      } else {
+        return {
+          valido: false,
+          tipo,
+          progressoAtual: acertosAtuais,
+          meta: acertosMin,
+          motivo: `Você acumulou ${acertosAtuais} acertos em ${nomeMateria}. A missão exige no mínimo ${acertosMin} acertos. Pratique mais na área de Questões!`,
+          linkAcao
+        };
+      }
+    }
+
+    if (tipo === 'revisao') {
+      const metaPct = Number(params.meta_porcentagem || 40);
+      const bateriasMateria = (baterias || []).filter(b => normalizarMateria(b.materia) === materiaNorm);
+      const aprovada = bateriasMateria.find(b => Number(b.porcentagem) >= metaPct);
+
+      if (aprovada) {
+        return {
+          valido: true,
+          tipo,
+          progressoAtual: Number(aprovada.porcentagem),
+          meta: metaPct,
+          motivo: `Revisão de ${nomeMateria} concluída com sucesso (${aprovada.porcentagem}%)!`,
+          linkAcao
+        };
+      } else {
+        return {
+          valido: false,
+          tipo,
+          progressoAtual: 0,
+          meta: metaPct,
+          motivo: `Para concluir a revisão, responda a uma bateria de questões de ${nomeMateria} com pelo menos ${metaPct}% de acertos.`,
+          linkAcao
+        };
+      }
+    }
+
+    return {
+      valido: true,
+      tipo: 'geral',
+      motivo: 'Missão pronta para ser concluída!',
+      linkAcao
+    };
   },
 
   async getUserTaskPayload(identifier, refDate = new Date()) {
@@ -349,6 +748,13 @@ const taskService = {
 
     const rawTasks = await this.ensureWeeklyTasks(user.id_usuario, date);
 
+    // Pré-carrega dados do usuário para validação ultra-rápida (1 query cada)
+    const preloadedData = {
+      progresso: await taskRepository.getUserProgresso(user.id_usuario),
+      baterias: await taskRepository.getUserBaterias(user.id_usuario),
+      simulados: await taskRepository.getUserSimulados(user.id_usuario)
+    };
+
     const dias = {
       segunda: [],
       terca: [],
@@ -358,16 +764,70 @@ const taskService = {
       sabado: []
     };
 
-    rawTasks.forEach((t) => {
+    const diaHojeValido = diaSemanaAtual === 0 ? 7 : diaSemanaAtual;
+
+    for (const t of rawTasks) {
       const chave = MAPA_DIAS[t.dia_semana];
       if (chave) {
+        let params = t.parametros_validacao;
+        if (typeof params === 'string') {
+          try { params = JSON.parse(params); } catch { params = {}; }
+        }
+
+        const isToday = t.dia_semana === diaSemanaAtual;
+        const isPast = t.dia_semana < diaHojeValido;
+        const isFuture = t.dia_semana > diaHojeValido;
+        const isDone = Boolean(t.concluida || t.status === 'done');
+
+        let validacao = null;
+        let podeConcluir = false;
+        let motivoBloqueio = null;
+        let linkAcao = null;
+        let taskStatus = t.status;
+
+        if (isDone) {
+          taskStatus = 'done';
+          motivoBloqueio = null;
+          podeConcluir = false;
+          linkAcao = null;
+        } else if (isPast) {
+          // RIGOROSAMENTE BLOQUEADO: Se não fez no próprio dia, já era! Expirada definitivamente.
+          taskStatus = 'expired';
+          motivoBloqueio = `Esta missão expirou. Ela pertencia a ${NOMES_DIAS[t.dia_semana] || 'outro dia'} e não pode mais ser realizada. As tarefas diárias devem ser feitas no próprio dia.`;
+          podeConcluir = false;
+          linkAcao = null;
+        } else if (isFuture) {
+          // BLOQUEADO: Liberada apenas no próprio dia
+          taskStatus = 'pending';
+          motivoBloqueio = `Esta missão será liberada em ${NOMES_DIAS[t.dia_semana] || 'outro dia'}. As missões só podem ser realizadas no próprio dia.`;
+          podeConcluir = false;
+          linkAcao = null;
+        } else {
+          // É HOJE!
+          validacao = await this.validarCumprimentoTarefa(t, user, date, preloadedData);
+          podeConcluir = Boolean(validacao.valido && !isDone);
+          motivoBloqueio = validacao.valido ? null : validacao.motivo;
+          linkAcao = validacao.linkAcao;
+        }
+
         dias[chave].push({
           ...t,
+          status: taskStatus,
+          concluida: isDone,
           sort: Number(t.sort),
-          xp_reward: Number(t.xp_reward)
+          xp_reward: Number(t.xp_reward),
+          tipo_validacao: t.tipo_validacao || validacao?.tipo || 'bateria',
+          parametros_validacao: params || {},
+          podeConcluir,
+          expirada: !isDone && isPast,
+          bloqueada: !isDone && isFuture,
+          validacao,
+          motivo_bloqueio: motivoBloqueio,
+          linkAcao,
+          sugerida_por_ia: Boolean(params?.sugerida_por_ia ?? true)
         });
       }
-    });
+    }
 
     Object.keys(dias).forEach((k) => {
       dias[k].sort((a, b) => a.sort - b.sort);
@@ -398,20 +858,7 @@ const taskService = {
       }
     }
 
-    const diasFormatados = {};
-    for (let d = 1; d <= MAX_DAYS_WEEK; d++) {
-      const chave = MAPA_DIAS[d];
-      const listaTarefas = dias[chave] || [];
-
-      if (d === diaSemanaAtual) {
-        diasFormatados[chave] = listaTarefas;
-      } else {
-        diasFormatados[chave] = listaTarefas.map((t) => ({
-          ...t,
-          status: t.concluida || t.status === 'done' ? 'done' : 'pending'
-        }));
-      }
-    }
+    const diasFormatados = dias;
 
     const levelInfo = getLevelInfo(user.exp);
 
@@ -465,11 +912,14 @@ const taskService = {
       throw err;
     }
 
+    const diaHojeValido = diaSemanaHoje === 0 ? 7 : diaSemanaHoje;
     if (task.dia_semana !== diaSemanaHoje) {
       const nomeDiaTarefa = NOMES_DIAS[task.dia_semana] || `Dia ${task.dia_semana}`;
       const nomeDiaHoje = diaSemanaHoje === 0 ? 'Domingo' : (NOMES_DIAS[diaSemanaHoje] || 'Hoje');
       const err = new Error(
-        `Esta tarefa é de ${nomeDiaTarefa}. Você só pode realizar as tarefas do dia atual (${nomeDiaHoje}). As tarefas dos demais dias ficam bloqueadas até chegar o dia.`
+        task.dia_semana < diaHojeValido
+          ? `Esta missão expirou! Ela pertencia a ${nomeDiaTarefa}. As tarefas diárias devem ser realizadas rigorosamente no próprio dia e não podem mais ser recuperadas.`
+          : `Esta missão é de ${nomeDiaTarefa}. Você só pode realizar as tarefas do dia atual (${nomeDiaHoje}). As tarefas dos demais dias ficam bloqueadas até chegar o dia.`
       );
       err.statusCode = 400;
       throw err;
@@ -516,7 +966,7 @@ const taskService = {
     };
   },
 
-  async completeTask(taskId, identifier, refDate = new Date()) {
+  async completeTask(taskId, identifier, refDate = new Date(), options = {}) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
     const diaSemanaHoje = date.getDay();
@@ -534,11 +984,14 @@ const taskService = {
       throw err;
     }
 
+    const diaHojeValido = diaSemanaHoje === 0 ? 7 : diaSemanaHoje;
     if (task.dia_semana !== diaSemanaHoje) {
       const nomeDiaTarefa = NOMES_DIAS[task.dia_semana] || `Dia ${task.dia_semana}`;
       const nomeDiaHoje = diaSemanaHoje === 0 ? 'Domingo' : (NOMES_DIAS[diaSemanaHoje] || 'Hoje');
       const err = new Error(
-        `Esta tarefa é de ${nomeDiaTarefa}. Você só pode concluir tarefas no dia atual (${nomeDiaHoje}).`
+        task.dia_semana < diaHojeValido
+          ? `Esta missão expirou! Ela pertencia a ${nomeDiaTarefa}. Tarefas não concluídas no próprio dia expiram definitivamente e não podem mais ser recuperadas.`
+          : `Esta missão é de ${nomeDiaTarefa}. Você só pode concluir tarefas rigorosamente no próprio dia (${nomeDiaHoje}).`
       );
       err.statusCode = 400;
       throw err;
@@ -550,9 +1003,20 @@ const taskService = {
       throw err;
     }
 
+    // Validação real de cumprimento dos requisitos
+    const validacao = await this.validarCumprimentoTarefa(task, user, date);
+    if (!validacao.valido && !options.force) {
+      const err = new Error(validacao.motivo || 'Você ainda não cumpriu os requisitos necessários para concluir esta missão diária.');
+      err.statusCode = 400;
+      err.validacao = validacao;
+      throw err;
+    }
+
     const updatedTask = await taskRepository.updateTask(task.id, {
       status: 'done',
-      concluida: true
+      concluida: true,
+      validada: true,
+      motivo_bloqueio: null
     });
 
     const xpReward = Number(task.xp_reward || 30);
@@ -573,7 +1037,7 @@ const taskService = {
 
     return {
       success: true,
-      message: `Missão "${task.titulo}" concluída com sucesso! +${xpReward} XP!`,
+      message: `Missão "${task.titulo}" validada e concluída com sucesso! +${xpReward} XP!`,
       xp_reward: xpReward,
       novo_xp: novoXp,
       task: updatedTask,
@@ -584,6 +1048,7 @@ const taskService = {
   async pauseTask(taskId, identifier, refDate = new Date()) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
+    const diaSemanaHoje = date.getDay();
 
     const task = await taskRepository.getTaskById(taskId);
     if (!task) {
@@ -595,6 +1060,12 @@ const taskService = {
     if (task.id_usuario !== user.id_usuario) {
       const err = new Error('Esta tarefa não pertence ao usuário informado.');
       err.statusCode = 403;
+      throw err;
+    }
+
+    if (task.dia_semana !== diaSemanaHoje) {
+      const err = new Error('Você só pode pausar tarefas do próprio dia.');
+      err.statusCode = 400;
       throw err;
     }
 
@@ -637,7 +1108,8 @@ const taskService = {
 
     const updatedTask = await taskRepository.updateTask(task.id, {
       status: task.sort === 1 ? 'current' : 'pending',
-      concluida: false
+      concluida: false,
+      validada: false
     });
 
     const payload = await this.getUserTaskPayload(user.id_usuario, date);
@@ -657,7 +1129,6 @@ const taskService = {
     const inicioSemanaStr = formatToYmd(inicioSemanaDate);
 
     await taskRepository.deleteTasksByUserAndWeek(user.id_usuario, inicioSemanaStr);
-
     await this.ensureWeeklyTasks(user.id_usuario, date);
 
     const payload = await this.getUserTaskPayload(user.id_usuario, date);
@@ -665,6 +1136,57 @@ const taskService = {
     return {
       success: true,
       message: 'Cronograma semanal reinicializado com sucesso no banco de dados.',
+      payload
+    };
+  },
+
+  async regenerarTarefasComIA(identifier, refDate = new Date()) {
+    const user = await this.getUsuario(identifier);
+    const date = new Date(refDate);
+    const inicioSemanaDate = getInicioSemana(date);
+    const inicioSemanaStr = formatToYmd(inicioSemanaDate);
+    const weekDays = getCurrentWeekDays(date);
+
+    await taskRepository.deleteTasksByUserAndWeek(user.id_usuario, inicioSemanaStr);
+
+    let desempenho = null;
+    try {
+      desempenho = await obterDesempenhoUsuario(user.id_usuario);
+    } catch (err) {
+      console.warn('[TaskService] Falha ao obter desempenho para regeneração:', err.message);
+    }
+
+    const templatesSugeridos = await sugerirTarefasSemanaisComIA(user, desempenho);
+
+    const tasksToInsert = templatesSugeridos.map((tmpl) => {
+      const dayDate = weekDays[tmpl.dia_semana - 1];
+      return {
+        id_usuario: user.id_usuario,
+        titulo: tmpl.titulo,
+        descricao: tmpl.descricao,
+        xp_reward: tmpl.xp_reward,
+        status: tmpl.sort === 1 ? 'current' : 'pending',
+        concluida: false,
+        sort: tmpl.sort,
+        dia_semana: tmpl.dia_semana,
+        horario: tmpl.horario,
+        duracao: tmpl.duracao,
+        data_agendada: formatToYmd(dayDate),
+        inicio_semana: inicioSemanaStr,
+        tipo_validacao: tmpl.tipo_validacao || 'bateria',
+        parametros_validacao: { ...(tmpl.parametros_validacao || {}), sugerida_por_ia: true },
+        validada: false,
+        motivo_bloqueio: null
+      };
+    });
+
+    await taskRepository.insertWeeklyTasks(tasksToInsert);
+
+    const payload = await this.getUserTaskPayload(user.id_usuario, date);
+
+    return {
+      success: true,
+      message: 'Missões semanais otimizadas e sugeridas com sucesso pelo Tutor IA com base no seu desempenho atual!',
       payload
     };
   },

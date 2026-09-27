@@ -1,5 +1,6 @@
-import { getAiResponse, getSmartFallbackResponse } from "../services/ai.service.js";
+import { getAiResponse, getSmartFallbackResponse, sugerirTarefasSemanaisComIA } from "../services/ai.service.js";
 import { obterDesempenhoUsuario } from "../services/desempenho.service.js";
+import taskRepository from "../Repositories/task.repository.js";
 
 export async function chatWithAi(req, res) {
   let context = req.body?.context && typeof req.body.context === 'object' ? { ...req.body.context } : {};
@@ -47,6 +48,24 @@ export async function chatWithAi(req, res) {
   }
 }
 
+export async function sugerirTarefasController(req, res, next) {
+  try {
+    const userId = req.headers['x-user-id'] || req.body?.userId || req.body?.id_usuario || req.query?.userId || null;
+    const user = await taskRepository.findUser(userId);
+    const resolvedId = user?.id_usuario || userId;
+    const desempenho = await obterDesempenhoUsuario(resolvedId);
+    const tarefas = await sugerirTarefasSemanaisComIA(user || { id_usuario: resolvedId }, desempenho);
+    return res.status(200).json({
+      success: true,
+      tarefas
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
-  chatWithAi
+  chatWithAi,
+  sugerirTarefasController
 };
+

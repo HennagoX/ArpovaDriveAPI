@@ -8,7 +8,8 @@ import {
   concluir,
   pausar,
   reiniciar,
-  resetarCronograma
+  resetarCronograma,
+  regenerarComIA
 } from '../controllers/task.controller.js';
 import {
   listarFixas,
@@ -49,5 +50,7 @@ router.post('/reiniciar', reiniciar);
 router.post('/:id/reiniciar', reiniciar);
 
 router.post('/reset-schedule', resetarCronograma);
+router.post('/regenerar-ia', regenerarComIA);
+router.post('/sugerir-ia', regenerarComIA);
 
 export default router;

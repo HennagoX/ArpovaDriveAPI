@@ -381,3 +381,373 @@ export async function getAiResponse(userMessage, conversationHistory = [], userC
     return getSmartFallbackResponse(userMessage, userContext);
   }
 }
+
+export function normalizarMateriaId(nome) {
+  if (!nome) return 'CodigoTransito';
+  const lower = String(nome).toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (lower.includes('meio') || lower.includes('ambiente') || lower.includes('cidadania')) return 'MeioAmbiente';
+  if (lower.includes('codigo') || lower.includes('legislacao')) return 'CodigoTransito';
+  if (lower.includes('placa') || lower.includes('sinalizacao')) return 'PlacasTransito';
+  if (lower.includes('direcao') || lower.includes('defensiva') || lower.includes('ofensiva')) return 'DirecaoDefensiva';
+  if (lower.includes('socorro') || lower.includes('saude') || lower.includes('primeiro')) return 'PrimeirosSocorros';
+  if (lower.includes('mecanica')) return 'MecanicaBasica';
+  return 'CodigoTransito';
+}
+
+export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
+  const pontosFracos = Array.isArray(desempenho?.pontosFracos) && desempenho.pontosFracos.length > 0
+    ? desempenho.pontosFracos
+    : ['Direção Defensiva', 'Legislação de Trânsito'];
+  
+  const matFraca1 = normalizarMateriaId(pontosFracos[0]);
+  const matFraca2 = normalizarMateriaId(pontosFracos[1] || pontosFracos[0] || 'PrimeirosSocorros');
+
+  const nomeMateria = {
+    CodigoTransito: 'Legislação de Trânsito',
+    PlacasTransito: 'Placas e Sinalização',
+    DirecaoDefensiva: 'Direção Defensiva',
+    PrimeirosSocorros: 'Primeiros Socorros',
+    MeioAmbiente: 'Meio Ambiente e Cidadania',
+    MecanicaBasica: 'Mecânica Básica'
+  };
+
+  return [
+    // Segunda-feira (Dia 1)
+    {
+      dia_semana: 1,
+      sort: 1,
+      titulo: 'Estudo Teórico: Legislação de Trânsito (Módulo 1)',
+      descricao: 'Leia o Módulo 1 com foco nas normas gerais de circulação, conduta e preferências no trânsito.',
+      horario: '08:00',
+      duracao: '20 min',
+      xp_reward: 50,
+      tipo_validacao: 'modulo',
+      parametros_validacao: { materia: 'CodigoTransito', modulo_minimo: 1 }
+    },
+    {
+      dia_semana: 1,
+      sort: 2,
+      titulo: 'Bateria 1 de Questões: Legislação de Trânsito',
+      descricao: 'Resolva a Bateria 1 de Legislação e alcance no mínimo 40% de acertos para validar a missão.',
+      horario: '12:30',
+      duracao: '15 min',
+      xp_reward: 80,
+      tipo_validacao: 'bateria',
+      parametros_validacao: { materia: 'CodigoTransito', bateria: 1, meta_porcentagem: 40 }
+    },
+    {
+      dia_semana: 1,
+      sort: 3,
+      titulo: 'Fixação Prática: Placas de Sinalização',
+      descricao: 'Complete a Bateria de Placas de Regulamentação e Advertência com pelo menos 40% de aproveitamento.',
+      horario: '19:00',
+      duracao: '40 min',
+      xp_reward: 75,
+      tipo_validacao: 'bateria',
+      parametros_validacao: { materia: 'PlacasTransito', bateria: 1, meta_porcentagem: 40 }
+    },
+
+    // Terça-feira (Dia 2)
+    {
+      dia_semana: 2,
+      sort: 1,
+      titulo: 'Estudo Teórico: Direção Defensiva (Módulo 1)',
+      descricao: 'Estude os conceitos fundamentais de prevenção de acidentes e as 6 condições adversas de tráfego.',
+      horario: '08:00',
+      duracao: '20 min',
+      xp_reward: 50,
+      tipo_validacao: 'modulo',
+      parametros_validacao: { materia: 'DirecaoDefensiva', modulo_minimo: 1 }
+    },
+    {
+      dia_semana: 2,
+      sort: 2,
+      titulo: 'Bateria 1 de Questões: Direção Defensiva',
+      descricao: 'Aplique as técnicas defensivas respondendo à Bateria 1 com aproveitamento mínimo de 40%.',
+      horario: '12:30',
+      duracao: '15 min',
+      xp_reward: 80,
+      tipo_validacao: 'bateria',
+      parametros_validacao: { materia: 'DirecaoDefensiva', bateria: 1, meta_porcentagem: 40 }
+    },
+    {
+      dia_semana: 2,
+      sort: 3,
+      titulo: 'Simulado Temático: Direção Defensiva (30 Questões)',
+      descricao: 'Realize o simulado de Direção Defensiva com meta diária de 40% (mínimo de 12 acertos em 30 questões).',
+      horario: '19:00',
+      duracao: '40 min',
+      xp_reward: 110,
+      tipo_validacao: 'simulado',
+      parametros_validacao: { materia: 'DirecaoDefensiva', meta_porcentagem: 40, acertos_minimos: 12 }
+    },
+
+    // Quarta-feira (Dia 3)
+    {
+      dia_semana: 3,
+      sort: 1,
+      titulo: 'Estudo Teórico: Primeiros Socorros no Trânsito',
+      descricao: 'Aprenda os procedimentos iniciais de socorro, sinalização segura e como acionar SAMU (192) e Bombeiros (193).',
+      horario: '08:00',
+      duracao: '20 min',
+      xp_reward: 50,
+      tipo_validacao: 'modulo',
+      parametros_validacao: { materia: 'PrimeirosSocorros', modulo_minimo: 1 }
+    },
+    {
+      dia_semana: 3,
+      sort: 2,
+      titulo: 'Bateria 1 de Questões: Primeiros Socorros',
+      descricao: 'Resolva a Bateria 1 de Primeiros Socorros e atinja a meta mínima de 40% de acertos.',
+      horario: '12:30',
+      duracao: '15 min',
+      xp_reward: 80,
+      tipo_validacao: 'bateria',
+      parametros_validacao: { materia: 'PrimeirosSocorros', bateria: 1, meta_porcentagem: 40 }
+    },
+    {
+      dia_semana: 3,
+      sort: 3,
+      titulo: 'Simulado Geral DETRAN de Meio de Semana',
+      descricao: 'Treine com 30 questões oficiais. Atinja pelo menos 40% (12 acertos) para cumprir a meta do dia.',
+      horario: '19:00',
+      duracao: '40 min',
+      xp_reward: 120,
+      tipo_validacao: 'simulado',
+      parametros_validacao: { materia: 'Geral', meta_porcentagem: 40, acertos_minimos: 12 }
+    },
+
+    // Quinta-feira (Dia 4)
+    {
+      dia_semana: 4,
+      sort: 1,
+      titulo: 'Estudo Teórico: Meio Ambiente e Cidadania',
+      descricao: 'Revise regras sobre emissão de poluentes, respeito aos pedestres, ciclistas e convívio no trânsito.',
+      horario: '08:00',
+      duracao: '20 min',
+      xp_reward: 50,
+      tipo_validacao: 'modulo',
+      parametros_validacao: { materia: 'MeioAmbiente', modulo_minimo: 1 }
+    },
+    {
+      dia_semana: 4,
+      sort: 2,
+      titulo: 'Bateria de Questões: Meio Ambiente e Cidadania',
+      descricao: 'Responda à bateria prática de Meio Ambiente e alcance pelo menos 40% de acertos.',
+      horario: '12:30',
+      duracao: '15 min',
+      xp_reward: 80,
+      tipo_validacao: 'bateria',
+      parametros_validacao: { materia: 'MeioAmbiente', bateria: 1, meta_porcentagem: 40 }
+    },
+    {
+      dia_semana: 4,
+      sort: 3,
+      titulo: 'Desafio Prático de Acertos: Placas de Trânsito',
+      descricao: 'Acumule pelo menos 4 acertos nas questões de placas para fixar a sinalização obrigatória.',
+      horario: '19:00',
+      duracao: '40 min',
+      xp_reward: 75,
+      tipo_validacao: 'acertos',
+      parametros_validacao: { materia: 'PlacasTransito', acertos_minimos: 4 }
+    },
+
+    // Sexta-feira (Dia 5)
+    {
+      dia_semana: 5,
+      sort: 1,
+      titulo: `Reforço no Ponto Fraco: ${nomeMateria[matFraca1] || 'Legislação'}`,
+      descricao: `Dedique foco especial à matéria de ${nomeMateria[matFraca1] || 'Legislação'}, superando suas dúvidas críticas (meta 40%+).`,
+      horario: '08:00',
+      duracao: '20 min',
+      xp_reward: 90,
+      tipo_validacao: 'bateria',
+      parametros_validacao: { materia: matFraca1, bateria: 2, meta_porcentagem: 40 }
+    },
+    {
+      dia_semana: 5,
+      sort: 2,
+      titulo: 'Bateria Avançada: Legislação e Infrações',
+      descricao: 'Pratique questões sobre infrações leves, médias, graves e gravíssimas (meta 40%+ de acertos).',
+      horario: '12:30',
+      duracao: '15 min',
+      xp_reward: 90,
+      tipo_validacao: 'bateria',
+      parametros_validacao: { materia: 'CodigoTransito', bateria: 2, meta_porcentagem: 40 }
+    },
+    {
+      dia_semana: 5,
+      sort: 3,
+      titulo: `Simulado Temático: ${nomeMateria[matFraca1] || 'Legislação'}`,
+      descricao: `Simulado de 30 questões focado em ${nomeMateria[matFraca1] || 'Legislação'}. Meta: 12 acertos (40%).`,
+      horario: '19:00',
+      duracao: '40 min',
+      xp_reward: 120,
+      tipo_validacao: 'simulado',
+      parametros_validacao: { materia: matFraca1, meta_porcentagem: 40, acertos_minimos: 12 }
+    },
+
+    // Sábado (Dia 6)
+    {
+      dia_semana: 6,
+      sort: 1,
+      titulo: `Revisão dos Erros em ${nomeMateria[matFraca2] || 'Direção Defensiva'}`,
+      descricao: `Revisão direcionada dos pontos com mais dúvidas em ${nomeMateria[matFraca2] || 'Direção Defensiva'} (meta 40%+).`,
+      horario: '08:00',
+      duracao: '20 min',
+      xp_reward: 85,
+      tipo_validacao: 'revisao',
+      parametros_validacao: { materia: matFraca2, meta_porcentagem: 40 }
+    },
+    {
+      dia_semana: 6,
+      sort: 2,
+      titulo: 'Bateria de Fixação Rápida: Legislação & Placas',
+      descricao: 'Bateria intensiva de consolidação com meta acessível de 40% de acertos.',
+      horario: '12:30',
+      duracao: '15 min',
+      xp_reward: 100,
+      tipo_validacao: 'bateria',
+      parametros_validacao: { materia: 'CodigoTransito', bateria: 3, meta_porcentagem: 40 }
+    },
+    {
+      dia_semana: 6,
+      sort: 3,
+      titulo: 'Grande Simulado Geral Oficial DETRAN (30 Questões)',
+      descricao: 'Prova simulada oficial de 30 questões. Atinja no mínimo 40% (12 acertos) para comemorar sua prontidão do dia!',
+      horario: '19:00',
+      duracao: '40 min',
+      xp_reward: 150,
+      tipo_validacao: 'simulado',
+      parametros_validacao: { materia: 'Geral', meta_porcentagem: 40, acertos_minimos: 12 }
+    }
+  ];
+}
+
+export async function sugerirTarefasSemanaisComIA(usuario = {}, desempenho = {}) {
+  const fallbackTasks = gerarTarefasSemanaisFallback(usuario, desempenho);
+  const apiKey = process.env.GROQ_API_KEY;
+
+  if (!apiKey) {
+    return fallbackTasks;
+  }
+
+  const client = new Groq({ apiKey });
+  const model = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
+
+  const nome = usuario?.nome || 'Aluno';
+  const taxa = desempenho?.resumo?.taxaAproveitamento ?? 50;
+  const pontosFracos = (desempenho?.pontosFracos || ['Direção Defensiva', 'Legislação de Trânsito']).join(', ');
+  const pontosFortes = (desempenho?.pontosFortes || ['Placas e Sinalização']).join(', ');
+
+  const prompt = `Você é o orientador pedagógico de inteligência artificial do AprovaDrive (plataforma de estudos para a prova teórica do DETRAN / CNH).
+O aluno ${nome} tem taxa de acertos atual de ${taxa}%.
+Pontos fracos para reforço urgente: ${pontosFracos}.
+Pontos fortes: ${pontosFortes}.
+
+Gere um cronograma semanal completo e pedagógico com exatamente 18 tarefas (Dias 1 a 6, sorts 1 a 3 para cada dia: manhã 08:00, tarde 12:30, noite 19:00).
+As tarefas devem ser práticas e fazer sentido com os recursos reais do AprovaDrive:
+1. Módulos teóricos em PDF (tipo_validacao = 'modulo')
+2. Baterias de 10 questões práticas por matéria (tipo_validacao = 'bateria')
+3. Simulados oficiais de 30 questões gerais ou temáticos (tipo_validacao = 'simulado')
+4. Desafios de acertos acumulados (tipo_validacao = 'acertos')
+5. Revisão de erros em pontos fracos (tipo_validacao = 'revisao')
+
+Matérias válidas para os parâmetros: 'CodigoTransito', 'PlacasTransito', 'DirecaoDefensiva', 'PrimeirosSocorros', 'MeioAmbiente', 'Geral'.
+
+Retorne exclusivamente um JSON com a chave 'tarefas' contendo um array de 18 objetos:
+{
+  "tarefas": [
+    {
+      "dia_semana": 1,
+      "sort": 1,
+      "titulo": "string",
+      "descricao": "string",
+      "horario": "08:00",
+      "duracao": "20 min",
+      "xp_reward": 50,
+      "tipo_validacao": "modulo",
+      "parametros_validacao": { "materia": "CodigoTransito", "modulo_minimo": 1 }
+    }
+  ]
+}`;
+
+  try {
+    const completion = await client.chat.completions.create({
+      model,
+      messages: [
+        {
+          role: 'system',
+          content: 'Você é o orientador pedagógico de inteligência artificial do AprovaDrive para a prova teórica do DETRAN / CNH. Responda ESTRITAMENTE em formato JSON com a chave "tarefas".'
+        },
+        {
+          role: 'user',
+          content: `${prompt}\n\nPor favor, retorne o objeto JSON com a chave "tarefas" contendo as 18 tarefas semanais.`
+        }
+      ],
+      temperature: 0.2,
+      response_format: { type: "json_object" }
+    });
+
+    const content = completion.choices[0]?.message?.content || '{}';
+    const parsed = JSON.parse(content);
+
+    if (Array.isArray(parsed.tarefas) && parsed.tarefas.length >= 6) {
+      const resultMap = new Map();
+      fallbackTasks.forEach(t => {
+        resultMap.set(`${t.dia_semana}_${t.sort}`, { ...t });
+      });
+
+      parsed.tarefas.forEach(aiTask => {
+        const dia = Number(aiTask.dia_semana);
+        const sort = Number(aiTask.sort);
+        if (dia >= 1 && dia <= 6 && sort >= 1 && sort <= 3) {
+          const key = `${dia}_${sort}`;
+          const base = resultMap.get(key) || {};
+          const tipoVal = ['modulo', 'bateria', 'simulado', 'acertos', 'revisao'].includes(aiTask.tipo_validacao)
+            ? aiTask.tipo_validacao
+            : base.tipo_validacao || 'bateria';
+
+          const matVal = normalizarMateriaId(aiTask.parametros_validacao?.materia || aiTask.titulo);
+
+          const paramsVal = {
+            ...(base.parametros_validacao || {}),
+            ...(aiTask.parametros_validacao || {}),
+            materia: matVal
+          };
+
+          if (tipoVal === 'bateria' && !paramsVal.meta_porcentagem) paramsVal.meta_porcentagem = 40;
+          if (tipoVal === 'simulado' && !paramsVal.meta_porcentagem) paramsVal.meta_porcentagem = 40;
+          if (tipoVal === 'simulado' && !paramsVal.acertos_minimos) paramsVal.acertos_minimos = 12;
+          if (tipoVal === 'modulo' && !paramsVal.modulo_minimo) paramsVal.modulo_minimo = 1;
+          if (tipoVal === 'acertos' && !paramsVal.acertos_minimos) paramsVal.acertos_minimos = 4;
+          if (tipoVal === 'revisao' && !paramsVal.meta_porcentagem) paramsVal.meta_porcentagem = 40;
+
+          resultMap.set(key, {
+            ...base,
+            dia_semana: dia,
+            sort,
+            titulo: String(aiTask.titulo || base.titulo).trim(),
+            descricao: String(aiTask.descricao || base.descricao).trim(),
+            horario: aiTask.horario || base.horario,
+            duracao: aiTask.duracao || base.duracao,
+            xp_reward: Math.max(30, Math.min(200, Number(aiTask.xp_reward) || base.xp_reward || 80)),
+            tipo_validacao: tipoVal,
+            parametros_validacao: paramsVal,
+            sugerida_por_ia: true
+          });
+        }
+      });
+
+      return Array.from(resultMap.values()).sort((a, b) => {
+        if (a.dia_semana !== b.dia_semana) return a.dia_semana - b.dia_semana;
+        return a.sort - b.sort;
+      });
+    }
+
+    return fallbackTasks;
+  } catch (error) {
+    console.warn('[AiService] Falha ao gerar tarefas com Groq, usando fallback inteligente:', error.message);
+    return fallbackTasks;
+  }
+}

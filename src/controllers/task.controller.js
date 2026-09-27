@@ -118,9 +118,16 @@ export async function concluir(req, res, next) {
     if (!isAdmin && requesterId && userId && requesterId !== userId) {
       return res.status(403).json({ error: 'Acesso negado. Você só tem permissão para gerenciar suas próprias tarefas.' });
     }
-    const result = await taskService.completeTask(taskId, userId, date);
+    const isForce = Boolean(req.body?.force && isAdmin);
+    const result = await taskService.completeTask(taskId, userId, date, { force: isForce });
     return res.status(200).json(result);
   } catch (error) {
+    if (error.statusCode === 400 || error.validacao) {
+      return res.status(400).json({
+        error: error.message,
+        validacao: error.validacao || null
+      });
+    }
     next(error);
   }
 }
@@ -176,9 +183,23 @@ export async function resetarCronograma(req, res, next) {
   }
 }
 
+export async function regenerarComIA(req, res, next) {
+  try {
+    const { userId, requesterId, isAdmin, date } = extrairParametros(req);
+    if (!isAdmin && requesterId && userId && requesterId !== userId) {
+      return res.status(403).json({ error: 'Acesso negado. Você só tem permissão para gerenciar suas próprias tarefas.' });
+    }
+    const result = await taskService.regenerarTarefasComIA(userId, date);
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export const reqTasks = listar;
 export const startTask = iniciar;
 export const completeTask = concluir;
 export const pauseTask = pausar;
 export const resetTask = reiniciar;
 export const resetSchedule = resetarCronograma;
+export const regenerarTarefasIA = regenerarComIA;

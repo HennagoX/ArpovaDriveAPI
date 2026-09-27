@@ -118,3 +118,4 @@ html/sw.js
 *.sln
 *.sw?
 .DS_Store
+.vercel
