@@ -40,8 +40,18 @@ export async function getCurrentModuloDB(content, userId) {
 export async function nextCurrentModuloDB(content, userId) {
   const resolvedId = await resolveUserId(userId);
   const result = await pool.query(
-    `UPDATE usuario SET ${content} = LEAST(10, COALESCE(${content}, 0) + 1) WHERE id_usuario = $1 RETURNING ${content}`,
+    `UPDATE usuario SET ${content} = COALESCE(${content}, 0) + 1 WHERE id_usuario = $1 RETURNING ${content}`,
     [resolvedId]
+  );
+  return result;
+}
+
+export async function setModuloDB(content, userId, novoNumero) {
+  const resolvedId = await resolveUserId(userId);
+  const num = Math.max(1, Number(novoNumero) || 1);
+  const result = await pool.query(
+    `UPDATE usuario SET ${content} = $1 WHERE id_usuario = $2 RETURNING ${content}`,
+    [num, resolvedId]
   );
   return result;
 }

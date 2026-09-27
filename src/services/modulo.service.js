@@ -1,4 +1,4 @@
-import { getCurrentModuloDB, nextCurrentModuloDB, resolveUserId } from '../Repositories/modulo.repository.js';
+import { getCurrentModuloDB, nextCurrentModuloDB, setModuloDB, resolveUserId } from '../Repositories/modulo.repository.js';
 import { incrementXp } from './exp.service.js';
 
 const MODULE_COLUMNS = {
@@ -63,7 +63,7 @@ export async function getCurrent(content, userId) {
   const query = await getCurrentModuloDB(column, resolvedUserId);
   const row = query?.rows[0];
   const rawValue = row && row[column] !== undefined ? Number(row[column]) : 1;
-  const moduloAtual = Math.min(10, Math.max(1, rawValue || 1));
+  const moduloAtual = Math.max(1, rawValue || 1);
   const canonical = CANONICAL_NAMES[column] || content;
 
   return {
@@ -87,26 +87,12 @@ export async function moveToNext(content, userId) {
   const currentQuery = await getCurrentModuloDB(column, resolvedUserId);
   const currentRow = currentQuery?.rows[0];
   const currentRaw = currentRow && currentRow[column] !== undefined ? Number(currentRow[column]) : 1;
-  const moduloAnterior = Math.min(10, Math.max(1, currentRaw || 1));
-
-  if (moduloAnterior >= 10) {
-    return {
-      success: true,
-      conteudo: canonical,
-      coluna: column,
-      modulo_atual: 10,
-      modulo_anterior: 10,
-      xp_ganha: 0,
-      exp_total: null,
-      message: `Você já concluiu todos os 10 módulos de ${canonical}.`,
-      userId: resolvedUserId
-    };
-  }
+  const moduloAnterior = Math.max(1, currentRaw || 1);
 
   const query = await nextCurrentModuloDB(column, resolvedUserId);
   const row = query?.rows[0];
   const rawValue = row && row[column] !== undefined ? Number(row[column]) : 1;
-  const moduloAtual = Math.min(10, Math.max(1, rawValue || 1));
+  const moduloAtual = Math.max(1, rawValue || 1);
 
   let expTotal = null;
   const realmenteAvancou = moduloAtual > moduloAnterior;
@@ -130,7 +116,28 @@ export async function moveToNext(content, userId) {
     exp_total: expTotal,
     message: realmenteAvancou 
       ? `Avanço realizado com sucesso! Você entrou no Módulo ${moduloAtual} de ${canonical}.`
-      : `Você já concluiu todos os módulos de ${canonical}.`,
+      : `Você avançou no módulo de ${canonical}.`,
     userId: resolvedUserId
+  };
+}
+
+export async function setPointer(content, userId, novoNumero) {
+  const column = resolveModuleColumn(content);
+  if (!column) {
+    throw new Error(`Conteúdo inválido: "${content}".`);
+  }
+
+  const resolvedUserId = await resolveUserId(userId);
+  const num = Math.max(1, Number(novoNumero) || 1);
+  await setModuloDB(column, resolvedUserId, num);
+  const canonical = CANONICAL_NAMES[column] || content;
+
+  return {
+    success: true,
+    conteudo: canonical,
+    coluna: column,
+    modulo_atual: num,
+    userId: resolvedUserId,
+    message: `Ponteiro do módulo atualizado para o Módulo ${num}!`
   };
 }

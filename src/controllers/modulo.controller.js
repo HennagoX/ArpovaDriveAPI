@@ -1,4 +1,4 @@
-import { getCurrent, moveToNext } from "../services/modulo.service.js";
+import { getCurrent, moveToNext, setPointer } from "../services/modulo.service.js";
 
 function extrairParametros(req) {
   const contentId = 
@@ -54,6 +54,30 @@ export async function moveToNextModule(req, res) {
     }
 
     const resultado = await moveToNext(contentId, userId);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function setModulePointer(req, res) {
+  try {
+    const { contentId, userId } = extrairParametros(req);
+    const numero = req.body?.numero || req.query?.numero || req.params?.numero;
+
+    if (!contentId) {
+      return res.status(400).json({ 
+        error: 'Conteúdo não informado para definir ponteiro.' 
+      });
+    }
+
+    if (numero === undefined || numero === null) {
+      return res.status(400).json({ 
+        error: 'Número do módulo não informado.' 
+      });
+    }
+
+    const resultado = await setPointer(contentId, userId, numero);
     return res.status(200).json(resultado);
   } catch (error) {
     return res.status(400).json({ error: error.message });
