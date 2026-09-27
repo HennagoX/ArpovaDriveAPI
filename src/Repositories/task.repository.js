@@ -175,52 +175,6 @@ export const taskRepository = {
     }
   },
 
-  async createTask(t) {
-    await this.ensureTaskTableColumns();
-    const query = `
-      INSERT INTO tarefa (
-        id_usuario,
-        titulo,
-        descricao,
-        xp_reward,
-        status,
-        concluida,
-        sort,
-        dia_semana,
-        horario,
-        duracao,
-        data_agendada,
-        inicio_semana,
-        tipo_validacao,
-        parametros_validacao,
-        validada,
-        motivo_bloqueio
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-      RETURNING *;
-    `;
-
-    const res = await pool.query(query, [
-      t.id_usuario,
-      t.titulo,
-      t.descricao || '',
-      Number(t.xp_reward || 30),
-      t.status || 'pending',
-      Boolean(t.concluida),
-      Number(t.sort || 1),
-      Number(t.dia_semana || 1),
-      t.horario || '14:00',
-      t.duracao || '25 min',
-      t.data_agendada,
-      t.inicio_semana,
-      t.tipo_validacao || 'bateria',
-      t.parametros_validacao ? JSON.stringify(t.parametros_validacao) : null,
-      Boolean(t.validada),
-      t.motivo_bloqueio || null
-    ]);
-
-    return res.rows[0];
-  },
-
   async updateTask(taskId, updates = {}) {
     await this.ensureTaskTableColumns();
     const fields = [];

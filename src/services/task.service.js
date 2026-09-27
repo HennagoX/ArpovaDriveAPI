@@ -1191,66 +1191,6 @@ const taskService = {
     };
   },
 
-  async criarTarefaAdmin(dados, refDate = new Date()) {
-    if (!dados || !dados.titulo || !dados.titulo.trim()) {
-      const err = new Error('O título da missão é obrigatório.');
-      err.statusCode = 400;
-      throw err;
-    }
-
-    const targetIdentifier = dados.id_usuario || dados.userId || dados.usuario;
-    const user = await this.getUsuario(targetIdentifier);
-    const date = new Date(refDate);
-    const inicioSemanaDate = getInicioSemana(date);
-    const inicioSemanaStr = formatToYmd(inicioSemanaDate);
-    const weekDays = getCurrentWeekDays(date);
-
-    const diaSemana = Math.max(1, Math.min(6, Number(dados.dia_semana || 1)));
-    const dayDate = weekDays[diaSemana - 1];
-
-    const existingTasks = await taskRepository.getTasksByUserAndWeek(user.id_usuario, inicioSemanaStr);
-    const tasksDia = existingTasks.filter(t => Number(t.dia_semana) === diaSemana);
-    const proximoSort = tasksDia.length + 1;
-
-    let paramsVal = dados.parametros_validacao || {};
-    if (typeof paramsVal === 'string') {
-      try { paramsVal = JSON.parse(paramsVal); } catch {}
-    }
-
-    const tipoVal = dados.tipo_validacao || 'bateria';
-    if (!paramsVal.meta_porcentagem) {
-      paramsVal.meta_porcentagem = 40;
-    }
-
-    const novaTarefa = await taskRepository.createTask({
-      id_usuario: user.id_usuario,
-      titulo: dados.titulo.trim(),
-      descricao: (dados.descricao || 'Missão configurada pelo Administrador').trim(),
-      xp_reward: Number(dados.xp_reward || 30),
-      status: 'pending',
-      concluida: false,
-      sort: proximoSort,
-      dia_semana: diaSemana,
-      horario: dados.horario || '14:00',
-      duracao: dados.duracao || '25 min',
-      data_agendada: formatToYmd(dayDate),
-      inicio_semana: inicioSemanaStr,
-      tipo_validacao: tipoVal,
-      parametros_validacao: paramsVal,
-      validada: false,
-      motivo_bloqueio: null
-    });
-
-    const payload = await this.getUserTaskPayload(user.id_usuario, date);
-
-    return {
-      success: true,
-      message: `Missão "${novaTarefa.titulo}" criada com sucesso para ${user.nome}!`,
-      task: novaTarefa,
-      payload
-    };
-  },
-
   resolveReferenceDate
 };
 

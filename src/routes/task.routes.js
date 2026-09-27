@@ -9,8 +9,7 @@ import {
   pausar,
   reiniciar,
   resetarCronograma,
-  regenerarComIA,
-  criarTarefaAdminController
+  regenerarComIA
 } from '../controllers/task.controller.js';
 import {
   listarFixas,
@@ -24,8 +23,6 @@ const router = Router();
 
 router.get('/admin-check', verificarAdmin);
 router.get('/usuarios', listarUsuarios);
-router.post('/admin/criar-tarefa', criarTarefaAdminController);
-router.post('/criar-tarefa', criarTarefaAdminController);
 
 router.post('/fixas/admin/criar', criarTarefaFixaAdminController);
 router.post('/fixas/criar', criarTarefaFixaAdminController);

@@ -199,21 +199,6 @@ export async function regenerarComIA(req, res, next) {
   }
 }
 
-export async function criarTarefaAdminController(req, res, next) {
-  try {
-    const { requesterId, date } = extrairParametros(req);
-    const isAdmin = await checkIsAdmin(requesterId);
-    if (!isAdmin) {
-      return res.status(403).json({ error: 'Acesso negado. Apenas o administrador tem permissão para criar missões.' });
-    }
-
-    const resultado = await taskService.criarTarefaAdmin(req.body, date);
-    return res.status(201).json(resultado);
-  } catch (error) {
-    next(error);
-  }
-}
-
 export const reqTasks = listar;
 export const startTask = iniciar;
 export const completeTask = concluir;
