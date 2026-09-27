@@ -1,5 +1,6 @@
 import taskService from '../services/task.service.js';
 import { isUserAdmin } from '../config/admin.config.js';
+import { checkIsAdmin } from '../middlewares/admin.middleware.js';
 
 export function extrairParametros(req) {
   const taskId = req.params?.id || req.body?.taskId || req.body?.id || req.body?.id_tarefa || req.query?.taskId;
@@ -27,8 +28,9 @@ export function extrairParametros(req) {
   return { taskId, userId, requesterId, isAdmin, date, rawDateOrDay };
 }
 
-export function verificarAdmin(req, res) {
-  const { requesterId, isAdmin } = extrairParametros(req);
+export async function verificarAdmin(req, res) {
+  const { requesterId } = extrairParametros(req);
+  const isAdmin = await checkIsAdmin(requesterId);
   return res.status(200).json({
     isAdmin,
     requesterId
@@ -37,7 +39,8 @@ export function verificarAdmin(req, res) {
 
 export async function listarUsuarios(req, res, next) {
   try {
-    const { isAdmin } = extrairParametros(req);
+    const { requesterId } = extrairParametros(req);
+    const isAdmin = await checkIsAdmin(requesterId);
     if (!isAdmin) {
       return res.status(403).json({
         error: 'Acesso negado. Apenas o administrador tem permissão para listar todos os usuários.'
@@ -54,7 +57,7 @@ export async function listarUsuarios(req, res, next) {
 export async function listar(req, res, next) {
   try {
     const { userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
-
+console.log(isAdmin)
     if (rawDateOrDay && !isAdmin) {
       return res.status(403).json({
         error: 'Acesso negado. Apenas o administrador tem permissão para simular dias da semana.'
@@ -191,6 +194,21 @@ export async function regenerarComIA(req, res, next) {
     }
     const result = await taskService.regenerarTarefasComIA(userId, date);
     return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function criarTarefaAdminController(req, res, next) {
+  try {
+    const { requesterId, date } = extrairParametros(req);
+    const isAdmin = await checkIsAdmin(requesterId);
+    if (!isAdmin) {
+      return res.status(403).json({ error: 'Acesso negado. Apenas o administrador tem permissão para criar missões.' });
+    }
+
+    const resultado = await taskService.criarTarefaAdmin(req.body, date);
+    return res.status(201).json(resultado);
   } catch (error) {
     next(error);
   }
