@@ -119,3 +119,4 @@ html/sw.js
 *.sw?
 .DS_Store
 .vercel
+uploads/

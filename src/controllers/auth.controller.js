@@ -15,7 +15,7 @@ export async function login(req, res, next) {
 
     const usuario = rows[0];
     const admin = getAdminConfig();
-    const isAdm = isUserAdmin(usuario);
+    const isAdm = Boolean(usuario.is_admin === true || isUserAdmin(usuario));
 
     let senhaValida = false;
     if (isAdm && admin.password && senha === admin.password) {
@@ -51,9 +51,9 @@ export async function register(req, res, next) {
     const senhaHash = await bcrypt.hash(senha, 10);
 
     const query = `
-      INSERT INTO usuario(nome, email, senha, data_nascimento)
-      VALUES($1, $2, $3, $4)
-      RETURNING id_usuario, nome, email;
+      INSERT INTO usuario(nome, email, senha, data_nascimento, is_admin)
+      VALUES($1, $2, $3, $4, FALSE)
+      RETURNING id_usuario, nome, email, is_admin;
     `;
 
     const { rows } = await pool.query(query, [nome, email, senhaHash, data_nascimento]);
