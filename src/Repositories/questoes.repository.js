@@ -9,6 +9,29 @@ const COLUNAS_VALIDAS = new Set([
   'acertos_meioambiente'
 ]);
 
+const COLUNAS_ERROS_VALIDAS = new Set([
+  'erros_codigotransito',
+  'erros_placatransito',
+  'erros_direcaodefensiva',
+  'erros_primeirossocorros',
+  'erros_meioambiente'
+]);
+
+export async function initErrosColunas() {
+  try {
+    await pool.query(`
+      ALTER TABLE usuario
+      ADD COLUMN IF NOT EXISTS erros_codigotransito INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS erros_placatransito INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS erros_direcaodefensiva INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS erros_primeirossocorros INTEGER DEFAULT 0,
+      ADD COLUMN IF NOT EXISTS erros_meioambiente INTEGER DEFAULT 0;
+    `);
+  } catch (err) {
+    console.error('[DB] Erro ao assegurar colunas de erros:', err.message);
+  }
+}
+
 export async function getQuestoes(moduloQuestao, userId) {
   const resolvedId = await resolveUserId(userId);
   if (!resolvedId) return null;
@@ -60,15 +83,28 @@ export async function incrementarAcerto(moduloQuestao, userId, quantidade = 1) {
   return response.rows[0]?.[moduloQuestao] ?? null;
 }
 
+export async function incrementarErro(colunaErro, userId, quantidade = 1) {
+  const resolvedId = await resolveUserId(userId);
+  if (!COLUNAS_ERROS_VALIDAS.has(colunaErro) || !resolvedId) return null;
+  await initErrosColunas();
+  const qtd = Math.max(1, Number(quantidade) || 1);
+  const response = await pool.query(
+    `UPDATE usuario SET ${colunaErro} = COALESCE(${colunaErro}, 0) + $1 WHERE id_usuario = $2 RETURNING ${colunaErro}`,
+    [qtd, resolvedId]
+  );
+  return response.rows[0]?.[colunaErro] ?? null;
+}
+
 export async function salvarResultadoBateria(userId, materia, bateria, acertos, totalQuestoes, porcentagem, aprovado) {
   const resolvedId = await resolveUserId(userId);
   if (!resolvedId) return null;
+  await initBateriaResultadoTable();
   const res = await pool.query(
     `INSERT INTO bateria_resultado (id_usuario, materia, bateria, acertos, total_questoes, porcentagem, aprovado, atualizado_em)
      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
      ON CONFLICT (id_usuario, materia, bateria) DO UPDATE SET
        acertos = GREATEST(bateria_resultado.acertos, EXCLUDED.acertos),
-       total_questoes = EXCLUDED.total_questoes,
+       total_questoes = GREATEST(bateria_resultado.total_questoes, EXCLUDED.total_questoes),
        porcentagem = GREATEST(bateria_resultado.porcentagem, EXCLUDED.porcentagem),
        aprovado = (bateria_resultado.aprovado OR EXCLUDED.aprovado),
        atualizado_em = NOW()
@@ -81,6 +117,7 @@ export async function salvarResultadoBateria(userId, materia, bateria, acertos, 
 export async function obterResultadosBateriasUsuario(userId) {
   const resolvedId = await resolveUserId(userId);
   if (!resolvedId) return [];
+  await initBateriaResultadoTable();
   const res = await pool.query(
     `SELECT materia, bateria, acertos, total_questoes, porcentagem, aprovado, atualizado_em 
      FROM bateria_resultado 

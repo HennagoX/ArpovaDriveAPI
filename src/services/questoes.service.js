@@ -1,4 +1,4 @@
-import { getQuestoes, incrementarAcerto, salvarResultadoBateria, salvarResultadoSimulado, obterResultadosSimuladosUsuario } from '../Repositories/questoes.repository.js';
+import { getQuestoes, incrementarAcerto, incrementarErro, salvarResultadoBateria, salvarResultadoSimulado, obterResultadosSimuladosUsuario } from '../Repositories/questoes.repository.js';
 import { incrementXp } from './exp.service.js';
 import { getCurrent } from './modulo.service.js';
 import { QUESTOES_BANCO } from './questoes.data.js';
@@ -24,6 +24,29 @@ const ACERTOS_COLUNAS = {
   meioambiente: 'acertos_meioambiente',
   'meio-ambiente': 'acertos_meioambiente',
   ambiente: 'acertos_meioambiente'
+};
+
+const ERROS_COLUNAS = {
+  CodigoTransito: 'erros_codigotransito',
+  codigotransito: 'erros_codigotransito',
+  legislacao: 'erros_codigotransito',
+  PlacasTransito: 'erros_placatransito',
+  PlacaTransito: 'erros_placatransito',
+  placas: 'erros_placatransito',
+  placatransito: 'erros_placatransito',
+  DirecaoDefensiva: 'erros_direcaodefensiva',
+  DirecaoOfensiva: 'erros_direcaodefensiva',
+  seguranca: 'erros_direcaodefensiva',
+  direcaodefensiva: 'erros_direcaodefensiva',
+  PrimeirosSocorros: 'erros_primeirossocorros',
+  primeirossocorros: 'erros_primeirossocorros',
+  saude: 'erros_primeirossocorros',
+  Cidadania: 'erros_meioambiente',
+  cidadania: 'erros_meioambiente',
+  MeioAmbiente: 'erros_meioambiente',
+  meioambiente: 'erros_meioambiente',
+  'meio-ambiente': 'erros_meioambiente',
+  ambiente: 'erros_meioambiente'
 };
 
 const LETRAS = ['A', 'B', 'C', 'D'];
@@ -161,11 +184,17 @@ export async function checarAcerto(respostas, userId) {
   const coluna = ACERTOS_COLUNAS[materiaNorm] || 'acertos_meioambiente';
 
   let totalAcertos = null;
+  let totalErros = null;
   let expData = null;
 
-  if (isCorreto && userId) {
-    totalAcertos = await incrementarAcerto(coluna, userId, 1);
-    expData = await incrementXp(userId, 10);
+  if (userId) {
+    if (isCorreto) {
+      totalAcertos = await incrementarAcerto(coluna, userId, 1);
+      expData = await incrementXp(userId, 10);
+    } else {
+      const colunaErro = ERROS_COLUNAS[materiaNorm] || 'erros_meioambiente';
+      totalErros = await incrementarErro(colunaErro, userId, 1);
+    }
   }
 
   return {
@@ -181,6 +210,7 @@ export async function checarAcerto(respostas, userId) {
     corretaIndex: questaoEncontrada.correta,
     explicacao: questaoEncontrada.explicacao,
     acertos: totalAcertos,
+    erros: totalErros,
     expGanha: isCorreto ? 10 : 0,
     totalExp: expData?.exp ?? null,
     lv: expData?.lv ?? null,
@@ -192,7 +222,7 @@ export async function concluirBateria(dados, userId) {
   const materiaNorm = normalizarMateria(dados?.materia);
   const bateriaNum = normalizarBateriaNumero(dados?.bateria);
   const perguntas = obterPerguntas(materiaNorm, bateriaNum);
-  const total = perguntas.length || 10;
+  const total = Math.max(1, Number(dados?.total) || perguntas.length || 10);
 
   const respostasEnviadas = dados?.respostas || {};
   let acertos = 0;

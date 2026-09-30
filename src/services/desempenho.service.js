@@ -1,5 +1,6 @@
 import pool from '../Repositories/db.js';
 import { resolveUserId } from '../Repositories/modulo.repository.js';
+import { initBateriaResultadoTable } from '../Repositories/questoes.repository.js';
 import { getLevelInfo } from './exp.service.js';
 import { normalizarMateria } from './questoes.service.js';
 
@@ -10,7 +11,8 @@ export const MATERIAS_CONFIG = [
     icone: 'fa-solid fa-scale-balanced',
     cor: 'green',
     moduloColuna: 'modulo_codigotransito',
-    acertosColuna: 'acertos_codigotransito'
+    acertosColuna: 'acertos_codigotransito',
+    errosColuna: 'erros_codigotransito'
   },
   {
     id: 'PlacasTransito',
@@ -18,7 +20,8 @@ export const MATERIAS_CONFIG = [
     icone: 'fa-solid fa-diamond-turn-right',
     cor: 'blue',
     moduloColuna: 'modulo_placastransito',
-    acertosColuna: 'acertos_placatransito'
+    acertosColuna: 'acertos_placatransito',
+    errosColuna: 'erros_placatransito'
   },
   {
     id: 'DirecaoDefensiva',
@@ -26,7 +29,8 @@ export const MATERIAS_CONFIG = [
     icone: 'fa-solid fa-shield-halved',
     cor: 'yellow',
     moduloColuna: 'modulo_direcaodefensiva',
-    acertosColuna: 'acertos_direcaodefensiva'
+    acertosColuna: 'acertos_direcaodefensiva',
+    errosColuna: 'erros_direcaodefensiva'
   },
   {
     id: 'MeioAmbiente',
@@ -34,7 +38,8 @@ export const MATERIAS_CONFIG = [
     icone: 'fa-solid fa-leaf',
     cor: 'purple',
     moduloColuna: 'modulo_cidadania',
-    acertosColuna: 'acertos_meioambiente'
+    acertosColuna: 'acertos_meioambiente',
+    errosColuna: 'erros_meioambiente'
   },
   {
     id: 'PrimeirosSocorros',
@@ -42,7 +47,8 @@ export const MATERIAS_CONFIG = [
     icone: 'fa-solid fa-kit-medical',
     cor: 'red',
     moduloColuna: 'modulo_primeirossocorros',
-    acertosColuna: 'acertos_primeirossocorros'
+    acertosColuna: 'acertos_primeirossocorros',
+    errosColuna: 'erros_primeirossocorros'
   },
   {
     id: 'MecanicaBasica',
@@ -50,7 +56,8 @@ export const MATERIAS_CONFIG = [
     icone: 'fa-solid fa-gears',
     cor: 'cyan',
     moduloColuna: null,
-    acertosColuna: null
+    acertosColuna: null,
+    errosColuna: null
   }
 ];
 
@@ -141,7 +148,12 @@ export async function obterDesempenhoUsuario(userId) {
             modulo_codigotransito, modulo_placastransito, modulo_direcaodefensiva,
             modulo_primeirossocorros, modulo_cidadania,
             acertos_codigotransito, acertos_placatransito, acertos_direcaodefensiva,
-            acertos_primeirossocorros, acertos_meioambiente
+            acertos_primeirossocorros, acertos_meioambiente,
+            COALESCE(erros_codigotransito, 0) AS erros_codigotransito,
+            COALESCE(erros_placatransito, 0) AS erros_placatransito,
+            COALESCE(erros_direcaodefensiva, 0) AS erros_direcaodefensiva,
+            COALESCE(erros_primeirossocorros, 0) AS erros_primeirossocorros,
+            COALESCE(erros_meioambiente, 0) AS erros_meioambiente
      FROM usuario
      WHERE id_usuario = $1`,
     [resolvedId]
@@ -159,6 +171,7 @@ export async function obterDesempenhoUsuario(userId) {
   // 2. Obter baterias do usuário
   let baterias = [];
   try {
+    await initBateriaResultadoTable();
     const batResult = await pool.query(
       `SELECT materia, bateria, acertos, total_questoes, porcentagem, aprovado, atualizado_em
        FROM bateria_resultado
@@ -193,24 +206,26 @@ export async function obterDesempenhoUsuario(userId) {
 
     const bateriasQuestoes = bateriasMateria.reduce((acc, b) => acc + Number(b.total_questoes || 10), 0);
     const bateriasAcertos = bateriasMateria.reduce((acc, b) => acc + Number(b.acertos || 0), 0);
+    const bateriasErros = Math.max(0, bateriasQuestoes - bateriasAcertos);
     const bateriasFeitas = bateriasMateria.length;
 
     // Simulados específicos da matéria
     const simsMateria = simulados.filter(s => normalizarMateria(s.materia) === idNorm);
     const simsQuestoes = simsMateria.reduce((acc, s) => acc + Number(s.total_questoes || 30), 0);
     const simsAcertos = simsMateria.reduce((acc, s) => acc + Number(s.acertos || 0), 0);
+    const simsErros = Math.max(0, simsQuestoes - simsAcertos);
 
-    let totalQuestoes = bateriasQuestoes + simsQuestoes;
-    let acertos = bateriasAcertos + simsAcertos;
-
-    // Se o usuário não tem baterias salvas mas tem contadores de acertos no perfil:
+    // Integrar contadores acumulados de acertos e erros do perfil por matéria
     const acertosPerfil = cfg.acertosColuna ? Number(user[cfg.acertosColuna] || 0) : 0;
-    if (totalQuestoes === 0 && acertosPerfil > 0) {
-      acertos = acertosPerfil;
-      totalQuestoes = Math.max(acertos, 10);
-    }
+    const errosPerfil = cfg.errosColuna ? Number(user[cfg.errosColuna] || 0) : 0;
 
-    const erros = Math.max(0, totalQuestoes - acertos);
+    const acertosBateriasConsolidados = Math.max(bateriasAcertos, acertosPerfil);
+    const errosBateriasConsolidados = Math.max(bateriasErros, errosPerfil);
+
+    const acertos = acertosBateriasConsolidados + simsAcertos;
+    const erros = errosBateriasConsolidados + simsErros;
+    const totalQuestoes = acertos + erros;
+
     const porcentagem = totalQuestoes > 0 ? Math.round((acertos / totalQuestoes) * 100) : 0;
 
     const classificacao = classificarPorcentagem(porcentagem, totalQuestoes);
@@ -233,30 +248,19 @@ export async function obterDesempenhoUsuario(userId) {
     };
   });
 
-  // 5. Totais Gerais
-  const bateriasTotaisQuestoes = baterias.reduce((acc, b) => acc + Number(b.total_questoes || 10), 0);
-  const bateriasTotaisAcertos = baterias.reduce((acc, b) => acc + Number(b.acertos || 0), 0);
+  // 5. Totais Gerais consolidados
+  const somaMateriasQuestoes = materiasDesempenho.reduce((acc, m) => acc + m.totalQuestoes, 0);
+  const somaMateriasAcertos = materiasDesempenho.reduce((acc, m) => acc + m.acertos, 0);
+  const somaMateriasErros = materiasDesempenho.reduce((acc, m) => acc + m.erros, 0);
 
-  const simuladosTotaisQuestoes = simulados.reduce((acc, s) => acc + Number(s.total_questoes || 30), 0);
-  const simuladosTotaisAcertos = simulados.reduce((acc, s) => acc + Number(s.acertos || 0), 0);
+  const simsGerais = simulados.filter(s => !s.materia || s.materia.toLowerCase() === 'geral' || s.materia.toLowerCase() === 'todos');
+  const simsGeraisQuestoes = simsGerais.reduce((acc, s) => acc + Number(s.total_questoes || 30), 0);
+  const simsGeraisAcertos = simsGerais.reduce((acc, s) => acc + Number(s.acertos || 0), 0);
+  const simsGeraisErros = Math.max(0, simsGeraisQuestoes - simsGeraisAcertos);
 
-  let totalQuestoes = bateriasTotaisQuestoes + simuladosTotaisQuestoes;
-  let totalAcertos = bateriasTotaisAcertos + simuladosTotaisAcertos;
-
-  // Fallback caso venha de contadores em usuario e nada no histórico de baterias
-  const acertosTotaisUsuario =
-    Number(user.acertos_codigotransito || 0) +
-    Number(user.acertos_placatransito || 0) +
-    Number(user.acertos_direcaodefensiva || 0) +
-    Number(user.acertos_primeirossocorros || 0) +
-    Number(user.acertos_meioambiente || 0);
-
-  if (totalQuestoes === 0 && acertosTotaisUsuario > 0) {
-    totalAcertos = acertosTotaisUsuario;
-    totalQuestoes = Math.max(acertosTotaisUsuario, 10);
-  }
-
-  const totalErros = Math.max(0, totalQuestoes - totalAcertos);
+  const totalQuestoes = somaMateriasQuestoes + simsGeraisQuestoes;
+  const totalAcertos = somaMateriasAcertos + simsGeraisAcertos;
+  const totalErros = somaMateriasErros + simsGeraisErros;
   const taxaAproveitamento = totalQuestoes > 0 ? Math.round((totalAcertos / totalQuestoes) * 100) : 0;
 
   const totalSimulados = simulados.length;

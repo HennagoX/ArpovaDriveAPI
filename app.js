@@ -50,7 +50,7 @@ app.listen(PORT, (err) => {
     console.error(err);
     return;
   }
-  console.log('App listening on port ' + PORT);
+ // console.log('App listening on port ' + PORT);
 });
 
 export default app;
