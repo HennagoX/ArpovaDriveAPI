@@ -1,0 +1,21 @@
+export async function register(req, res, next) {
+  const { nome, email, senha, data_nascimento } = req.body;
+
+  try {
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    const query = `
+      INSERT INTO usuario(nome, email, senha, data_nascimento, is_admin)
+      VALUES($1, $2, $3, $4, FALSE)
+      RETURNING id_usuario, nome, email, is_admin;
+    `;
+
+    const { rows } = await pool.query(query, [nome, email, senhaHash, data_nascimento]);
+
+    return res.status(201).json({
+      message: 'Usuário cadastrado com sucesso!',
+      usuario: rows[0]
+    });
+  } catch (error) {
+    next(error);
+  }
