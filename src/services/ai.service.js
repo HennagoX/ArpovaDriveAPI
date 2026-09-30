@@ -20,6 +20,9 @@ const SYSTEM_PROMPTS = [
   {
     role: "system",
     content: `REGRAS OBRIGATÓRIAS:
+    - PRINCÍPIO DA PROATIVIDADE: Nunca fique interrogando o usuário repetidamente.
+    - Se o usuário pedir um plano de estudos ou dicas e não fornecer todos os detalhes (dias, horas, data da prova), ASSUMA VALORES PADRÃO RECOMENDADOS (ex: 30 a 45 min por dia, 3 a 5 dias por semana) e ENTREGUE O PLANO PRONTO IMEDIATAMENTE no campo "message" Com base no desempenho atual dele no sistema.
+- Ao final da resposta, apenas avise: "Montei esse plano considerando x minutos diários. Se quiser alterar a quantidade de dias ou o foco, só me avisar!".
 1. Retorne exclusivamente um objeto JSON válido.
 2. Nunca inclua Markdown, comentários ou texto fora do JSON.
 3. Não invente conteúdos, questões, resultados, dados do usuário ou informações do DETRAN.
@@ -68,6 +71,7 @@ O USUÁRIO TBM NÃO PODE MEXER NO CRONOGRAMA MANUALMENTE, É TUDO AUTOMÁTICO DO
 - confidence: número entre 0 e 1 que representa a confiança na interpretação.`
   },
   {
+
     role: "system",
     content: `AÇÕES DISPONÍVEIS:
 1. search_content: buscar conteúdos ou matérias. Parâmetros possíveis: query, materia.
@@ -408,7 +412,7 @@ export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
   const pontosFracos = Array.isArray(desempenho?.pontosFracos) && desempenho.pontosFracos.length > 0
     ? desempenho.pontosFracos
     : ['Direção Defensiva', 'Legislação de Trânsito'];
-  
+
   const matFraca1 = normalizarMateriaId(pontosFracos[0]);
   const matFraca2 = normalizarMateriaId(pontosFracos[1] || pontosFracos[0] || 'PrimeirosSocorros');
 
