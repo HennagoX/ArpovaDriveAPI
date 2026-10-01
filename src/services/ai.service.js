@@ -42,6 +42,11 @@ VOCẼ NÃO CRIA O CRONOGRAMA COM BASE NO QUE ELE FALAR NO CHAT, é só com base
 O QUE O USUÁRIO FALA NO CHAT NÃO AFETA NO CRONOGRAMA, é semanal que o cronograma é criado. E não quando o usuário fala no chat.
 NÃO PODE FALAR SOBRE CRIAR CRONOGRAMA NO SISTEMA, SE NÃO PERGUNTAR E FALAR SÓ DE CRIAR CRONOGRAMA EM GERAL, NÃO CITA SISTEMA, FALA QUE É SÓ UM PLANO NO CHAT MESMO
 O USUÁRIO TBM NÃO PODE MEXER NO CRONOGRAMA MANUALMENTE, É TUDO AUTOMÁTICO DO SISTEMA SEMANALMENTE
+15. REGRAS CRÍTICAS DE FORMATAÇÃO E ESTRUTURAÇÃO NO CAMPO "message":
+- Toda lista ordenada, passo a passo ou cronograma de tarefas diárias DEVE iniciar pelo número 1 no formato "1. Item" com ponto e espaço (exemplo: "1. Revisão rápida (5 min)\n2. Leitura do módulo..."). NUNCA omita o número "1. " no primeiro item.
+- Rótulos e títulos de seções/listas devem usar negrito markdown com dois-pontos (exemplo: "**Dias da semana:**", "**Tempo diário:** 30 minutos").
+- Para dias da semana e listas não ordenadas, use marcadores com hífen e espaço (exemplo: "- Segunda-feira").
+- Separe blocos e seções sempre por uma linha em branco dupla para manter a leitura limpa e agradável.
 `,
   },
   {
@@ -380,9 +385,12 @@ export async function getAiResponse(userMessage, conversationHistory = [], userC
     const rawContent = completion.choices[0]?.message?.content || '{}';
     const parsed = JSON.parse(rawContent);
 
+    const rawMsg = parsed.message || "Como posso ajudar você em seus estudos para a prova do DETRAN?";
+    const formattedMessage = formatarMensagemResposta(rawMsg);
+
     return {
       intent: parsed.intent || "conversation",
-      message: parsed.message || "Como posso ajudar você em seus estudos para a prova do DETRAN?",
+      message: formattedMessage,
       action: parsed.action || {
         type: "none",
         status: "none",
@@ -394,6 +402,64 @@ export async function getAiResponse(userMessage, conversationHistory = [], userC
   } catch (error) {
     return getSmartFallbackResponse(userMessage, userContext);
   }
+}
+
+export function formatarMensagemResposta(message) {
+  if (!message || typeof message !== 'string') return message;
+
+  let msg = message.replace(/\r\n/g, '\n');
+  msg = msg.replace(/\n{3,}/g, '\n\n');
+
+  const lines = msg.split('\n');
+
+  // Pre-processamento: se uma linha é seguida por "2. " e ela própria não tem número, nem é especial/título, ela é o item 1
+  for (let i = 0; i < lines.length - 1; i++) {
+    const cur = lines[i].trim();
+    if (!cur) continue;
+
+    let nextIdx = -1;
+    for (let j = i + 1; j < lines.length; j++) {
+      if (lines[j].trim()) {
+        nextIdx = j;
+        break;
+      }
+    }
+
+    if (nextIdx !== -1) {
+      const nextTrimmed = lines[nextIdx].trim();
+      const nextIsTwo = /^(\s*)(2)(?:[º°\)]|(?:\.(?!\d))|(?:\s*[-–—:]))\s*(.*)$/.test(nextTrimmed);
+      const isCurSpecial = /^(\s*)(?:[-*•–—+▫▪]|\d+|#{1,6}|>|&gt;|\||```)/.test(cur) || /(?::|\:\*{1,2}|:\_{1,2})$/.test(cur);
+      if (nextIsTwo && !isCurSpecial) {
+        lines[i] = '1. ' + cur;
+      }
+    }
+  }
+
+  // Normalização de chaves e rótulos para negrito: e.g. "Tempo diário: 30 minutos" -> "**Tempo diário:** 30 minutos"
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (!trimmed) continue;
+
+    if (trimmed.startsWith('#') || trimmed.startsWith('**') || trimmed.startsWith('__')) {
+      continue;
+    }
+
+    // Ex: "Tempo diário: 30 minutos" -> "**Tempo diário:** 30 minutos"
+    const mKeyVal = trimmed.match(/^([A-ZÀ-Úa-z][\w\sÀ-ÿ\(\)\/\-]{1,35}):\s+([^\n]+)$/);
+    if (mKeyVal) {
+      lines[i] = `**${mKeyVal[1]}:** ${mKeyVal[2]}`;
+      continue;
+    }
+
+    // Ex: "Dias da semana:" -> "**Dias da semana:**"
+    const mTitle = trimmed.match(/^([A-ZÀ-Úa-z][\w\sÀ-ÿ\(\)\/\-]{1,35}):$/);
+    if (mTitle) {
+      lines[i] = `**${mTitle[1]}:**`;
+      continue;
+    }
+  }
+
+  return lines.join('\n');
 }
 
 export function normalizarMateriaId(nome) {
