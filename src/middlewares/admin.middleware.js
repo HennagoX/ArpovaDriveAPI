@@ -5,14 +5,27 @@ import { isUserAdmin } from '../config/admin.config.js';
  * Verifica se um usuário ou identificador possui papel de Administrador.
  * Consulta o banco de dados (coluna is_admin) e mantém compatibilidade com ADMIN_EMAIL/ADMIN_ID.
  */
+const adminCheckCache = new Map();
+const ADMIN_CACHE_TTL_MS = 5 * 60 * 1000;
+
 export async function checkIsAdmin(identifier) {
   if (!identifier) return false;
 
   // Compatibilidade com variáveis de ambiente (.env)
   if (isUserAdmin(identifier)) return true;
 
+  const clean = String(identifier).trim().toLowerCase();
+
+  // Verifica cache em memória
+  if (adminCheckCache.has(clean)) {
+    const entry = adminCheckCache.get(clean);
+    if (Date.now() - entry.timestamp < ADMIN_CACHE_TTL_MS) {
+      return entry.isAdmin;
+    }
+    adminCheckCache.delete(clean);
+  }
+
   try {
-    const clean = String(identifier).trim();
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
 
     let query = '';
@@ -27,9 +40,9 @@ export async function checkIsAdmin(identifier) {
     }
 
     const { rows } = await pool.query(query, params);
-    if (rows.length > 0 && rows[0].is_admin === true) {
-      return true;
-    }
+    const isAdmin = Boolean(rows.length > 0 && rows[0].is_admin === true);
+    adminCheckCache.set(clean, { isAdmin, timestamp: Date.now() });
+    return isAdmin;
   } catch (err) {
     console.error('[AdminMiddleware] Erro ao verificar admin no banco:', err.message);
   }

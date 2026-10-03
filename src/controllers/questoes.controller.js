@@ -183,6 +183,7 @@ export async function concluirBateriaController(req, res) {
     const userId = extrairUserId(req);
     const dataRef = extrairDataReferencia(req);
     const resultado = await concluirBateria(req.body, userId, dataRef);
+    taskService.invalidateUserPayloadCache(userId);
 
     return res.status(200).json(resultado);
   } catch (error) {
@@ -220,6 +221,7 @@ export async function concluirSimuladoController(req, res) {
     const userId = extrairUserId(req);
     const dataRef = extrairDataReferencia(req);
     const resultado = await concluirSimulado(req.body, userId, dataRef);
+    taskService.invalidateUserPayloadCache(userId);
 
     return res.status(200).json(resultado);
   } catch (error) {

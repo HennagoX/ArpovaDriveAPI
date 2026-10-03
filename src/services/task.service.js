@@ -432,6 +432,11 @@ export const DEFAULT_WEEK_TEMPLATES = [
   }
 ];
 
+const userPayloadCache = new Map();
+const PAYLOAD_CACHE_TTL_MS = 30 * 1000;
+let usuariosListCache = null;
+let usuariosListCacheTime = 0;
+
 const taskService = {
   async getUsuario(identifier) {
     if (!identifier || typeof identifier !== 'string' || !identifier.trim()) {
@@ -449,8 +454,27 @@ const taskService = {
     return user;
   },
 
-  async listarUsuarios() {
-    return await taskRepository.listUsers();
+  async listarUsuarios(forceRefresh = false) {
+    if (!forceRefresh && usuariosListCache && (Date.now() - usuariosListCacheTime < 60000)) {
+      return usuariosListCache;
+    }
+    const users = await taskRepository.listUsers();
+    usuariosListCache = users;
+    usuariosListCacheTime = Date.now();
+    return users;
+  },
+
+  invalidateUserPayloadCache(userId = null) {
+    if (!userId) {
+      userPayloadCache.clear();
+      return;
+    }
+    const prefix = String(userId).toLowerCase();
+    for (const key of userPayloadCache.keys()) {
+      if (key.toLowerCase().startsWith(prefix)) {
+        userPayloadCache.delete(key);
+      }
+    }
   },
 
   async ensureWeeklyTasks(userId, refDate = new Date()) {
@@ -778,9 +802,19 @@ const taskService = {
     };
   },
 
-  async getUserTaskPayload(identifier, refDate = new Date()) {
+  async getUserTaskPayload(identifier, refDate = new Date(), skipCache = false) {
     const user = await this.getUsuario(identifier);
     const date = new Date(refDate);
+    const cacheKey = `${user.id_usuario}_${formatToYmd(date)}`;
+
+    if (!skipCache && userPayloadCache.has(cacheKey)) {
+      const entry = userPayloadCache.get(cacheKey);
+      if (Date.now() - entry.timestamp < PAYLOAD_CACHE_TTL_MS) {
+        return entry.payload;
+      }
+      userPayloadCache.delete(cacheKey);
+    }
+
     const diaSemanaAtual = date.getDay();
     const diaAtualChave = MAPA_DIAS[diaSemanaAtual] || null;
 
@@ -923,6 +957,9 @@ const taskService = {
       tarefasDoDia: diasFormatados[diaAtualChave] || [],
       dias: diasFormatados
     };
+
+    userPayloadCache.set(cacheKey, { payload, timestamp: Date.now() });
+    return payload;
   },
 
   async getTaskById(taskId) {
@@ -996,7 +1033,8 @@ const taskService = {
       status: 'in_progress'
     });
 
-    const payload = await this.getUserTaskPayload(user.id_usuario, date);
+    this.invalidateUserPayloadCache(user.id_usuario);
+    const payload = await this.getUserTaskPayload(user.id_usuario, date, true);
 
     return {
       success: true,
@@ -1073,7 +1111,8 @@ const taskService = {
       }
     }
 
-    const payload = await this.getUserTaskPayload(user.id_usuario, date);
+    this.invalidateUserPayloadCache(user.id_usuario);
+    const payload = await this.getUserTaskPayload(user.id_usuario, date, true);
 
     return {
       success: true,
@@ -1119,7 +1158,8 @@ const taskService = {
       status: 'current'
     });
 
-    const payload = await this.getUserTaskPayload(user.id_usuario, date);
+    this.invalidateUserPayloadCache(user.id_usuario);
+    const payload = await this.getUserTaskPayload(user.id_usuario, date, true);
 
     return {
       success: true,
@@ -1152,7 +1192,8 @@ const taskService = {
       validada: false
     });
 
-    const payload = await this.getUserTaskPayload(user.id_usuario, date);
+    this.invalidateUserPayloadCache(user.id_usuario);
+    const payload = await this.getUserTaskPayload(user.id_usuario, date, true);
 
     return {
       success: true,
@@ -1171,7 +1212,8 @@ const taskService = {
     await taskRepository.deleteTasksByUserAndWeek(user.id_usuario, inicioSemanaStr);
     await this.ensureWeeklyTasks(user.id_usuario, date);
 
-    const payload = await this.getUserTaskPayload(user.id_usuario, date);
+    this.invalidateUserPayloadCache(user.id_usuario);
+    const payload = await this.getUserTaskPayload(user.id_usuario, date, true);
 
     return {
       success: true,
@@ -1222,7 +1264,8 @@ const taskService = {
 
     await taskRepository.insertWeeklyTasks(tasksToInsert);
 
-    const payload = await this.getUserTaskPayload(user.id_usuario, date);
+    this.invalidateUserPayloadCache(user.id_usuario);
+    const payload = await this.getUserTaskPayload(user.id_usuario, date, true);
 
     return {
       success: true,
