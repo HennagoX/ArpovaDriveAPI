@@ -55,3 +55,51 @@ export async function setModuloDB(content, userId, novoNumero) {
   );
   return result;
 }
+
+export async function initModuloLeituraTable() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS modulo_leitura_log (
+        id SERIAL PRIMARY KEY,
+        id_usuario UUID NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+        conteudo VARCHAR(50) NOT NULL,
+        modulo INTEGER NOT NULL DEFAULT 1,
+        lido_em TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_modulo_leitura_user_date ON modulo_leitura_log (id_usuario, lido_em);
+      CREATE INDEX IF NOT EXISTS idx_modulo_leitura_user_conteudo ON modulo_leitura_log (id_usuario, conteudo, modulo);
+    `);
+  } catch (err) {
+    console.warn('[ModuloRepository] Erro ao assegurar tabela modulo_leitura_log:', err.message);
+  }
+}
+
+export async function registrarLeituraModuloDB(conteudo, modulo, userId, dataReferencia = null) {
+  const resolvedId = await resolveUserId(userId);
+  if (!resolvedId) return null;
+  await initModuloLeituraTable();
+
+  const ts = dataReferencia ? new Date(dataReferencia) : new Date();
+  const res = await pool.query(
+    `INSERT INTO modulo_leitura_log (id_usuario, conteudo, modulo, lido_em)
+     VALUES ($1, $2, $3, $4)
+     RETURNING *`,
+    [resolvedId, String(conteudo), Math.max(1, Number(modulo) || 1), ts]
+  );
+  return res.rows[0] || null;
+}
+
+export async function getLeiturasModulosUsuario(userId) {
+  const resolvedId = await resolveUserId(userId);
+  if (!resolvedId) return [];
+  await initModuloLeituraTable();
+
+  const res = await pool.query(
+    `SELECT id, id_usuario, conteudo, modulo, lido_em
+     FROM modulo_leitura_log
+     WHERE id_usuario = $1
+     ORDER BY lido_em DESC`,
+    [resolvedId]
+  );
+  return res.rows;
+}

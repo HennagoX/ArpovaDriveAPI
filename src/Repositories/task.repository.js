@@ -265,7 +265,38 @@ export const taskRepository = {
     return res.rows[0] || null;
   },
 
+  async getUserLeituras(userId) {
+    try {
+      const res = await pool.query(
+        `SELECT id, conteudo, modulo, lido_em
+         FROM modulo_leitura_log
+         WHERE id_usuario = $1
+         ORDER BY lido_em DESC`,
+        [userId]
+      );
+      return res.rows;
+    } catch (err) {
+      console.warn('[TaskRepository] Erro ao buscar leituras de modulo:', err.message);
+      return [];
+    }
+  },
+
   async getUserBaterias(userId) {
+    try {
+      const hist = await pool.query(
+        `SELECT materia, bateria, acertos, total_questoes, porcentagem, aprovado, criado_em AS atualizado_em
+         FROM bateria_historico_log
+         WHERE id_usuario = $1
+         ORDER BY criado_em DESC`,
+        [userId]
+      );
+      if (hist.rows.length > 0) {
+        return hist.rows;
+      }
+    } catch {
+      // Ignora e faz fallback
+    }
+
     const res = await pool.query(
       `SELECT materia, bateria, acertos, total_questoes, porcentagem, aprovado, atualizado_em
        FROM bateria_resultado 
@@ -285,6 +316,22 @@ export const taskRepository = {
       [userId]
     );
     return res.rows;
+  },
+
+  async getUserQuestoesRespostas(userId) {
+    try {
+      const res = await pool.query(
+        `SELECT materia, bateria, numero_questao, correto, criado_em
+         FROM questao_resposta_log
+         WHERE id_usuario = $1
+         ORDER BY criado_em DESC`,
+        [userId]
+      );
+      return res.rows;
+    } catch (err) {
+      console.warn('[TaskRepository] Erro ao buscar respostas de questoes:', err.message);
+      return [];
+    }
   }
 };
 

@@ -95,22 +95,101 @@ export async function incrementarErro(colunaErro, userId, quantidade = 1) {
   return response.rows[0]?.[colunaErro] ?? null;
 }
 
-export async function salvarResultadoBateria(userId, materia, bateria, acertos, totalQuestoes, porcentagem, aprovado) {
+export async function initBateriaHistoricoTable() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS bateria_historico_log (
+        id SERIAL PRIMARY KEY,
+        id_usuario UUID NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+        materia VARCHAR(50) NOT NULL,
+        bateria INTEGER NOT NULL DEFAULT 1,
+        acertos INTEGER NOT NULL DEFAULT 0,
+        total_questoes INTEGER NOT NULL DEFAULT 10,
+        porcentagem INTEGER NOT NULL DEFAULT 0,
+        aprovado BOOLEAN NOT NULL DEFAULT FALSE,
+        criado_em TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_bateria_hist_user_date ON bateria_historico_log (id_usuario, criado_em);
+      CREATE INDEX IF NOT EXISTS idx_bateria_hist_user_mat ON bateria_historico_log (id_usuario, materia);
+    `);
+  } catch (err) {
+    console.warn('[QuestoesRepository] Erro ao assegurar tabela bateria_historico_log:', err.message);
+  }
+}
+
+export async function initQuestaoRespostaTable() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS questao_resposta_log (
+        id SERIAL PRIMARY KEY,
+        id_usuario UUID NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+        materia VARCHAR(50) NOT NULL,
+        bateria INTEGER NOT NULL DEFAULT 1,
+        numero_questao INTEGER,
+        correto BOOLEAN NOT NULL DEFAULT FALSE,
+        criado_em TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_questao_resp_user_date ON questao_resposta_log (id_usuario, criado_em);
+      CREATE INDEX IF NOT EXISTS idx_questao_resp_user_mat ON questao_resposta_log (id_usuario, materia, correto);
+    `);
+  } catch (err) {
+    console.warn('[QuestoesRepository] Erro ao assegurar tabela questao_resposta_log:', err.message);
+  }
+}
+
+export async function salvarQuestaoRespostaLog(userId, materia, bateria, numeroQuestao, correto, dataReferencia = null) {
+  const resolvedId = await resolveUserId(userId);
+  if (!resolvedId) return null;
+  await initQuestaoRespostaTable();
+  const ts = dataReferencia ? new Date(dataReferencia) : new Date();
+
+  try {
+    const res = await pool.query(
+      `INSERT INTO questao_resposta_log (id_usuario, materia, bateria, numero_questao, correto, criado_em)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [resolvedId, String(materia), Number(bateria || 1), Number(numeroQuestao || 1), Boolean(correto), ts]
+    );
+    return res.rows[0] || null;
+  } catch (err) {
+    console.warn('[QuestoesRepository] Falha ao salvar log de questao:', err.message);
+    return null;
+  }
+}
+
+export async function salvarResultadoBateria(userId, materia, bateria, acertos, totalQuestoes, porcentagem, aprovado, dataReferencia = null) {
   const resolvedId = await resolveUserId(userId);
   if (!resolvedId) return null;
   await initBateriaResultadoTable();
+  await initBateriaHistoricoTable();
+
+  const ts = dataReferencia ? new Date(dataReferencia) : new Date();
+
+  // 1. Tabela consolidada por bateria
   const res = await pool.query(
     `INSERT INTO bateria_resultado (id_usuario, materia, bateria, acertos, total_questoes, porcentagem, aprovado, atualizado_em)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      ON CONFLICT (id_usuario, materia, bateria) DO UPDATE SET
        acertos = GREATEST(bateria_resultado.acertos, EXCLUDED.acertos),
        total_questoes = GREATEST(bateria_resultado.total_questoes, EXCLUDED.total_questoes),
        porcentagem = GREATEST(bateria_resultado.porcentagem, EXCLUDED.porcentagem),
        aprovado = (bateria_resultado.aprovado OR EXCLUDED.aprovado),
-       atualizado_em = NOW()
+       atualizado_em = $8
      RETURNING *;`,
-    [resolvedId, materia, Number(bateria), Number(acertos), Number(totalQuestoes), Number(porcentagem), Boolean(aprovado)]
+    [resolvedId, materia, Number(bateria), Number(acertos), Number(totalQuestoes), Number(porcentagem), Boolean(aprovado), ts]
   );
+
+  // 2. Histórico detalhado por data
+  try {
+    await pool.query(
+      `INSERT INTO bateria_historico_log (id_usuario, materia, bateria, acertos, total_questoes, porcentagem, aprovado, criado_em)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
+      [resolvedId, materia, Number(bateria), Number(acertos), Number(totalQuestoes), Number(porcentagem), Boolean(aprovado), ts]
+    );
+  } catch (err) {
+    console.warn('[QuestoesRepository] Erro ao gravar historico de bateria:', err.message);
+  }
+
   return res.rows[0] || null;
 }
 
@@ -163,15 +242,17 @@ export async function initSimuladoResultadoTable() {
   }
 }
 
-export async function salvarResultadoSimulado(userId, materia, acertos, totalQuestoes, porcentagem, aprovado, tempoGastoSegundos = 0) {
+export async function salvarResultadoSimulado(userId, materia, acertos, totalQuestoes, porcentagem, aprovado, tempoGastoSegundos = 0, dataReferencia = null) {
   const resolvedId = await resolveUserId(userId);
   if (!resolvedId) return null;
   await initSimuladoResultadoTable();
+  const ts = dataReferencia ? new Date(dataReferencia) : new Date();
+
   const res = await pool.query(
     `INSERT INTO simulado_resultado (id_usuario, materia, acertos, total_questoes, porcentagem, aprovado, tempo_gasto_segundos, criado_em)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING *;`,
-    [resolvedId, String(materia || 'Geral'), Number(acertos), Number(totalQuestoes || 30), Number(porcentagem), Boolean(aprovado), Number(tempoGastoSegundos || 0)]
+    [resolvedId, String(materia || 'Geral'), Number(acertos), Number(totalQuestoes || 30), Number(porcentagem), Boolean(aprovado), Number(tempoGastoSegundos || 0), ts]
   );
   return res.rows[0] || null;
 }
