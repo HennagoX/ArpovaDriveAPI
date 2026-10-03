@@ -1,4 +1,4 @@
-import { getCurrentModuloDB, nextCurrentModuloDB, setModuloDB, resolveUserId } from '../Repositories/modulo.repository.js';
+import { getCurrentModuloDB, nextCurrentModuloDB, setModuloDB, resolveUserId, registrarLeituraModuloDB } from '../Repositories/modulo.repository.js';
 import { incrementXp } from './exp.service.js';
 
 const MODULE_COLUMNS = {
@@ -75,7 +75,7 @@ export async function getCurrent(content, userId) {
   };
 }
 
-export async function moveToNext(content, userId) {
+export async function moveToNext(content, userId, dataReferencia = null) {
   const column = resolveModuleColumn(content);
   if (!column) {
     throw new Error(`Conteúdo inválido: "${content}". Conteúdos aceitos: CodigoTransito, PlacasTransito, DirecaoDefensiva, PrimeirosSocorros, Cidadania.`);
@@ -106,6 +106,13 @@ export async function moveToNext(content, userId) {
     }
   }
 
+  // Registra leitura com carimbo de data
+  try {
+    await registrarLeituraModuloDB(canonical, moduloAtual, resolvedUserId, dataReferencia);
+  } catch (err) {
+    console.warn('[ModuloService] Erro ao registrar leitura do módulo:', err.message);
+  }
+
   return {
     success: true,
     conteudo: canonical,
@@ -118,6 +125,23 @@ export async function moveToNext(content, userId) {
       ? `Avanço realizado com sucesso! Você entrou no Módulo ${moduloAtual} de ${canonical}.`
       : `Você avançou no módulo de ${canonical}.`,
     userId: resolvedUserId
+  };
+}
+
+export async function registrarLeitura(content, modulo, userId, dataReferencia = null) {
+  const column = resolveModuleColumn(content);
+  const canonical = column ? (CANONICAL_NAMES[column] || content) : content;
+  const resolvedUserId = await resolveUserId(userId);
+  const num = Math.max(1, Number(modulo) || 1);
+
+  const record = await registrarLeituraModuloDB(canonical, num, resolvedUserId, dataReferencia);
+  return {
+    success: true,
+    conteudo: canonical,
+    modulo: num,
+    lido_em: record?.lido_em,
+    userId: resolvedUserId,
+    message: `Leitura do Módulo ${num} de ${canonical} registrada com sucesso!`
   };
 }
 

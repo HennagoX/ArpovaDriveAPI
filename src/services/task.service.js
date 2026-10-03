@@ -530,31 +530,46 @@ const taskService = {
     const nomeMateria = NOMES_MATERIAS_EXIBICAO[materiaNorm] || params.materia || 'Matéria';
     const linkAcao = obterLinkAcao(tipo, { ...params, materia: materiaNorm });
 
+    // Data alvo formatada para verificação rigorosa do mesmo dia
+    const targetDateStr = formatToYmd(refDate || task.data_agendada || new Date());
+
+    const isSameDayStr = (dateOrStr, targetYmd) => {
+      if (!dateOrStr || !targetYmd) return false;
+      return formatToYmd(dateOrStr) === targetYmd;
+    };
+
     const progresso = preloadedData?.progresso || await taskRepository.getUserProgresso(userId);
     const baterias = preloadedData?.baterias || await taskRepository.getUserBaterias(userId);
     const simulados = preloadedData?.simulados || await taskRepository.getUserSimulados(userId);
+    const leituras = preloadedData?.leituras || await taskRepository.getUserLeituras(userId);
+    const questoesRespostas = preloadedData?.questoesRespostas || await taskRepository.getUserQuestoesRespostas(userId);
 
     if (tipo === 'modulo') {
-      const moduloMin = Number(params.modulo_minimo || 1);
-      const col = MODULO_COLUNAS_MAP[materiaNorm] || 'modulo_codigotransito';
-      const modAtual = Number(progresso?.[col] || 1);
+      const moduloMin = Number(params.modulo_minimo || params.modulo || 1);
 
-      if (modAtual >= moduloMin) {
+      const leiturasDoDia = (leituras || []).filter(l => {
+        const mesmaMateria = normalizarMateria(l.conteudo) === materiaNorm;
+        return mesmaMateria && isSameDayStr(l.lido_em, targetDateStr);
+      });
+
+      const leituraValida = leiturasDoDia.find(l => Number(l.modulo) >= moduloMin);
+
+      if (leituraValida) {
         return {
           valido: true,
           tipo,
-          progressoAtual: modAtual,
+          progressoAtual: Number(leituraValida.modulo),
           meta: moduloMin,
-          motivo: `Módulo ${moduloMin} de ${nomeMateria} estudado! Requisito cumprido.`,
+          motivo: `Módulo ${moduloMin} de ${nomeMateria} lido hoje! Requisito cumprido com sucesso.`,
           linkAcao
         };
       } else {
         return {
           valido: false,
           tipo,
-          progressoAtual: modAtual,
+          progressoAtual: 0,
           meta: moduloMin,
-          motivo: `Para concluir esta missão, estude o Módulo ${moduloMin} de ${nomeMateria} na aba Módulos (Seu progresso atual: Módulo ${modAtual}).`,
+          motivo: `Para concluir esta missão, faça a leitura do Módulo ${moduloMin} de ${nomeMateria} hoje na aba Módulos.`,
           linkAcao
         };
       }
@@ -564,11 +579,15 @@ const taskService = {
       const batNum = params.bateria ? Number(params.bateria) : null;
       const metaPct = Number(params.meta_porcentagem || 40);
 
-      const bateriasMateria = (baterias || []).filter(b => normalizarMateria(b.materia) === materiaNorm);
+      const bateriasDoDia = (baterias || []).filter(b => {
+        const mesmaMateria = normalizarMateria(b.materia) === materiaNorm;
+        const dataBat = b.atualizado_em || b.criado_em;
+        return mesmaMateria && isSameDayStr(dataBat, targetDateStr);
+      });
 
       let batAlvo = null;
       if (batNum) {
-        batAlvo = bateriasMateria.find(b => Number(b.bateria) === batNum);
+        batAlvo = bateriasDoDia.find(b => Number(b.bateria) === batNum);
       }
 
       if (batAlvo) {
@@ -580,7 +599,7 @@ const taskService = {
             tipo,
             progressoAtual: pct,
             meta: metaPct,
-            motivo: `Bateria ${batNum} de ${nomeMateria} superada com ${pct}% de acertos! Requisito cumprido.`,
+            motivo: `Bateria ${batNum} de ${nomeMateria} superada hoje com ${pct}% de acertos! Requisito cumprido.`,
             linkAcao
           };
         } else {
@@ -589,32 +608,32 @@ const taskService = {
             tipo,
             progressoAtual: pct,
             meta: metaPct,
-            motivo: `Você obteve ${pct}% na Bateria ${batNum} de ${nomeMateria}. A missão exige no mínimo ${metaPct}% de acertos para validação. Pratique novamente na aba Questões!`,
+            motivo: `Você obteve ${pct}% na Bateria ${batNum} de ${nomeMateria} hoje. A missão exige no mínimo ${metaPct}% de acertos para validação. Pratique novamente na aba Questões!`,
             linkAcao
           };
         }
       }
 
-      const algumaAprovada = bateriasMateria.find(b => Boolean(b.aprovado) || Number(b.porcentagem) >= metaPct);
+      const algumaAprovada = bateriasDoDia.find(b => Boolean(b.aprovado) || Number(b.porcentagem) >= metaPct);
       if (algumaAprovada) {
         return {
           valido: true,
           tipo,
           progressoAtual: Number(algumaAprovada.porcentagem),
           meta: metaPct,
-          motivo: `Bateria de ${nomeMateria} concluída com ${algumaAprovada.porcentagem}% de acertos! Requisito cumprido.`,
+          motivo: `Bateria de ${nomeMateria} concluída hoje com ${algumaAprovada.porcentagem}% de acertos! Requisito cumprido.`,
           linkAcao
         };
       }
 
-      const tentouAlguma = bateriasMateria[0];
+      const tentouAlguma = bateriasDoDia[0];
       if (tentouAlguma) {
         return {
           valido: false,
           tipo,
           progressoAtual: Number(tentouAlguma.porcentagem),
           meta: metaPct,
-          motivo: `Seu melhor rendimento em ${nomeMateria} foi ${tentouAlguma.porcentagem}%. É necessário atingir no mínimo ${metaPct}% de acertos para validar esta missão.`,
+          motivo: `Seu melhor rendimento hoje em ${nomeMateria} foi ${tentouAlguma.porcentagem}%. É necessário atingir no mínimo ${metaPct}% de acertos hoje para validar esta missão.`,
           linkAcao
         };
       }
@@ -624,7 +643,7 @@ const taskService = {
         tipo,
         progressoAtual: 0,
         meta: metaPct,
-        motivo: `Para concluir esta missão, resolva a Bateria de Questões de ${nomeMateria} e acerte no mínimo ${metaPct}% das questões.`,
+        motivo: `Para concluir esta missão, resolva a Bateria de Questões de ${nomeMateria} hoje e acerte no mínimo ${metaPct}% das questões.`,
         linkAcao
       };
     }
@@ -634,12 +653,14 @@ const taskService = {
       const acertosMin = Number(params.acertos_minimos || 12);
       const isGeral = !params.materia || String(params.materia).toLowerCase() === 'geral' || String(params.materia).toLowerCase() === 'todos';
 
-      const simsFiltrados = (simulados || []).filter(s => {
+      const simsDoDia = (simulados || []).filter(s => {
+        const mesmoDia = isSameDayStr(s.criado_em, targetDateStr);
+        if (!mesmoDia) return false;
         if (isGeral) return true;
         return normalizarMateria(s.materia) === materiaNorm;
       });
 
-      const simAprovado = simsFiltrados.find(s =>
+      const simAprovado = simsDoDia.find(s =>
         Boolean(s.aprovado) || Number(s.porcentagem) >= metaPct || Number(s.acertos) >= acertosMin
       );
 
@@ -649,12 +670,12 @@ const taskService = {
           tipo,
           progressoAtual: Number(simAprovado.porcentagem),
           meta: metaPct,
-          motivo: `Simulado concluído (${simAprovado.porcentagem}% • ${simAprovado.acertos}/30 acertos)! Meta atingida.`,
+          motivo: `Simulado concluído hoje (${simAprovado.porcentagem}% • ${simAprovado.acertos}/30 acertos)! Meta atingida.`,
           linkAcao
         };
       }
 
-      const melhorSim = simsFiltrados.reduce((melhor, curr) => {
+      const melhorSim = simsDoDia.reduce((melhor, curr) => {
         if (!melhor || Number(curr.acertos) > Number(melhor.acertos)) return curr;
         return melhor;
       }, null);
@@ -665,7 +686,7 @@ const taskService = {
           tipo,
           progressoAtual: Number(melhorSim.porcentagem),
           meta: metaPct,
-          motivo: `Seu simulado anterior registrou ${melhorSim.acertos}/30 acertos (${melhorSim.porcentagem}%). A missão diária exige no mínimo ${acertosMin} acertos (${metaPct}%). Realize um novo simulado!`,
+          motivo: `Seu simulado de hoje registrou ${melhorSim.acertos}/30 acertos (${melhorSim.porcentagem}%). A missão diária exige no mínimo ${acertosMin} acertos (${metaPct}%). Realize um novo simulado hoje!`,
           linkAcao
         };
       }
@@ -675,15 +696,28 @@ const taskService = {
         tipo,
         progressoAtual: 0,
         meta: metaPct,
-        motivo: `Para concluir esta missão, realize um Simulado no AprovaDrive e atinja no mínimo ${acertosMin} acertos (${metaPct}%).`,
+        motivo: `Para concluir esta missão, realize um Simulado no AprovaDrive hoje e atinja no mínimo ${acertosMin} acertos (${metaPct}%).`,
         linkAcao
       };
     }
 
     if (tipo === 'acertos') {
       const acertosMin = Number(params.acertos_minimos || 4);
-      const colAcertos = ACERTOS_COLUNAS_MAP[materiaNorm] || 'acertos_codigotransito';
-      const acertosAtuais = Number(progresso?.[colAcertos] || 0);
+
+      const acertosDoDiaQuestoes = (questoesRespostas || []).filter(q => {
+        return normalizarMateria(q.materia) === materiaNorm &&
+               isSameDayStr(q.criado_em, targetDateStr) &&
+               Boolean(q.correto);
+      }).length;
+
+      const bateriasDoDia = (baterias || []).filter(b => {
+        const mesmaMateria = normalizarMateria(b.materia) === materiaNorm;
+        const dataBat = b.atualizado_em || b.criado_em;
+        return mesmaMateria && isSameDayStr(dataBat, targetDateStr);
+      });
+
+      const acertosDoDiaBaterias = bateriasDoDia.reduce((acc, b) => acc + Number(b.acertos || 0), 0);
+      const acertosAtuais = Math.max(acertosDoDiaQuestoes, acertosDoDiaBaterias);
 
       if (acertosAtuais >= acertosMin) {
         return {
@@ -691,7 +725,7 @@ const taskService = {
           tipo,
           progressoAtual: acertosAtuais,
           meta: acertosMin,
-          motivo: `Meta de acertos superada (${acertosAtuais}/${acertosMin} acertos em ${nomeMateria})!`,
+          motivo: `Meta diária de acertos superada (${acertosAtuais}/${acertosMin} acertos em ${nomeMateria} hoje)!`,
           linkAcao
         };
       } else {
@@ -700,7 +734,7 @@ const taskService = {
           tipo,
           progressoAtual: acertosAtuais,
           meta: acertosMin,
-          motivo: `Você acumulou ${acertosAtuais} acertos em ${nomeMateria}. A missão exige no mínimo ${acertosMin} acertos. Pratique mais na área de Questões!`,
+          motivo: `Você acumulou ${acertosAtuais}/${acertosMin} acertos em ${nomeMateria} hoje. A missão exige no mínimo ${acertosMin} acertos hoje. Pratique mais na área de Questões!`,
           linkAcao
         };
       }
@@ -708,8 +742,12 @@ const taskService = {
 
     if (tipo === 'revisao') {
       const metaPct = Number(params.meta_porcentagem || 40);
-      const bateriasMateria = (baterias || []).filter(b => normalizarMateria(b.materia) === materiaNorm);
-      const aprovada = bateriasMateria.find(b => Number(b.porcentagem) >= metaPct);
+      const bateriasDoDia = (baterias || []).filter(b => {
+        const mesmaMateria = normalizarMateria(b.materia) === materiaNorm;
+        const dataBat = b.atualizado_em || b.criado_em;
+        return mesmaMateria && isSameDayStr(dataBat, targetDateStr);
+      });
+      const aprovada = bateriasDoDia.find(b => Number(b.porcentagem) >= metaPct);
 
       if (aprovada) {
         return {
@@ -717,7 +755,7 @@ const taskService = {
           tipo,
           progressoAtual: Number(aprovada.porcentagem),
           meta: metaPct,
-          motivo: `Revisão de ${nomeMateria} concluída com sucesso (${aprovada.porcentagem}%)!`,
+          motivo: `Revisão de ${nomeMateria} concluída hoje com sucesso (${aprovada.porcentagem}%)!`,
           linkAcao
         };
       } else {
@@ -726,7 +764,7 @@ const taskService = {
           tipo,
           progressoAtual: 0,
           meta: metaPct,
-          motivo: `Para concluir a revisão, responda a uma bateria de questões de ${nomeMateria} com pelo menos ${metaPct}% de acertos.`,
+          motivo: `Para concluir a revisão, responda a uma bateria de questões de ${nomeMateria} hoje com pelo menos ${metaPct}% de acertos.`,
           linkAcao
         };
       }
@@ -752,7 +790,9 @@ const taskService = {
     const preloadedData = {
       progresso: await taskRepository.getUserProgresso(user.id_usuario),
       baterias: await taskRepository.getUserBaterias(user.id_usuario),
-      simulados: await taskRepository.getUserSimulados(user.id_usuario)
+      simulados: await taskRepository.getUserSimulados(user.id_usuario),
+      leituras: await taskRepository.getUserLeituras(user.id_usuario),
+      questoesRespostas: await taskRepository.getUserQuestoesRespostas(user.id_usuario)
     };
 
     const dias = {

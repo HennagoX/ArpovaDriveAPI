@@ -4,6 +4,7 @@ import {
   incrementarErro,
   salvarResultadoBateria,
   salvarResultadoSimulado,
+  salvarQuestaoRespostaLog,
   obterResultadosSimuladosUsuario,
   salvarQuestaoCustomizada,
   listarQuestoesCustomizadas,
@@ -207,7 +208,7 @@ export async function verificarAcessoBateria(materia, bateriaNumero, userId) {
   };
 }
 
-export async function checarAcerto(respostas, userId) {
+export async function checarAcerto(respostas, userId, dataReferencia = null) {
   const materiaRaw = respostas?.materia || respostas?.conteudo || respostas?.disciplina || respostas?.questao?.materia || 'MeioAmbiente';
   const materiaNorm = normalizarMateria(materiaRaw);
   const bateriaRaw = respostas?.bateria || respostas?.bateriaNumero || respostas?.bateriaId || respostas?.bateria_id || 1;
@@ -264,6 +265,12 @@ export async function checarAcerto(respostas, userId) {
       const colunaErro = ERROS_COLUNAS[materiaNorm] || 'erros_meioambiente';
       totalErros = await incrementarErro(colunaErro, userId, 1);
     }
+
+    try {
+      await salvarQuestaoRespostaLog(userId, materiaNorm, bateriaNum, numQuestao, isCorreto, dataReferencia);
+    } catch (err) {
+      console.warn('[QuestoesService] Falha ao registrar log de resposta:', err.message);
+    }
   }
 
   return {
@@ -287,7 +294,7 @@ export async function checarAcerto(respostas, userId) {
   };
 }
 
-export async function concluirBateria(dados, userId) {
+export async function concluirBateria(dados, userId, dataReferencia = null) {
   const materiaNorm = normalizarMateria(dados?.materia);
   const bateriaNum = normalizarBateriaNumero(dados?.bateria);
   const perguntas = await obterPerguntasAsync(materiaNorm, bateriaNum);
@@ -322,7 +329,8 @@ export async function concluirBateria(dados, userId) {
         acertos,
         total,
         porcentagem,
-        aprovado
+        aprovado,
+        dataReferencia
       );
     } catch (err) {
       console.warn('[QuestoesService] Falha ao registrar resultado da bateria no banco:', err.message);
@@ -417,7 +425,7 @@ export function gerarQuestoesSimulado(materia = 'Geral') {
   }));
 }
 
-export async function concluirSimulado(dados, userId) {
+export async function concluirSimulado(dados, userId, dataReferencia = null) {
   const materia = dados?.materia || 'Geral';
   const total = 30;
   const respostasEnviadas = dados?.respostas || {};
@@ -451,7 +459,8 @@ export async function concluirSimulado(dados, userId) {
         total,
         porcentagem,
         aprovado,
-        tempoGasto
+        tempoGasto,
+        dataReferencia
       );
     } catch (err) {
       console.warn('[QuestoesService] Falha ao registrar resultado do simulado no banco:', err.message);

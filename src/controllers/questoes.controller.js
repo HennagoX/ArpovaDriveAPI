@@ -18,6 +18,7 @@ import {
   listarSimuladosAdmin,
   removerSimuladoAdmin
 } from "../services/questoes.service.js";
+import taskService from "../services/task.service.js";
 
 function extrairUserId(req) {
   return req.body?.userId ||
@@ -32,10 +33,25 @@ function extrairUserId(req) {
          null;
 }
 
+function extrairDataReferencia(req) {
+  const rawDateOrDay =
+    req.body?.simularDia ||
+    req.body?.mockDay ||
+    req.body?.dia ||
+    req.query?.simularDia ||
+    req.query?.mockDay ||
+    req.query?.dia ||
+    req.headers?.['x-mock-day'] ||
+    req.headers?.['x-mock-date'];
+
+  return rawDateOrDay ? taskService.resolveReferenceDate(rawDateOrDay) : null;
+}
+
 export async function checkAcerto(req, res) {
   try {
     const userId = extrairUserId(req);
-    const resultado = await checarAcerto(req.body, userId);
+    const dataRef = extrairDataReferencia(req);
+    const resultado = await checarAcerto(req.body, userId, dataRef);
     
     if (!resultado) {
       return res.status(400).json({
@@ -165,7 +181,8 @@ export async function getBaterias(req, res) {
 export async function concluirBateriaController(req, res) {
   try {
     const userId = extrairUserId(req);
-    const resultado = await concluirBateria(req.body, userId);
+    const dataRef = extrairDataReferencia(req);
+    const resultado = await concluirBateria(req.body, userId, dataRef);
 
     return res.status(200).json(resultado);
   } catch (error) {
@@ -201,7 +218,8 @@ export async function getSimuladoQuestoesController(req, res) {
 export async function concluirSimuladoController(req, res) {
   try {
     const userId = extrairUserId(req);
-    const resultado = await concluirSimulado(req.body, userId);
+    const dataRef = extrairDataReferencia(req);
+    const resultado = await concluirSimulado(req.body, userId, dataRef);
 
     return res.status(200).json(resultado);
   } catch (error) {

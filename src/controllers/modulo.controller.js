@@ -1,4 +1,5 @@
-import { getCurrent, moveToNext, setPointer } from "../services/modulo.service.js";
+import { getCurrent, moveToNext, setPointer, registrarLeitura } from "../services/modulo.service.js";
+import taskService from "../services/task.service.js";
 
 function extrairParametros(req) {
   const contentId = 
@@ -23,7 +24,19 @@ function extrairParametros(req) {
     req.headers?.['x-requester-id'] || 
     'Henrique';
 
-  return { contentId, userId };
+  const rawDateOrDay = 
+    req.body?.simularDia || 
+    req.body?.mockDay || 
+    req.body?.dia || 
+    req.query?.simularDia || 
+    req.query?.mockDay || 
+    req.query?.dia || 
+    req.headers?.['x-mock-day'] || 
+    req.headers?.['x-mock-date'];
+
+  const dateRef = rawDateOrDay ? taskService.resolveReferenceDate(rawDateOrDay) : null;
+
+  return { contentId, userId, rawDateOrDay, dateRef };
 }
 
 export async function getCurrentModule(req, res) {
@@ -45,7 +58,7 @@ export async function getCurrentModule(req, res) {
 
 export async function moveToNextModule(req, res) {
   try {
-    const { contentId, userId } = extrairParametros(req);
+    const { contentId, userId, dateRef } = extrairParametros(req);
 
     if (!contentId) {
       return res.status(400).json({ 
@@ -53,7 +66,25 @@ export async function moveToNextModule(req, res) {
       });
     }
 
-    const resultado = await moveToNext(contentId, userId);
+    const resultado = await moveToNext(contentId, userId, dateRef);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function registrarLeituraModuloController(req, res) {
+  try {
+    const { contentId, userId, dateRef } = extrairParametros(req);
+    const modulo = req.body?.modulo || req.query?.modulo || req.params?.modulo || 1;
+
+    if (!contentId) {
+      return res.status(400).json({ 
+        error: 'Conteúdo não informado para registrar leitura.' 
+      });
+    }
+
+    const resultado = await registrarLeitura(contentId, modulo, userId, dateRef);
     return res.status(200).json(resultado);
   } catch (error) {
     return res.status(400).json({ error: error.message });

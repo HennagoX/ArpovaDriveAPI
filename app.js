@@ -62,6 +62,7 @@ app.use('/auth', authRoutes);
 app.use('/task', taskRoutes);
 app.use('/questoes', questoesRoutes);
 app.use('/modulo', moduloRoutes);
+app.use('/modulos', moduloRoutes);
 app.use('/ai', aiRoutes);
 app.use('/desempenho', desempenhoRoutes);
 app.use('/modulos-customizados', moduloCustomizadoRoutes);
