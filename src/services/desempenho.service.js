@@ -49,15 +49,6 @@ export const MATERIAS_CONFIG = [
     moduloColuna: 'modulo_primeirossocorros',
     acertosColuna: 'acertos_primeirossocorros',
     errosColuna: 'erros_primeirossocorros'
-  },
-  {
-    id: 'MecanicaBasica',
-    nome: 'Mecânica Básica',
-    icone: 'fa-solid fa-gears',
-    cor: 'cyan',
-    moduloColuna: null,
-    acertosColuna: null,
-    errosColuna: null
   }
 ];
 

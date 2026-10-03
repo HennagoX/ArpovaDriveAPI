@@ -40,7 +40,6 @@ export const NOMES_MATERIAS_EXIBICAO = {
   DirecaoDefensiva: 'Direção Defensiva',
   PrimeirosSocorros: 'Primeiros Socorros',
   MeioAmbiente: 'Meio Ambiente e Cidadania',
-  MecanicaBasica: 'Mecânica Básica',
   Geral: 'DETRAN Geral'
 };
 
@@ -70,7 +69,6 @@ export function inferirTipoValidacao(task) {
   else if (texto.includes('direcao') || texto.includes('defensiva')) materia = 'DirecaoDefensiva';
   else if (texto.includes('socorro') || texto.includes('saude') || texto.includes('primeiro')) materia = 'PrimeirosSocorros';
   else if (texto.includes('meio') || texto.includes('ambiente') || texto.includes('cidada')) materia = 'MeioAmbiente';
-  else if (texto.includes('mecanica')) materia = 'MecanicaBasica';
 
   if (texto.includes('simulado')) {
     const isGeral = texto.includes('geral') || texto.includes('detran') || texto.includes('oficial') || !texto.includes('especifico');
@@ -388,8 +386,8 @@ export const DEFAULT_WEEK_TEMPLATES = [
   {
     dia_semana: 5,
     sort: 2,
-    titulo: 'Mecânica Básica para Habilitação',
-    descricao: 'Componentes essenciais do veículo, painel de instrumentos e manutenção preventiva.',
+    titulo: 'Prática de Questões: Legislação e Placas',
+    descricao: 'Resolva exercícios focados em regras de circulação e placas de trânsito.',
     xp_reward: 50,
     horario: '12:30',
     duracao: '15 min'

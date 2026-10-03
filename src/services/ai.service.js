@@ -121,7 +121,6 @@ O USUÁRIO TBM NÃO PODE MEXER NO CRONOGRAMA MANUALMENTE, É TUDO AUTOMÁTICO DO
    - Direção Defensiva (Módulos em PDF e baterias de questões sobre condições adversas, prevenção de acidentes e conduta segura).
    - Primeiros Socorros (Módulos em PDF e baterias de questões sobre atendimento inicial, parada cardiorrespiratória, hemorragias e segurança do local).
    - Meio Ambiente e Cidadania (Módulos em PDF e baterias de questões sobre poluição veicular, conservação ambiental e convívio social).
-   - Mecânica Básica (Módulos em PDF e baterias de questões sobre motor, freios, pneus e manutenção preventiva).
 3. Regras da Prova do DETRAN:
    - Exige no mínimo 70% de acertos para aprovação (21 questões de 30).
    - Legislação de Trânsito e Direção Defensiva são as matérias mais cobradas na prova oficial.
@@ -131,7 +130,7 @@ O USUÁRIO TBM NÃO PODE MEXER NO CRONOGRAMA MANUALMENTE, É TUDO AUTOMÁTICO DO
   },
   {
     role: "system",
-    content: "CONHECIMENTO DO DESEMPENHO DO ALUNO: Sempre que fornecido no contexto, consulte o bloco 'DESEMPENHO REAL E DETALHADO DO ALUNO NO APROVADRIVE'. Você sabe exatamente a porcentagem de acertos geral do aluno, o total de questões, acertos, erros, simulados realizados e aprovados, bem como o aproveitamento específico em cada matéria (Legislação, Placas, Direção Defensiva, Primeiros Socorros, Meio Ambiente e Mecânica). Quando o aluno perguntar como está seu desempenho, onde tem mais dificuldade ou pedir orientações, use esses dados exatos e ofereça um plano de ação personalizado e encorajador."
+    content: "CONHECIMENTO DO DESEMPENHO DO ALUNO: Sempre que fornecido no contexto, consulte o bloco 'DESEMPENHO REAL E DETALHADO DO ALUNO NO APROVADRIVE'. Você sabe exatamente a porcentagem de acertos geral do aluno, o total de questões, acertos, erros, simulados realizados e aprovados, bem como o aproveitamento específico em cada matéria (Legislação, Placas, Direção Defensiva, Primeiros Socorros e Meio Ambiente). Quando o aluno perguntar como está seu desempenho, onde tem mais dificuldade ou pedir orientações, use esses dados exatos e ofereça um plano de ação personalizado e encorajador."
   }
 ];
 
@@ -236,7 +235,7 @@ export function getSmartFallbackResponse(userMessage, userContext = {}) {
   if (norm.includes('materia') || norm.includes('conteudo') || norm.includes('cobradas') || norm.includes('mais cai') || norm.includes('prova')) {
     return {
       intent: "explain_content",
-      message: `As matérias cobradas na prova teórica do DETRAN são organizadas por ordem de relevância:\n\n1. **Legislação de Trânsito:** Regras de circulação, normas de preferência, infrações, penalidades e sinalização.\n2. **Direção Defensiva:** Prevenção de acidentes, condições adversas e conduta segura.\n3. **Primeiros Socorros:** Atendimento primário, sinalização do local e acionamento de emergências (SAMU 192 e Bombeiros 193).\n4. **Meio Ambiente e Cidadania:** Emissões veiculares, conservação ambiental e convivência pacífica no trânsito.\n5. **Mecânica Básica:** Manutenção preventiva, componentes do motor, pneus e freios.`,
+      message: `As matérias cobradas na prova teórica do DETRAN são organizadas por ordem de relevância:\n\n1. **Legislação de Trânsito:** Regras de circulação, normas de preferência, infrações, penalidades e sinalização.\n2. **Direção Defensiva:** Prevenção de acidentes, condições adversas e conduta segura.\n3. **Primeiros Socorros:** Atendimento primário, sinalização do local e acionamento de emergências (SAMU 192 e Bombeiros 193).\n4. **Meio Ambiente e Cidadania:** Emissões veiculares, conservação ambiental e convivência pacífica no trânsito.`,
       action: { type: "explain_content", status: "none", parameters: { assunto: "materias_detran" } },
       requires_confirmation: false,
       confidence: 1.0
@@ -306,8 +305,8 @@ export function getSmartFallbackResponse(userMessage, userContext = {}) {
   if (norm.includes('mecanica') || norm.includes('motor') || norm.includes('freio') || norm.includes('pneu') || norm.includes('oleo') || norm.includes('radiador')) {
     return {
       intent: "explain_content",
-      message: `Os pontos essenciais de Mecânica Básica para a prova teórica incluem:\n\n- **Manutenção Preventiva:** Evita quebras inesperadas e reduz acidentes de trânsito.\n- **Pneus:** A profundidade mínima dos sulcos deve ser de **1,6 mm** (indicador TWI). Sulcos abaixo disso tornam o pneu "careca" e geram infração grave.\n- **Arrefecimento e Lubrificação:** Verificar sempre o nível do óleo do motor e o nível da água/aditivo no radiador com o motor frio e em terreno plano.\n- **Painel de Instrumentos:** Luzes vermelhas indicam emergência que exige parada imediata (ex: pressão do óleo ou freios).`,
-      action: { type: "explain_content", status: "none", parameters: { assunto: "mecanica_basica" } },
+      message: `A matéria de Mecânica Básica não faz mais parte da grade do curso no AprovaDrive. Nosso foco é 100% nas matérias oficiais exigidas: Legislação de Trânsito, Direção Defensiva, Primeiros Socorros, Placas e Sinalização, e Meio Ambiente e Cidadania.`,
+      action: { type: "explain_content", status: "none", parameters: { assunto: "materias_detran" } },
       requires_confirmation: false,
       confidence: 1.0
     };
@@ -470,7 +469,6 @@ export function normalizarMateriaId(nome) {
   if (lower.includes('placa') || lower.includes('sinalizacao')) return 'PlacasTransito';
   if (lower.includes('direcao') || lower.includes('defensiva') || lower.includes('ofensiva')) return 'DirecaoDefensiva';
   if (lower.includes('socorro') || lower.includes('saude') || lower.includes('primeiro')) return 'PrimeirosSocorros';
-  if (lower.includes('mecanica')) return 'MecanicaBasica';
   return 'CodigoTransito';
 }
 
@@ -488,7 +486,6 @@ export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
     DirecaoDefensiva: 'Direção Defensiva',
     PrimeirosSocorros: 'Primeiros Socorros',
     MeioAmbiente: 'Meio Ambiente e Cidadania',
-    MecanicaBasica: 'Mecânica Básica'
   };
 
   return [
