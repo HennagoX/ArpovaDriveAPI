@@ -171,29 +171,18 @@ export const moduloCustomizadoService = {
 
     const savedRow = rows[0];
 
-    // Determina o tipo de ação para o histórico
-    let tipoAcao = 'CRIACAO';
-    let descAcao = `Criação do módulo "${savedRow.titulo}" com PDF "${savedRow.pdf_nome}"`;
-
-    if (prevRow) {
-      if (prevRow.pdf_url !== savedRow.pdf_url || prevRow.pdf_nome !== savedRow.pdf_nome) {
-        tipoAcao = 'EDICAO_PDF';
-        descAcao = `Substituição do PDF de "${prevRow.pdf_nome || 'PDF anterior'}" para "${savedRow.pdf_nome}"`;
-      } else {
-        tipoAcao = 'EDICAO_MODULO';
-        descAcao = `Edição das informações do módulo "${savedRow.titulo}"`;
-      }
+    // Se o módulo já existia e teve seu PDF anterior substituído, registra o arquivo antigo para possível restauração
+    if (prevRow && (prevRow.pdf_url || prevRow.pdf_nome) && (prevRow.pdf_url !== savedRow.pdf_url || prevRow.pdf_nome !== savedRow.pdf_nome)) {
+      await registrarHistorico({
+        moduloId: savedRow.id,
+        conteudoId: savedRow.conteudo_id,
+        tipoAcao: 'REMOCAO',
+        descricaoAcao: `Arquivo anterior "${prevRow.pdf_nome || 'PDF'}" substituído no módulo "${savedRow.titulo}"`,
+        adminId: requesterId,
+        dadosAnteriores: savedRow,
+        dadosNovos: prevRow
+      });
     }
-
-    await registrarHistorico({
-      moduloId: savedRow.id,
-      conteudoId: savedRow.conteudo_id,
-      tipoAcao,
-      descricaoAcao: descAcao,
-      adminId: requesterId,
-      dadosAnteriores: prevRow,
-      dadosNovos: savedRow
-    });
 
     return {
       success: true,
@@ -277,9 +266,10 @@ export const moduloCustomizadoService = {
   async listarHistorico(conteudoId = null, moduloId = null) {
     await initHistoricoTable();
 
-    let query = 'SELECT * FROM modulo_pdf_historico';
+    // Apenas arquivos e módulos DELETADOS anteriormente aparecem no histórico para restauração
+    let query = "SELECT * FROM modulo_pdf_historico WHERE tipo_acao = 'REMOCAO'";
     let params = [];
-    let conditions = ["tipo_acao != 'REVERSAO'"];
+    let conditions = ["tipo_acao = 'REMOCAO'"];
 
     if (conteudoId) {
       params.push(conteudoId);
@@ -292,7 +282,7 @@ export const moduloCustomizadoService = {
     }
 
     if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
+      query = 'SELECT * FROM modulo_pdf_historico WHERE ' + conditions.join(' AND ');
     }
 
     query += ' ORDER BY criado_em DESC LIMIT 150';
@@ -305,42 +295,31 @@ export const moduloCustomizadoService = {
     };
   },
 
-  async reverterHistorico(historicoId, requesterId = null, targetVersion = 'anterior') {
+  async reverterHistorico(historicoId, requesterId = null, targetVersion = 'versao') {
     await initHistoricoTable();
 
     const histCheck = await pool.query('SELECT * FROM modulo_pdf_historico WHERE id = $1', [historicoId]);
     if (histCheck.rows.length === 0) {
-      const err = new Error('Registro de histórico não encontrado.');
+      const err = new Error('Arquivo deletado não encontrado no histórico.');
       err.statusCode = 404;
       throw err;
     }
 
     const hist = histCheck.rows[0];
-
-    // Determina o estado a ser restaurado:
-    // 'anterior' -> restaura os dados como estavam antes daquela alteração (se houver dados_anteriores, senão usa dados_novos)
-    // 'versao' ou 'novos' -> restaura os dados daquela versão específica (dados_novos)
-    let targetState = null;
-    if (targetVersion === 'depois' || targetVersion === 'novos' || targetVersion === 'versao') {
-      targetState = hist.dados_novos || hist.dados_anteriores;
-    } else {
-      targetState = hist.dados_anteriores || hist.dados_novos;
-    }
+    const targetState = hist.dados_novos || hist.dados_anteriores;
 
     if (!targetState) {
-      const err = new Error('Não há dados históricos gravados para reverter este registro.');
+      const err = new Error('Não há dados do arquivo para restaurar.');
       err.statusCode = 400;
       throw err;
     }
 
     const moduloId = hist.modulo_id;
-    const currentCheck = await pool.query('SELECT * FROM modulo_customizado WHERE id = $1', [moduloId]);
-    const currentState = currentCheck.rows[0] || null;
 
     const query = `
       INSERT INTO modulo_customizado (
         id, conteudo_id, numero, titulo, descricao, duracao, topicos, pdf_nome, pdf_url, removido, is_custom, atualizado_em
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, TRUE, NOW())
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, FALSE, TRUE, NOW())
       ON CONFLICT (id) DO UPDATE SET
         conteudo_id = EXCLUDED.conteudo_id,
         numero = EXCLUDED.numero,
@@ -350,7 +329,7 @@ export const moduloCustomizadoService = {
         topicos = EXCLUDED.topicos,
         pdf_nome = EXCLUDED.pdf_nome,
         pdf_url = EXCLUDED.pdf_url,
-        removido = EXCLUDED.removido,
+        removido = FALSE,
         atualizado_em = NOW()
       RETURNING *;
     `;
@@ -359,36 +338,49 @@ export const moduloCustomizadoService = {
       moduloId,
       targetState.conteudo_id || hist.conteudo_id,
       targetState.numero !== undefined ? Number(targetState.numero) : 99,
-      targetState.titulo || 'Módulo Revertido',
+      targetState.titulo || 'Módulo Restaurado',
       targetState.descricao || '',
       targetState.duracao || '20 min',
       targetState.topicos !== undefined ? Number(targetState.topicos) : 4,
-      targetState.pdf_nome || 'material_revertido.pdf',
-      targetState.pdf_url || '',
-      Boolean(targetState.removido)
+      targetState.pdf_nome || 'material_restaurado.pdf',
+      targetState.pdf_url || ''
     ]);
 
     const restoredRow = rows[0];
 
+    // Como o arquivo/módulo foi restaurado, ele sai do histórico de deletados
+    await pool.query('DELETE FROM modulo_pdf_historico WHERE id = $1', [historicoId]);
+
     return {
       success: true,
-      message: `Arquivo "${restoredRow.pdf_nome || 'material.pdf'}" restaurado com sucesso no módulo!`,
+      message: `Arquivo "${restoredRow.pdf_nome || 'material.pdf'}" restaurado com sucesso!`,
       modulo: restoredRow
     };
   },
 
   async removerItemHistorico(historicoId, requesterId = null) {
     await initHistoricoTable();
-    const { rows } = await pool.query('DELETE FROM modulo_pdf_historico WHERE id = $1 RETURNING *', [historicoId]);
-    if (rows.length === 0) {
-      const err = new Error('Registro de histórico não encontrado.');
+    const histCheck = await pool.query('SELECT * FROM modulo_pdf_historico WHERE id = $1', [historicoId]);
+    if (histCheck.rows.length === 0) {
+      const err = new Error('Arquivo não encontrado no histórico.');
       err.statusCode = 404;
       throw err;
     }
+
+    const hist = histCheck.rows[0];
+    const moduloId = hist.modulo_id;
+
+    // Remove do histórico permanentemente
+    await pool.query('DELETE FROM modulo_pdf_historico WHERE id = $1', [historicoId]);
+
+    // Se o módulo correspondente ainda estiver marcado como removido, purga definitivamente do banco
+    if (moduloId) {
+      await pool.query('DELETE FROM modulo_customizado WHERE id = $1 AND removido = TRUE', [moduloId]);
+    }
+
     return {
       success: true,
-      message: `Registro de histórico #${historicoId} excluído com sucesso!`,
-      item: rows[0]
+      message: 'Arquivo deletado definitivamente!'
     };
   },
 
@@ -413,9 +405,16 @@ export const moduloCustomizadoService = {
 
     const { rowCount } = await pool.query(query, params);
 
+    // Também purga os módulos marcados como removidos correspondentes
+    if (conteudoId) {
+      await pool.query('DELETE FROM modulo_customizado WHERE conteudo_id = $1 AND removido = TRUE', [conteudoId]);
+    } else {
+      await pool.query('DELETE FROM modulo_customizado WHERE removido = TRUE');
+    }
+
     return {
       success: true,
-      message: `${rowCount} registro(s) de histórico excluído(s) com sucesso!`,
+      message: `${rowCount} arquivo(s) deletado(s) definitivamente!`,
       removidos: rowCount
     };
   }
