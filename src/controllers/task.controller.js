@@ -14,6 +14,7 @@ export function extrairParametros(req) {
                  (!req.params?.id ? req.query?.id : null);
 
   const requesterId = req.headers?.['x-admin-id'] || 
+                      req.headers?.['x-requester-id'] || 
                       req.headers?.['x-user-id'] || 
                       req.headers?.['x-usuario-id'] || 
                       req.body?.requesterId || 
@@ -177,8 +178,9 @@ export async function reiniciar(req, res, next) {
 
 export async function resetarCronograma(req, res, next) {
   try {
-    const { userId, isAdmin, date } = extrairParametros(req);
-    if (!isAdmin) {
+    const { userId, isAdmin, requesterId, date } = extrairParametros(req);
+    const adminCheck = isAdmin || (await checkIsAdmin(requesterId));
+    if (!adminCheck) {
       return res.status(403).json({ error: 'Acesso negado. Apenas o administrador pode reinicializar cronogramas.' });
     }
     const result = await taskService.resetSchedule(userId, date);
@@ -191,7 +193,8 @@ export async function resetarCronograma(req, res, next) {
 export async function regenerarComIA(req, res, next) {
   try {
     const { userId, requesterId, isAdmin, date } = extrairParametros(req);
-    if (!isAdmin && requesterId && userId && requesterId !== userId) {
+    const adminCheck = isAdmin || (await checkIsAdmin(requesterId));
+    if (!adminCheck && requesterId && userId && requesterId !== userId) {
       return res.status(403).json({ error: 'Acesso negado. Você só tem permissão para gerenciar suas próprias tarefas.' });
     }
     const result = await taskService.regenerarTarefasComIA(userId, date);
