@@ -1,4 +1,17 @@
-import { getQuestoes, incrementarAcerto, incrementarErro, salvarResultadoBateria, salvarResultadoSimulado, obterResultadosSimuladosUsuario } from '../Repositories/questoes.repository.js';
+import {
+  getQuestoes,
+  incrementarAcerto,
+  incrementarErro,
+  salvarResultadoBateria,
+  salvarResultadoSimulado,
+  obterResultadosSimuladosUsuario,
+  salvarQuestaoCustomizada,
+  listarQuestoesCustomizadas,
+  removerQuestaoCustomizada,
+  salvarSimuladoCustomizado,
+  listarSimuladosCustomizados,
+  removerSimuladoCustomizado
+} from '../Repositories/questoes.repository.js';
 import { incrementXp } from './exp.service.js';
 import { getCurrent } from './modulo.service.js';
 import { QUESTOES_BANCO } from './questoes.data.js';
@@ -92,6 +105,35 @@ export function obterPerguntas(materia, bateriaNumero) {
   return questoesMateria[batNum];
 }
 
+export async function obterPerguntasAsync(materia, bateriaNumero) {
+  const materiaNorm = normalizarMateria(materia);
+  const batNum = normalizarBateriaNumero(bateriaNumero);
+  const base = obterPerguntas(materiaNorm, batNum);
+
+  try {
+    const customRows = await listarQuestoesCustomizadas(materiaNorm, batNum);
+    if (customRows && customRows.length > 0) {
+      const customMapped = customRows.map((cq, idx) => ({
+        id: cq.id,
+        numero: Number(cq.numero || (base.length + idx + 1)),
+        modulo: Number(cq.modulo || 1),
+        materia: cq.materia || materiaNorm,
+        texto: cq.texto,
+        opcoes: Array.isArray(cq.opcoes) ? cq.opcoes : JSON.parse(cq.opcoes || '[]'),
+        correta: Number(cq.correta),
+        corretaLetra: cq.correta_letra || LETRAS[cq.correta] || 'A',
+        explicacao: cq.explicacao || '',
+        isCustom: true
+      }));
+      return [...base, ...customMapped];
+    }
+  } catch (err) {
+    console.warn('[QuestoesService] Falha ao consultar questões customizadas:', err.message);
+  }
+
+  return base;
+}
+
 export function obterBaterias(materia) {
   const materiaNorm = normalizarMateria(materia);
   const questoesMateria = QUESTOES_BANCO[materiaNorm];
@@ -163,7 +205,7 @@ export async function checarAcerto(respostas, userId) {
     respostas?.resposta ?? respostas?.respostaUsuario ?? respostas?.alternativa
   );
 
-  const perguntas = obterPerguntas(materiaNorm, bateriaNum);
+  const perguntas = await obterPerguntasAsync(materiaNorm, bateriaNum);
   const questaoEncontrada = perguntas.find(q => Number(q.numero) === numQuestao);
 
   const textoResposta = String(respostas?.textoResposta || respostas?.texto || '').trim();
@@ -221,7 +263,7 @@ export async function checarAcerto(respostas, userId) {
 export async function concluirBateria(dados, userId) {
   const materiaNorm = normalizarMateria(dados?.materia);
   const bateriaNum = normalizarBateriaNumero(dados?.bateria);
-  const perguntas = obterPerguntas(materiaNorm, bateriaNum);
+  const perguntas = await obterPerguntasAsync(materiaNorm, bateriaNum);
   const total = Math.max(1, Number(dados?.total) || perguntas.length || 10);
 
   const respostasEnviadas = dados?.respostas || {};
@@ -409,4 +451,148 @@ export async function concluirSimulado(dados, userId) {
 
 export async function obterResultadosSimulados(userId) {
   return await obterResultadosSimuladosUsuario(userId);
+}
+
+export async function gerarQuestoesSimuladoAsync(materia = 'Geral') {
+  const materiaNorm = normalizarMateria(materia);
+  const isGeral = !materia || String(materia).toLowerCase() === 'geral' || String(materia).toLowerCase() === 'todos' || String(materia).toLowerCase() === 'detran';
+
+  let customQuestoes = [];
+  try {
+    const customRows = await listarQuestoesCustomizadas(isGeral ? null : materiaNorm);
+    customQuestoes = (customRows || []).filter(q => q.incluir_no_simulado !== false);
+  } catch (err) {
+    console.warn('[QuestoesService] Falha ao buscar questões customizadas para simulado:', err.message);
+  }
+
+  const baseQuestoes = gerarQuestoesSimulado(materia);
+
+  if (customQuestoes.length === 0) {
+    return baseQuestoes;
+  }
+
+  const customMapped = customQuestoes.map(cq => ({
+    modulo: Number(cq.modulo || 1),
+    materia: cq.materia || materiaNorm,
+    texto: cq.texto,
+    opcoes: Array.isArray(cq.opcoes) ? cq.opcoes : JSON.parse(cq.opcoes || '[]'),
+    correta: Number(cq.correta),
+    corretaLetra: cq.correta_letra || LETRAS[cq.correta] || 'A',
+    explicacao: cq.explicacao || '',
+    isCustom: true
+  }));
+
+  const todas = [...customMapped, ...baseQuestoes];
+  const embaralhadas = shuffleArray(todas).slice(0, 30);
+
+  return embaralhadas.map((q, idx) => ({
+    ...q,
+    numero: idx + 1
+  }));
+}
+
+export async function criarQuestaoAdmin(dados, adminId = null) {
+  const texto = String(dados.texto || '').trim();
+  if (!texto) {
+    const err = new Error('O enunciado da questão é obrigatório.');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const opcoes = Array.isArray(dados.opcoes) ? dados.opcoes : [];
+  if (opcoes.length < 4 || opcoes.some(o => !String(o).trim())) {
+    const err = new Error('A questão precisa conter 4 alternativas preenchidas (A, B, C e D).');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const materia = normalizarMateria(dados.materia);
+  const bateriaNumero = normalizarBateriaNumero(dados.bateria || dados.bateria_numero || 1);
+
+  let correta = Number(dados.correta ?? 0);
+  let corretaLetra = normalizarRespostaLetra(dados.corretaLetra || dados.correta_letra || LETRAS[correta]);
+  if (!corretaLetra) corretaLetra = 'A';
+  correta = LETRAS.indexOf(corretaLetra);
+  if (correta < 0) correta = 0;
+
+  const row = await salvarQuestaoCustomizada({
+    ...dados,
+    materia,
+    bateria_numero: bateriaNumero,
+    correta,
+    correta_letra: corretaLetra,
+    opcoes
+  }, adminId);
+
+  return {
+    success: true,
+    message: 'Questão criada com sucesso pelo administrador!',
+    questao: row
+  };
+}
+
+export async function listarQuestoesCustomizadasAdmin(materia = null, bateria = null) {
+  const materiaNorm = materia ? normalizarMateria(materia) : null;
+  const bateriaNum = bateria ? normalizarBateriaNumero(bateria) : null;
+  const rows = await listarQuestoesCustomizadas(materiaNorm, bateriaNum);
+  return {
+    success: true,
+    questoes: rows
+  };
+}
+
+export async function removerQuestaoAdmin(id) {
+  if (!id) {
+    const err = new Error('ID da questão é obrigatório.');
+    err.statusCode = 400;
+    throw err;
+  }
+  await removerQuestaoCustomizada(id);
+  return {
+    success: true,
+    message: 'Questão removida com sucesso!'
+  };
+}
+
+export async function criarSimuladoAdmin(dados, adminId = null) {
+  const titulo = String(dados.titulo || '').trim();
+  if (!titulo) {
+    const err = new Error('O título do simulado é obrigatório.');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const materia = dados.materia ? normalizarMateria(dados.materia) : 'Geral';
+  const row = await salvarSimuladoCustomizado({
+    ...dados,
+    titulo,
+    materia
+  }, adminId);
+
+  return {
+    success: true,
+    message: 'Simulado criado com sucesso pelo administrador!',
+    simulado: row
+  };
+}
+
+export async function listarSimuladosAdmin(materia = null) {
+  const rows = await listarSimuladosCustomizados(materia);
+  return {
+    success: true,
+    simulados: rows
+  };
+}
+
+export async function removerSimuladoAdmin(id) {
+  if (!id) {
+    const err = new Error('ID do simulado é obrigatório.');
+    err.statusCode = 400;
+    throw err;
+  }
+  await removerSimuladoCustomizado(id);
+  return {
+    success: true,
+    message: 'Simulado removido com sucesso!'
+  };
 }

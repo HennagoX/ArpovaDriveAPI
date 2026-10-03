@@ -2,12 +2,20 @@ import {
   checarAcerto,
   obterQuestoes,
   obterPerguntas,
+  obterPerguntasAsync,
   obterBaterias,
   concluirBateria,
   verificarAcessoBateria,
   gerarQuestoesSimulado,
+  gerarQuestoesSimuladoAsync,
   concluirSimulado,
-  obterResultadosSimulados
+  obterResultadosSimulados,
+  criarQuestaoAdmin,
+  listarQuestoesCustomizadasAdmin,
+  removerQuestaoAdmin,
+  criarSimuladoAdmin,
+  listarSimuladosAdmin,
+  removerSimuladoAdmin
 } from "../services/questoes.service.js";
 
 function extrairUserId(req) {
@@ -97,7 +105,7 @@ export async function getPerguntas(req, res) {
       }
     }
 
-    const perguntas = obterPerguntas(materia, bateria);
+    const perguntas = await obterPerguntasAsync(materia, bateria);
 
     return res.status(200).json({
       sucesso: true,
@@ -171,7 +179,7 @@ export async function concluirBateriaController(req, res) {
 export async function getSimuladoQuestoesController(req, res) {
   try {
     const materia = req.query.materia || req.params?.materia || 'Geral';
-    const questoes = gerarQuestoesSimulado(materia);
+    const questoes = await gerarQuestoesSimuladoAsync(materia);
 
     return res.status(200).json({
       sucesso: true,
@@ -228,5 +236,66 @@ export async function getSimuladoResultadosController(req, res) {
       success: false,
       message: error.message || "Erro ao buscar histórico de simulados"
     });
+  }
+}
+
+export async function adminCriarQuestao(req, res, next) {
+  try {
+    const adminId = req.requesterId;
+    const resultado = await criarQuestaoAdmin(req.body, adminId);
+    return res.status(201).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function adminListarQuestoes(req, res, next) {
+  try {
+    const materia = req.query.materia || null;
+    const bateria = req.query.bateria || null;
+    const resultado = await listarQuestoesCustomizadasAdmin(materia, bateria);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function adminRemoverQuestao(req, res, next) {
+  try {
+    const id = req.params?.id || req.body?.id;
+    const resultado = await removerQuestaoAdmin(id);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function adminCriarSimulado(req, res, next) {
+  try {
+    const adminId = req.requesterId;
+    const resultado = await criarSimuladoAdmin(req.body, adminId);
+    return res.status(201).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function adminListarSimulados(req, res, next) {
+  try {
+    const materia = req.query.materia || null;
+    const resultado = await listarSimuladosAdmin(materia);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function adminRemoverSimulado(req, res, next) {
+  try {
+    const id = req.params?.id || req.body?.id;
+    const resultado = await removerSimuladoAdmin(id);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
   }
 }
