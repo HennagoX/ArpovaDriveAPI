@@ -386,6 +386,49 @@ export const moduloCustomizadoService = {
       message: `Módulo e PDF revertidos com sucesso para a versão #${historicoId}!`,
       modulo: revertedRow
     };
+  },
+
+  async removerItemHistorico(historicoId, requesterId = null) {
+    await initHistoricoTable();
+    const { rows } = await pool.query('DELETE FROM modulo_pdf_historico WHERE id = $1 RETURNING *', [historicoId]);
+    if (rows.length === 0) {
+      const err = new Error('Registro de histórico não encontrado.');
+      err.statusCode = 404;
+      throw err;
+    }
+    return {
+      success: true,
+      message: `Registro de histórico #${historicoId} excluído com sucesso!`,
+      item: rows[0]
+    };
+  },
+
+  async limparHistorico(conteudoId = null, moduloId = null, requesterId = null) {
+    await initHistoricoTable();
+    let query = 'DELETE FROM modulo_pdf_historico';
+    const params = [];
+    const conditions = [];
+
+    if (conteudoId) {
+      params.push(conteudoId);
+      conditions.push(`conteudo_id = $${params.length}`);
+    }
+    if (moduloId) {
+      params.push(moduloId);
+      conditions.push(`modulo_id = $${params.length}`);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    const { rowCount } = await pool.query(query, params);
+
+    return {
+      success: true,
+      message: `${rowCount} registro(s) de histórico excluído(s) com sucesso!`,
+      removidos: rowCount
+    };
   }
 };
 

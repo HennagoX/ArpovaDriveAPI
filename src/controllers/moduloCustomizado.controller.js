@@ -66,3 +66,26 @@ export async function reverter(req, res, next) {
     next(error);
   }
 }
+
+export async function removerHistorico(req, res, next) {
+  try {
+    const requesterId = req.requesterId;
+    const historicoId = req.params?.id;
+    const resultado = await moduloCustomizadoService.removerItemHistorico(historicoId, requesterId);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function limparHistorico(req, res, next) {
+  try {
+    const requesterId = req.requesterId;
+    const conteudoId = req.query?.conteudoId || req.body?.conteudoId || null;
+    const moduloId = req.query?.moduloId || req.body?.moduloId || null;
+    const resultado = await moduloCustomizadoService.limparHistorico(conteudoId, moduloId, requesterId);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
