@@ -12,8 +12,8 @@ export const userSchema = z.object({
   data_nascimento: z.string().refine((value) => !Number.isNaN(new Date(value).getTime()), {
     message: 'Data de nascimento inválida.'
   }),
-  pergunta_seguranca: z.string().trim().min(3, 'A pergunta de segurança deve ter pelo menos 3 caracteres.').optional(),
-  resposta_seguranca: z.string().trim().min(2, 'A resposta de segurança deve ter pelo menos 2 caracteres.').optional()
+  pergunta_seguranca: z.string().trim().min(3, 'A pergunta de segurança deve ter pelo menos 3 caracteres.').nullable().optional(),
+  resposta_seguranca: z.string().trim().min(2, 'A resposta de segurança deve ter pelo menos 2 caracteres.').nullable().optional()
 });
 
 export const perguntaSegurancaSchema = z.object({

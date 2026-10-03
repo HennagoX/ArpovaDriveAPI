@@ -85,6 +85,30 @@ export async function register(req, res, next) {
   }
 }
 
+export async function verificarEmail(req, res, next) {
+  const email = (req.body?.email || req.query?.email)?.toLowerCase().trim();
+
+  if (!email) {
+    return res.status(400).json({ error: 'Por favor, informe o e-mail.' });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      'SELECT id_usuario FROM usuario WHERE LOWER(email) = LOWER($1)',
+      [email]
+    );
+
+    const exists = rows.length > 0;
+    return res.status(200).json({
+      exists,
+      disponivel: !exists,
+      message: exists ? 'Esse e-mail já está em uso!' : 'E-mail disponível para cadastro.'
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function getPerguntaSeguranca(req, res, next) {
   const email = (req.body?.email || req.query?.email)?.toLowerCase().trim();
 

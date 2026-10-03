@@ -15,15 +15,20 @@ export function errorHandler(err, req, res, next) {
   console.error('[API_ERROR]', err);
 
   if (err instanceof ZodError) {
+    const flattened = err.flatten();
+    const firstField = Object.keys(flattened.fieldErrors || {})[0];
+    const firstFieldError = firstField ? flattened.fieldErrors[firstField]?.[0] : null;
+    const errorMessage = firstFieldError || flattened.formErrors?.[0] || 'Dados inválidos.';
+
     return res.status(400).json({
-      error: 'Invalid data.',
-      details: err.flatten()
+      error: errorMessage,
+      details: flattened
     });
   }
 
   if (err?.code === '23505') {
     return res.status(409).json({
-      error: 'This email is already registered.'
+      error: 'Esse e-mail já está em uso!'
     });
   }
 

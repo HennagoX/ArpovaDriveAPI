@@ -3,9 +3,14 @@ export function validate(schema) {
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
+      const flattened = result.error.flatten();
+      const firstField = Object.keys(flattened.fieldErrors || {})[0];
+      const firstFieldError = firstField ? flattened.fieldErrors[firstField]?.[0] : null;
+      const errorMessage = firstFieldError || flattened.formErrors?.[0] || 'Dados inválidos.';
+
       return res.status(400).json({
-        error: 'Invalid data.',
-        details: result.error.flatten()
+        error: errorMessage,
+        details: flattened
       });
     }
 
