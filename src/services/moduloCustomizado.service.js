@@ -1,12 +1,53 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import pool from '../Repositories/db.js';
 
-const UPLOAD_DIR = path.join(process.cwd(), 'uploads', 'pdfs');
+function getUploadDir() {
+  const localDir = path.join(process.cwd(), 'uploads', 'pdfs');
+  try {
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
+    }
+    return localDir;
+  } catch {
+    const tmpDir = path.join(os.tmpdir(), 'aprovadrive', 'uploads', 'pdfs');
+    try {
+      if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+      return tmpDir;
+    } catch (tmpErr) {
+      console.warn('[ModuloCustomizadoService] Sistema de arquivos somente leitura, operando em modo database:', tmpErr.message);
+      return null;
+    }
+  }
+}
 
-function ensureUploadDir() {
-  if (!fs.existsSync(UPLOAD_DIR)) {
-    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+export async function initModuloCustomizadoTable() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS modulo_customizado (
+        id VARCHAR(255) PRIMARY KEY,
+        conteudo_id VARCHAR(100) NOT NULL,
+        numero INTEGER NOT NULL DEFAULT 1,
+        titulo VARCHAR(255) NOT NULL,
+        descricao TEXT,
+        duracao VARCHAR(50) DEFAULT '20 min',
+        topicos INTEGER DEFAULT 4,
+        pdf_nome VARCHAR(255),
+        pdf_url TEXT,
+        pdf_base64 TEXT,
+        removido BOOLEAN DEFAULT FALSE,
+        is_custom BOOLEAN DEFAULT TRUE,
+        criado_em TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        atualizado_em TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_modulo_customizado_conteudo ON modulo_customizado(conteudo_id);
+      ALTER TABLE modulo_customizado ADD COLUMN IF NOT EXISTS pdf_base64 TEXT;
+    `);
+  } catch (err) {
+    console.error('[ModuloCustomizadoService] Erro ao assegurar tabela modulo_customizado:', err.message);
   }
 }
 
@@ -64,6 +105,8 @@ async function registrarHistorico({
 
 export const moduloCustomizadoService = {
   async listarModulos(conteudoId = null) {
+    await initModuloCustomizadoTable();
+
     let query = 'SELECT * FROM modulo_customizado';
     let params = [];
 
@@ -87,7 +130,7 @@ export const moduloCustomizadoService = {
   },
 
   async salvarModulo(dados, requesterId = null) {
-    ensureUploadDir();
+    await initModuloCustomizadoTable();
 
     let {
       id,
@@ -114,14 +157,22 @@ export const moduloCustomizadoService = {
       throw err;
     }
 
-    // Se foi enviado PDF via base64, salva o arquivo fisicamente na pasta uploads/pdfs
+    // Se foi enviado PDF via base64, salva o arquivo fisicamente como cache temporário se possível e no banco
     if (pdf_base64 && typeof pdf_base64 === 'string') {
       const base64Data = pdf_base64.replace(/^data:application\/pdf;base64,/, '').replace(/^data:application\/octet-stream;base64,/, '');
       const sanitizedName = (pdf_nome || `material_${Date.now()}.pdf`).replace(/[^a-zA-Z0-9_.-]/g, '_');
       const uniqueFilename = `${Date.now()}_${sanitizedName}`;
-      const filePath = path.join(UPLOAD_DIR, uniqueFilename);
 
-      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+      const uploadDir = getUploadDir();
+      if (uploadDir) {
+        try {
+          const filePath = path.join(uploadDir, uniqueFilename);
+          fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+        } catch (err) {
+          console.warn('[ModuloCustomizadoService] Aviso ao gravar PDF em disco temporário:', err.message);
+        }
+      }
+
       pdf_url = `/uploads/pdfs/${uniqueFilename}`;
       pdf_nome = sanitizedName;
     }
@@ -141,8 +192,8 @@ export const moduloCustomizadoService = {
 
     const query = `
       INSERT INTO modulo_customizado (
-        id, conteudo_id, numero, titulo, descricao, duracao, topicos, pdf_nome, pdf_url, removido, is_custom, atualizado_em
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, FALSE, TRUE, NOW())
+        id, conteudo_id, numero, titulo, descricao, duracao, topicos, pdf_nome, pdf_url, pdf_base64, removido, is_custom, atualizado_em
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, FALSE, TRUE, NOW())
       ON CONFLICT (id) DO UPDATE SET
         conteudo_id = EXCLUDED.conteudo_id,
         numero = EXCLUDED.numero,
@@ -152,6 +203,7 @@ export const moduloCustomizadoService = {
         topicos = EXCLUDED.topicos,
         pdf_nome = EXCLUDED.pdf_nome,
         pdf_url = EXCLUDED.pdf_url,
+        pdf_base64 = COALESCE(EXCLUDED.pdf_base64, modulo_customizado.pdf_base64),
         removido = FALSE,
         atualizado_em = NOW()
       RETURNING *;
@@ -166,7 +218,8 @@ export const moduloCustomizadoService = {
       dur,
       top,
       pNome,
-      pUrl
+      pUrl,
+      pdf_base64 || prevRow?.pdf_base64 || null
     ]);
 
     const savedRow = rows[0];

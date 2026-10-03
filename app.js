@@ -19,6 +19,9 @@ import { rateLimiters } from './src/config/rateLimit.js';
 import { errorHandler, notFoundHandler } from './src/middlewares/errorHandler.js';
 import taskService from './src/services/task.service.js';
 
+import os from 'os';
+import pool from './src/Repositories/db.js';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -26,8 +29,34 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
-// Servir arquivos estáticos de uploads de PDFs
+// Servir arquivos estáticos de uploads de PDFs (disco local ou temporário de serverless)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use('/uploads', express.static(path.join(os.tmpdir(), 'aprovadrive', 'uploads')));
+
+// Fallback dinâmico para PDFs armazenados diretamente no banco de dados (resiliente para Vercel Serverless)
+app.get('/uploads/pdfs/:filename', async (req, res, next) => {
+  try {
+    const filename = req.params.filename;
+    const { rows } = await pool.query(
+      `SELECT pdf_base64, pdf_nome FROM modulo_customizado 
+       WHERE pdf_url LIKE $1 OR pdf_nome = $2 OR pdf_url LIKE $3
+       LIMIT 1`,
+      [`%${filename}%`, filename, `%/${filename}`]
+    );
+
+    if (rows.length > 0 && rows[0].pdf_base64) {
+      const cleanBase64 = rows[0].pdf_base64.replace(/^data:application\/pdf;base64,/, '').replace(/^data:application\/octet-stream;base64,/, '');
+      const buffer = Buffer.from(cleanBase64, 'base64');
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(rows[0].pdf_nome || filename)}"`);
+      return res.send(buffer);
+    }
+    return next();
+  } catch (err) {
+    console.warn('[UploadsFallback] Falha ao recuperar PDF do banco:', err.message);
+    return next();
+  }
+});
 
 app.use('/auth', authRoutes);
 app.use('/task', taskRoutes);
