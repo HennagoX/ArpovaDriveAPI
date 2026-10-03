@@ -552,7 +552,6 @@ const taskService = {
     const nomeMateria = NOMES_MATERIAS_EXIBICAO[materiaNorm] || params.materia || 'Matéria';
     const linkAcao = obterLinkAcao(tipo, { ...params, materia: materiaNorm });
 
-    // Data alvo formatada para verificação rigorosa do mesmo dia
     const targetDateStr = formatToYmd(refDate || task.data_agendada || new Date());
 
     const isSameDayStr = (dateOrStr, targetYmd) => {
@@ -818,7 +817,6 @@ const taskService = {
 
     const rawTasks = await this.ensureWeeklyTasks(user.id_usuario, date);
 
-    // Pré-carrega dados do usuário para validação ultra-rápida (1 query cada)
     const preloadedData = {
       progresso: await taskRepository.getUserProgresso(user.id_usuario),
       baterias: await taskRepository.getUserBaterias(user.id_usuario),
@@ -863,19 +861,16 @@ const taskService = {
           podeConcluir = false;
           linkAcao = null;
         } else if (isPast) {
-          // RIGOROSAMENTE BLOQUEADO: Se não fez no próprio dia, já era! Expirada definitivamente.
           taskStatus = 'expired';
           motivoBloqueio = `Esta missão expirou. Ela pertencia a ${NOMES_DIAS[t.dia_semana] || 'outro dia'} e não pode mais ser realizada. As tarefas diárias devem ser feitas no próprio dia.`;
           podeConcluir = false;
           linkAcao = null;
         } else if (isFuture) {
-          // BLOQUEADO: Liberada apenas no próprio dia
           taskStatus = 'pending';
           motivoBloqueio = `Esta missão será liberada em ${NOMES_DIAS[t.dia_semana] || 'outro dia'}. As missões só podem ser realizadas no próprio dia.`;
           podeConcluir = false;
           linkAcao = null;
         } else {
-          // É HOJE!
           validacao = await this.validarCumprimentoTarefa(t, user, date, preloadedData);
           podeConcluir = Boolean(validacao.valido && !isDone);
           motivoBloqueio = validacao.valido ? null : validacao.motivo;
@@ -1079,7 +1074,6 @@ const taskService = {
       throw err;
     }
 
-    // Validação real de cumprimento dos requisitos
     const validacao = await this.validarCumprimentoTarefa(task, user, date);
     if (!validacao.valido && !options.force) {
       const err = new Error(validacao.motivo || 'Você ainda não cumpriu os requisitos necessários para concluir esta missão diária.');

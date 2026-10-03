@@ -489,7 +489,6 @@ export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
   };
 
   return [
-    // Segunda-feira (Dia 1)
     {
       dia_semana: 1,
       sort: 1,
@@ -524,7 +523,6 @@ export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
       parametros_validacao: { materia: 'PlacasTransito', bateria: 1, meta_porcentagem: 40 }
     },
 
-    // Terça-feira (Dia 2)
     {
       dia_semana: 2,
       sort: 1,
@@ -559,7 +557,6 @@ export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
       parametros_validacao: { materia: 'DirecaoDefensiva', meta_porcentagem: 40, acertos_minimos: 12 }
     },
 
-    // Quarta-feira (Dia 3)
     {
       dia_semana: 3,
       sort: 1,
@@ -594,7 +591,6 @@ export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
       parametros_validacao: { materia: 'Geral', meta_porcentagem: 40, acertos_minimos: 12 }
     },
 
-    // Quinta-feira (Dia 4)
     {
       dia_semana: 4,
       sort: 1,
@@ -629,7 +625,6 @@ export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
       parametros_validacao: { materia: 'PlacasTransito', acertos_minimos: 4 }
     },
 
-    // Sexta-feira (Dia 5)
     {
       dia_semana: 5,
       sort: 1,
@@ -664,7 +659,6 @@ export function gerarTarefasSemanaisFallback(usuario = {}, desempenho = {}) {
       parametros_validacao: { materia: matFraca1, meta_porcentagem: 40, acertos_minimos: 12 }
     },
 
-    // Sábado (Dia 6)
     {
       dia_semana: 6,
       sort: 1,

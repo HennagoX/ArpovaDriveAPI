@@ -106,7 +106,6 @@ export async function moveToNext(content, userId, dataReferencia = null) {
     }
   }
 
-  // Registra leitura com carimbo de data
   try {
     await registrarLeituraModuloDB(canonical, moduloAtual, resolvedUserId, dataReferencia);
   } catch (err) {

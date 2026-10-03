@@ -29,11 +29,9 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
-// Servir arquivos estáticos de uploads de PDFs (disco local ou temporário de serverless)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.use('/uploads', express.static(path.join(os.tmpdir(), 'aprovadrive', 'uploads')));
 
-// Fallback dinâmico para PDFs armazenados diretamente no banco de dados (resiliente para Vercel Serverless)
 app.get('/uploads/pdfs/:filename', async (req, res, next) => {
   try {
     const filename = req.params.filename;
@@ -80,7 +78,6 @@ app.listen(PORT, (err) => {
     console.error(err);
     return;
   }
- // console.log('App listening on port ' + PORT);
 });
 
 export default app;

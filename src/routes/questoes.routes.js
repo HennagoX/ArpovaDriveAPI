@@ -21,7 +21,6 @@ import { requireAdmin } from '../middlewares/admin.middleware.js';
 
 const router = Router();
 
-// Consultas gerais e resoluções
 router.get('/concluidas', getQuestoesConcluidas);
 router.get('/tQuestoesConcluidas', getQuestoesConcluidas);
 router.get('/perguntas', getPerguntas);
@@ -35,13 +34,11 @@ router.post('/checkAcerto', checkAcerto);
 router.post('/concluirBateria', concluirBateriaController);
 router.post('/simulado/concluir', concluirSimuladoController);
 
-// Rotas administrativas para criação e gerenciamento de questões
 router.get('/customizadas', adminListarQuestoes);
 router.post('/admin/criar', requireAdmin, adminCriarQuestao);
 router.put('/admin/:id', requireAdmin, adminCriarQuestao);
 router.delete('/admin/:id', requireAdmin, adminRemoverQuestao);
 
-// Rotas administrativas para criação e gerenciamento de simulados
 router.get('/simulados-customizados', adminListarSimulados);
 router.post('/simulados-customizados/admin/criar', requireAdmin, adminCriarSimulado);
 router.delete('/simulados-customizados/admin/:id', requireAdmin, adminRemoverSimulado);

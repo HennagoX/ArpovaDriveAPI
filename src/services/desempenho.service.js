@@ -147,7 +147,6 @@ export async function obterDesempenhoUsuario(userId) {
     return cached.data;
   }
 
-  // 1. Obter dados do usuário
   const userResult = await pool.query(
     `SELECT id_usuario, nome, email, exp, lv,
             modulo_codigotransito, modulo_placastransito, modulo_direcaodefensiva,
@@ -173,7 +172,6 @@ export async function obterDesempenhoUsuario(userId) {
   const levelInfo = getLevelInfo(expTotal);
   const nivel = Math.max(Number(user.lv || 1), levelInfo.nivel);
 
-  // 2. Obter baterias do usuário
   let baterias = [];
   try {
     await initBateriaResultadoTable();
@@ -189,7 +187,6 @@ export async function obterDesempenhoUsuario(userId) {
     console.warn('[DesempenhoService] Falha ao consultar bateria_resultado:', err.message);
   }
 
-  // 3. Obter simulados do usuário
   let simulados = [];
   try {
     const simResult = await pool.query(
@@ -204,7 +201,6 @@ export async function obterDesempenhoUsuario(userId) {
     console.warn('[DesempenhoService] Falha ao consultar simulado_resultado:', err.message);
   }
 
-  // 4. Calcular desempenho por matéria
   const materiasDesempenho = MATERIAS_CONFIG.map(cfg => {
     const idNorm = normalizarMateria(cfg.id);
     const bateriasMateria = baterias.filter(b => normalizarMateria(b.materia) === idNorm);
@@ -214,13 +210,11 @@ export async function obterDesempenhoUsuario(userId) {
     const bateriasErros = Math.max(0, bateriasQuestoes - bateriasAcertos);
     const bateriasFeitas = bateriasMateria.length;
 
-    // Simulados específicos da matéria
     const simsMateria = simulados.filter(s => normalizarMateria(s.materia) === idNorm);
     const simsQuestoes = simsMateria.reduce((acc, s) => acc + Number(s.total_questoes || 30), 0);
     const simsAcertos = simsMateria.reduce((acc, s) => acc + Number(s.acertos || 0), 0);
     const simsErros = Math.max(0, simsQuestoes - simsAcertos);
 
-    // Integrar contadores acumulados de acertos e erros do perfil por matéria
     const acertosPerfil = cfg.acertosColuna ? Number(user[cfg.acertosColuna] || 0) : 0;
     const errosPerfil = cfg.errosColuna ? Number(user[cfg.errosColuna] || 0) : 0;
 
@@ -253,7 +247,6 @@ export async function obterDesempenhoUsuario(userId) {
     };
   });
 
-  // 5. Totais Gerais consolidados
   const somaMateriasQuestoes = materiasDesempenho.reduce((acc, m) => acc + m.totalQuestoes, 0);
   const somaMateriasAcertos = materiasDesempenho.reduce((acc, m) => acc + m.acertos, 0);
   const somaMateriasErros = materiasDesempenho.reduce((acc, m) => acc + m.erros, 0);
@@ -290,7 +283,6 @@ export async function obterDesempenhoUsuario(userId) {
     statusDescricao = 'Você ainda não concluiu baterias ou simulados suficientes. Comece resolvendo questões para medir seu índice real de prontidão!';
   }
 
-  // 6. Pontos Fortes e Fracos
   const materiasComQuestoes = materiasDesempenho.filter(m => m.totalQuestoes > 0);
   let pontosFortes = [];
   let pontosFracos = [];
@@ -309,7 +301,6 @@ export async function obterDesempenhoUsuario(userId) {
     pontosFracos = ['Legislação de Trânsito', 'Direção Defensiva'];
   }
 
-  // 7. Diagnóstico Dinâmico do Tutor IA
   let diagnosticoIa = '';
   if (totalQuestoes === 0) {
     diagnosticoIa = 'Você está iniciando seus estudos! Para a prova oficial do DETRAN, o melhor caminho é começar pelos conteúdos de Legislação de Trânsito e Direção Defensiva, que concentram mais de 60% das questões da prova oficial.';
@@ -320,7 +311,6 @@ export async function obterDesempenhoUsuario(userId) {
     diagnosticoIa = `Parabéns! Seu rendimento geral é de ${taxaAproveitamento}%, acima da nota de corte oficial do DETRAN (70%). Suas melhores matérias são ${pontosFortes.slice(0, 2).join(' e ')}. Continue resolvendo simulados para consolidar a agilidade de resposta!`;
   }
 
-  // 8. Lista de Últimos Simulados formatados
   const ultimosSimulados = simulados.slice(0, 6).map((sim, index) => {
     const isAprovado = Boolean(sim.aprovado) || Number(sim.acertos) >= 20 || Number(sim.porcentagem) >= 67;
     const matNome = sim.materia && sim.materia !== 'todos' && sim.materia.toLowerCase() !== 'geral'

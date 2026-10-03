@@ -15,7 +15,6 @@ export async function chatWithAi(req, res) {
       req.body?.userId ||
       null;
 
-    // Garante que o contexto sempre tenha os dados completos de desempenho do aluno
     if (!context.desempenho) {
       try {
         const dadosDesempenho = await obterDesempenhoUsuario(userId);

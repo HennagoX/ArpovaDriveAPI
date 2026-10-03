@@ -11,12 +11,10 @@ const ADMIN_CACHE_TTL_MS = 5 * 60 * 1000;
 export async function checkIsAdmin(identifier) {
   if (!identifier) return false;
 
-  // Compatibilidade com variáveis de ambiente (.env)
   if (isUserAdmin(identifier)) return true;
 
   const clean = String(identifier).trim().toLowerCase();
 
-  // Verifica cache em memória
   if (adminCheckCache.has(clean)) {
     const entry = adminCheckCache.get(clean);
     if (Date.now() - entry.timestamp < ADMIN_CACHE_TTL_MS) {

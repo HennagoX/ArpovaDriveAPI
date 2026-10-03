@@ -165,7 +165,7 @@ export async function salvarResultadoBateria(userId, materia, bateria, acertos, 
 
   const ts = dataReferencia ? new Date(dataReferencia) : new Date();
 
-  // 1. Tabela consolidada por bateria
+
   const res = await pool.query(
     `INSERT INTO bateria_resultado (id_usuario, materia, bateria, acertos, total_questoes, porcentagem, aprovado, atualizado_em)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -179,7 +179,6 @@ export async function salvarResultadoBateria(userId, materia, bateria, acertos, 
     [resolvedId, materia, Number(bateria), Number(acertos), Number(totalQuestoes), Number(porcentagem), Boolean(aprovado), ts]
   );
 
-  // 2. Histórico detalhado por data
   try {
     await pool.query(
       `INSERT INTO bateria_historico_log (id_usuario, materia, bateria, acertos, total_questoes, porcentagem, aprovado, criado_em)

@@ -59,7 +59,6 @@ export async function listarUsuarios(req, res, next) {
 export async function listar(req, res, next) {
   try {
     const { userId, requesterId, isAdmin, rawDateOrDay, date } = extrairParametros(req);
-console.log(isAdmin)
     if (rawDateOrDay && !isAdmin) {
       return res.status(403).json({
         error: 'Acesso negado. Apenas o administrador tem permissão para simular dias da semana.'

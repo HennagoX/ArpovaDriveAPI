@@ -157,7 +157,6 @@ export const moduloCustomizadoService = {
       throw err;
     }
 
-    // Se foi enviado PDF via base64, salva o arquivo fisicamente como cache temporário se possível e no banco
     if (pdf_base64 && typeof pdf_base64 === 'string') {
       const base64Data = pdf_base64.replace(/^data:application\/pdf;base64,/, '').replace(/^data:application\/octet-stream;base64,/, '');
       const sanitizedName = (pdf_nome || `material_${Date.now()}.pdf`).replace(/[^a-zA-Z0-9_.-]/g, '_');
@@ -177,7 +176,6 @@ export const moduloCustomizadoService = {
       pdf_nome = sanitizedName;
     }
 
-    // Se id não informado, cria id único
     const moduloId = (id && String(id).trim()) || `mod-custom-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const num = numero ? Number(numero) : 99;
     const dur = duracao || '20 min';
@@ -186,7 +184,6 @@ export const moduloCustomizadoService = {
     const pUrl = pdf_url || '';
     const pNome = pdf_nome || (pUrl ? path.basename(pUrl) : 'Material PDF');
 
-    // Consulta estado anterior para registro no histórico
     const checkPrev = await pool.query('SELECT * FROM modulo_customizado WHERE id = $1', [moduloId]);
     const prevRow = checkPrev.rows[0] || null;
 
@@ -224,7 +221,6 @@ export const moduloCustomizadoService = {
 
     const savedRow = rows[0];
 
-    // Se o módulo já existia e teve seu PDF anterior substituído, registra o arquivo antigo para possível restauração
     if (prevRow && (prevRow.pdf_url || prevRow.pdf_nome) && (prevRow.pdf_url !== savedRow.pdf_url || prevRow.pdf_nome !== savedRow.pdf_nome)) {
       await registrarHistorico({
         moduloId: savedRow.id,
@@ -251,7 +247,6 @@ export const moduloCustomizadoService = {
       throw err;
     }
 
-    // Se for módulo que já está na tabela, marca como removido
     const check = await pool.query('SELECT * FROM modulo_customizado WHERE id = $1', [id]);
     const prevRow = check.rows[0] || null;
 
@@ -261,7 +256,6 @@ export const moduloCustomizadoService = {
         [id]
       );
     } else {
-      // Se for um módulo padrão (base) que o admin está ocultando/removendo
       await pool.query(`
         INSERT INTO modulo_customizado (
           id, conteudo_id, numero, titulo, removido, is_custom, atualizado_em
@@ -319,7 +313,6 @@ export const moduloCustomizadoService = {
   async listarHistorico(conteudoId = null, moduloId = null) {
     await initHistoricoTable();
 
-    // Apenas arquivos e módulos DELETADOS anteriormente aparecem no histórico para restauração
     let query = "SELECT * FROM modulo_pdf_historico WHERE tipo_acao = 'REMOCAO'";
     let params = [];
     let conditions = ["tipo_acao = 'REMOCAO'"];
@@ -401,7 +394,6 @@ export const moduloCustomizadoService = {
 
     const restoredRow = rows[0];
 
-    // Como o arquivo/módulo foi restaurado, ele sai do histórico de deletados
     await pool.query('DELETE FROM modulo_pdf_historico WHERE id = $1', [historicoId]);
 
     return {
@@ -423,10 +415,8 @@ export const moduloCustomizadoService = {
     const hist = histCheck.rows[0];
     const moduloId = hist.modulo_id;
 
-    // Remove do histórico permanentemente
     await pool.query('DELETE FROM modulo_pdf_historico WHERE id = $1', [historicoId]);
 
-    // Se o módulo correspondente ainda estiver marcado como removido, purga definitivamente do banco
     if (moduloId) {
       await pool.query('DELETE FROM modulo_customizado WHERE id = $1 AND removido = TRUE', [moduloId]);
     }
@@ -458,7 +448,6 @@ export const moduloCustomizadoService = {
 
     const { rowCount } = await pool.query(query, params);
 
-    // Também purga os módulos marcados como removidos correspondentes
     if (conteudoId) {
       await pool.query('DELETE FROM modulo_customizado WHERE conteudo_id = $1 AND removido = TRUE', [conteudoId]);
     } else {

@@ -62,7 +62,6 @@ export async function concluirFixa(req, res, next) {
 
 export async function criarTarefaFixaAdminController(req, res, next) {
   try {
-    console.log("B");
     const requesterId = req.headers?.['x-admin-id'] || req.headers?.['x-requester-id'] || req.body?.adminId || extrairIdentificadorUsuario(req);
     const result = await taskFixaService.criarTarefaFixaAdmin(req.body, requesterId);
     return res.status(201).json(result);
