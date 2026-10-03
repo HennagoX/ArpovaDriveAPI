@@ -136,10 +136,29 @@ function formatarDataSimulado(dataIso) {
   }
 }
 
+const memoryDesempenhoCache = new Map();
+const DESEMPENHO_CACHE_TTL_MS = 30000;
+
+export function invalidateDesempenhoCache(userId = null) {
+  if (!userId) {
+    memoryDesempenhoCache.clear();
+    return;
+  }
+  const key = String(userId).trim().toLowerCase();
+  memoryDesempenhoCache.delete(key);
+}
+
 export async function obterDesempenhoUsuario(userId) {
   const resolvedId = await resolveUserId(userId);
   if (!resolvedId) {
     return null;
+  }
+
+  const cacheKey = String(resolvedId).trim().toLowerCase();
+  const cached = memoryDesempenhoCache.get(cacheKey);
+  const now = Date.now();
+  if (cached && (now - cached.timestamp < DESEMPENHO_CACHE_TTL_MS)) {
+    return cached.data;
   }
 
   // 1. Obter dados do usuário
@@ -369,6 +388,13 @@ export async function obterDesempenhoUsuario(userId) {
     diagnosticoIa,
     ultimosSimulados
   };
+
+  memoryDesempenhoCache.set(cacheKey, {
+    timestamp: Date.now(),
+    data: resultado
+  });
+
+  return resultado;
 }
 
 export function formatarDesempenhoParaPrompt(desempenho) {
@@ -402,5 +428,6 @@ Use estritamente estes dados reais do aluno acima. Se o aluno perguntar sobre se
 export default {
   MATERIAS_CONFIG,
   obterDesempenhoUsuario,
+  invalidateDesempenhoCache,
   formatarDesempenhoParaPrompt
 };

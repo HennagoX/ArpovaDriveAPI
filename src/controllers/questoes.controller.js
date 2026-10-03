@@ -19,6 +19,7 @@ import {
   removerSimuladoAdmin
 } from "../services/questoes.service.js";
 import taskService from "../services/task.service.js";
+import { invalidateDesempenhoCache } from "../services/desempenho.service.js";
 
 function extrairUserId(req) {
   return req.body?.userId ||
@@ -61,6 +62,7 @@ export async function checkAcerto(req, res) {
       });
     }
 
+    invalidateDesempenhoCache(userId);
 
     return res.status(200).json(resultado);
   } catch (error) {
@@ -184,6 +186,7 @@ export async function concluirBateriaController(req, res) {
     const dataRef = extrairDataReferencia(req);
     const resultado = await concluirBateria(req.body, userId, dataRef);
     taskService.invalidateUserPayloadCache(userId);
+    invalidateDesempenhoCache(userId);
 
     return res.status(200).json(resultado);
   } catch (error) {
@@ -222,6 +225,7 @@ export async function concluirSimuladoController(req, res) {
     const dataRef = extrairDataReferencia(req);
     const resultado = await concluirSimulado(req.body, userId, dataRef);
     taskService.invalidateUserPayloadCache(userId);
+    invalidateDesempenhoCache(userId);
 
     return res.status(200).json(resultado);
   } catch (error) {

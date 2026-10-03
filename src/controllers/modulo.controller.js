@@ -1,5 +1,6 @@
 import { getCurrent, moveToNext, setPointer, registrarLeitura } from "../services/modulo.service.js";
 import taskService from "../services/task.service.js";
+import { invalidateDesempenhoCache } from "../services/desempenho.service.js";
 
 function extrairParametros(req) {
   const contentId = 
@@ -68,6 +69,7 @@ export async function moveToNextModule(req, res) {
 
     const resultado = await moveToNext(contentId, userId, dateRef);
     taskService.invalidateUserPayloadCache(userId);
+    invalidateDesempenhoCache(userId);
     return res.status(200).json(resultado);
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -87,6 +89,7 @@ export async function registrarLeituraModuloController(req, res) {
 
     const resultado = await registrarLeitura(contentId, modulo, userId, dateRef);
     taskService.invalidateUserPayloadCache(userId);
+    invalidateDesempenhoCache(userId);
     return res.status(200).json(resultado);
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -111,6 +114,8 @@ export async function setModulePointer(req, res) {
     }
 
     const resultado = await setPointer(contentId, userId, numero);
+    taskService.invalidateUserPayloadCache(userId);
+    invalidateDesempenhoCache(userId);
     return res.status(200).json(resultado);
   } catch (error) {
     return res.status(400).json({ error: error.message });

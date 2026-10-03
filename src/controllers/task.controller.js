@@ -1,6 +1,7 @@
 import taskService from '../services/task.service.js';
 import { isUserAdmin } from '../config/admin.config.js';
 import { checkIsAdmin } from '../middlewares/admin.middleware.js';
+import { invalidateDesempenhoCache } from '../services/desempenho.service.js';
 
 export function extrairParametros(req) {
   const taskId = req.params?.id || req.body?.taskId || req.body?.id || req.body?.id_tarefa || req.query?.taskId;
@@ -123,6 +124,7 @@ export async function concluir(req, res, next) {
     }
     const isForce = Boolean(req.body?.force && isAdmin);
     const result = await taskService.completeTask(taskId, userId, date, { force: isForce });
+    invalidateDesempenhoCache(userId);
     return res.status(200).json(result);
   } catch (error) {
     if (error.statusCode === 400 || error.validacao) {
