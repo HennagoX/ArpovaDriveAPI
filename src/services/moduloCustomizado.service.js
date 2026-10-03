@@ -279,7 +279,7 @@ export const moduloCustomizadoService = {
 
     let query = 'SELECT * FROM modulo_pdf_historico';
     let params = [];
-    let conditions = [];
+    let conditions = ["tipo_acao != 'REVERSAO'"];
 
     if (conteudoId) {
       params.push(conteudoId);
@@ -368,23 +368,12 @@ export const moduloCustomizadoService = {
       Boolean(targetState.removido)
     ]);
 
-    const revertedRow = rows[0];
-
-    const dataOriginal = new Date(hist.criado_em).toLocaleString('pt-BR');
-    await registrarHistorico({
-      moduloId,
-      conteudoId: hist.conteudo_id,
-      tipoAcao: 'REVERSAO',
-      descricaoAcao: `Reversão para a versão #${historicoId} (${dataOriginal}) - PDF: "${revertedRow.pdf_nome}"`,
-      adminId: requesterId,
-      dadosAnteriores: currentState,
-      dadosNovos: revertedRow
-    });
+    const restoredRow = rows[0];
 
     return {
       success: true,
-      message: `Módulo e PDF revertidos com sucesso para a versão #${historicoId}!`,
-      modulo: revertedRow
+      message: `Arquivo "${restoredRow.pdf_nome || 'material.pdf'}" restaurado com sucesso no módulo!`,
+      modulo: restoredRow
     };
   },
 
