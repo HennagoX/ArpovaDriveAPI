@@ -137,15 +137,10 @@ function formatarDataSimulado(dataIso) {
 }
 
 const memoryDesempenhoCache = new Map();
-const DESEMPENHO_CACHE_TTL_MS = 30000;
+const DESEMPENHO_CACHE_TTL_MS = 10000; // 10 segundos
 
 export function invalidateDesempenhoCache(userId = null) {
-  if (!userId) {
-    memoryDesempenhoCache.clear();
-    return;
-  }
-  const key = String(userId).trim().toLowerCase();
-  memoryDesempenhoCache.delete(key);
+  memoryDesempenhoCache.clear();
 }
 
 export async function obterDesempenhoUsuario(userId) {
