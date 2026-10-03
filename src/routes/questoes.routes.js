@@ -38,6 +38,7 @@ router.post('/simulado/concluir', concluirSimuladoController);
 // Rotas administrativas para criação e gerenciamento de questões
 router.get('/customizadas', adminListarQuestoes);
 router.post('/admin/criar', requireAdmin, adminCriarQuestao);
+router.put('/admin/:id', requireAdmin, adminCriarQuestao);
 router.delete('/admin/:id', requireAdmin, adminRemoverQuestao);
 
 // Rotas administrativas para criação e gerenciamento de simulados

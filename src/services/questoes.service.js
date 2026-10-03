@@ -115,7 +115,7 @@ export async function obterPerguntasAsync(materia, bateriaNumero) {
     if (customRows && customRows.length > 0) {
       const customMapped = customRows.map((cq, idx) => ({
         id: cq.id,
-        numero: Number(cq.numero || (base.length + idx + 1)),
+        numero: base.length + idx + 1,
         modulo: Number(cq.modulo || 1),
         materia: cq.materia || materiaNorm,
         texto: cq.texto,
@@ -123,6 +123,7 @@ export async function obterPerguntasAsync(materia, bateriaNumero) {
         correta: Number(cq.correta),
         corretaLetra: cq.correta_letra || LETRAS[cq.correta] || 'A',
         explicacao: cq.explicacao || '',
+        incluirNoSimulado: cq.incluir_no_simulado !== false,
         isCustom: true
       }));
       return [...base, ...customMapped];
@@ -142,6 +143,25 @@ export function obterBaterias(materia) {
     numero: Number(num),
     totalQuestoes: questoesMateria[num].length
   }));
+}
+
+export async function obterBateriasAsync(materia) {
+  const materiaNorm = normalizarMateria(materia);
+  const questoesMateria = QUESTOES_BANCO[materiaNorm] || {};
+  const baterias = [];
+  for (let num = 1; num <= 4; num++) {
+    const baseCount = questoesMateria[num] ? questoesMateria[num].length : 0;
+    let customCount = 0;
+    try {
+      const customRows = await listarQuestoesCustomizadas(materiaNorm, num);
+      customCount = customRows ? customRows.length : 0;
+    } catch {}
+    baterias.push({
+      numero: num,
+      totalQuestoes: baseCount + customCount
+    });
+  }
+  return baterias;
 }
 
 const BATERIAS_MODULOS_MINIMOS = {
@@ -193,6 +213,7 @@ export async function checarAcerto(respostas, userId) {
   const bateriaRaw = respostas?.bateria || respostas?.bateriaNumero || respostas?.bateriaId || respostas?.bateria_id || 1;
   const bateriaNum = normalizarBateriaNumero(bateriaRaw);
 
+  const questaoId = respostas?.id || respostas?.questaoId || respostas?.questao?.id;
   const numQuestao = Number(
     respostas?.num ||
     respostas?.numQuestao ||
@@ -206,7 +227,13 @@ export async function checarAcerto(respostas, userId) {
   );
 
   const perguntas = await obterPerguntasAsync(materiaNorm, bateriaNum);
-  const questaoEncontrada = perguntas.find(q => Number(q.numero) === numQuestao);
+  let questaoEncontrada = null;
+  if (questaoId) {
+    questaoEncontrada = perguntas.find(q => String(q.id) === String(questaoId));
+  }
+  if (!questaoEncontrada) {
+    questaoEncontrada = perguntas.find(q => Number(q.numero) === numQuestao);
+  }
 
   const textoResposta = String(respostas?.textoResposta || respostas?.texto || '').trim();
 

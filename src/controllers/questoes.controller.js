@@ -4,6 +4,7 @@ import {
   obterPerguntas,
   obterPerguntasAsync,
   obterBaterias,
+  obterBateriasAsync,
   concluirBateria,
   verificarAcessoBateria,
   gerarQuestoesSimulado,
@@ -144,7 +145,7 @@ export async function verificarAcessoBateriaController(req, res) {
 export async function getBaterias(req, res) {
   try {
     const materia = req.query.materia || req.params?.materia || 'MeioAmbiente';
-    const baterias = obterBaterias(materia);
+    const baterias = await obterBateriasAsync(materia);
 
     return res.status(200).json({
       sucesso: true,
@@ -242,7 +243,11 @@ export async function getSimuladoResultadosController(req, res) {
 export async function adminCriarQuestao(req, res, next) {
   try {
     const adminId = req.requesterId;
-    const resultado = await criarQuestaoAdmin(req.body, adminId);
+    const dados = { ...req.body };
+    if (req.params?.id) {
+      dados.id = req.params.id;
+    }
+    const resultado = await criarQuestaoAdmin(dados, adminId);
     return res.status(201).json(resultado);
   } catch (error) {
     next(error);
